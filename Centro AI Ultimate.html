@@ -16,14 +16,19 @@
                 extend: {
                     fontFamily: { sans: ['Outfit', 'sans-serif'] },
                     animation: {
-                        'gradient-x': 'gradient-x 4s ease infinite',
+                        'gradient-x':  'gradient-x 4s ease infinite',
                         'float':       'float 6s ease-in-out infinite',
                         'float-slow':  'float 10s ease-in-out infinite',
+                        'float-med':   'float 8s ease-in-out infinite',
                         'fade-in-up':  'fadeInUp 0.5s ease-out forwards',
                         'slide-down':  'slideDown 0.35s cubic-bezier(0.16,1,0.3,1) forwards',
                         'pulse-ring':  'pulseRing 2s cubic-bezier(0,0,0.2,1) infinite',
                         'scan-line':   'scanLine 3s ease-in-out infinite',
                         'data-flow':   'dataFlow 2s ease-in-out infinite',
+                        'shimmer':     'shimmer 2.8s ease-in-out infinite',
+                        'glow-pulse':  'glowPulse 3s ease-in-out infinite',
+                        'aurora':      'aurora 16s ease infinite',
+                        'border-flow': 'borderFlow 6s linear infinite',
                     },
                     keyframes: {
                         'gradient-x': {
@@ -43,7 +48,7 @@
                             '100%': { opacity:'1', transform:'translateY(0)',     'max-height':'600px' }
                         },
                         pulseRing: {
-                            '0%':   { transform:'scale(0.8)', opacity:'0.8' },
+                            '0%':       { transform:'scale(0.8)', opacity:'0.8' },
                             '80%,100%': { transform:'scale(2.5)', opacity:'0' }
                         },
                         scanLine: {
@@ -54,6 +59,23 @@
                         dataFlow: {
                             '0%,100%': { opacity:'0.3' },
                             '50%':     { opacity:'1' }
+                        },
+                        shimmer: {
+                            '0%':   { transform:'translateX(-100%)', opacity:'0' },
+                            '40%':  { opacity:'1' },
+                            '100%': { transform:'translateX(200%)',  opacity:'0' }
+                        },
+                        glowPulse: {
+                            '0%,100%': { opacity:'0.55', transform:'scale(1)' },
+                            '50%':     { opacity:'1',    transform:'scale(1.07)' }
+                        },
+                        aurora: {
+                            '0%,100%': { 'background-position':'0% 50%',   'background-size':'300% 300%' },
+                            '50%':     { 'background-position':'100% 50%', 'background-size':'300% 300%' }
+                        },
+                        borderFlow: {
+                            '0%':   { 'background-position':'0% 50%' },
+                            '100%': { 'background-position':'200% 50%' }
                         }
                     }
                 }
@@ -64,31 +86,35 @@
     <style>
         /* ── CSS Custom Properties ─────────────────────────────── */
         :root {
-            --bg:           #030712;
-            --glow1:        rgba(59,130,246,0.15);
-            --glow2:        rgba(139,92,246,0.15);
-            --surface:      rgba(17,24,39,0.65);
-            --panel:        rgba(31,41,55,0.45);
-            --border:       rgba(255,255,255,0.08);
-            --border-s:     rgba(255,255,255,0.05);
-            --text:         #f8fafc;
-            --muted:        #94a3b8;
-            --shadow:       0 8px 32px 0 rgba(0,0,0,0.3);
-            --shadow-h:     0 12px 40px 0 rgba(0,0,0,0.4);
-            --chip-bg:      rgba(255,255,255,0.03);
-            --chip-border:  rgba(255,255,255,0.08);
-            --chip-text:    #cbd5e1;
-            --pill-bg:      rgba(255,255,255,0.04);
-            --pill-border:  rgba(255,255,255,0.08);
-            --tab-i-bg:     rgba(255,255,255,0.02);
-            --tab-i-border: rgba(255,255,255,0.05);
-            --tab-i-text:   #94a3b8;
-            --content-bg:   rgba(0,0,0,0.2);
-            --scroll-thumb: rgba(139,92,246,0.25);
-            --head-text:    #ffffff;
+            --bg:             #020810;
+            --glow1:          rgba(59,130,246,0.20);
+            --glow2:          rgba(139,92,246,0.20);
+            --glow3:          rgba(16,185,129,0.08);
+            --surface:        rgba(15,22,36,0.72);
+            --panel:          rgba(26,36,52,0.55);
+            --border:         rgba(255,255,255,0.09);
+            --border-s:       rgba(255,255,255,0.06);
+            --border-grad-a:  rgba(255,255,255,0.11);
+            --border-grad-b:  rgba(139,92,246,0.16);
+            --text:           #f1f5f9;
+            --muted:          #94a3b8;
+            --shadow:         0 8px 32px 0 rgba(0,0,0,0.35), 0 2px 8px 0 rgba(0,0,0,0.2);
+            --shadow-h:       0 16px 48px 0 rgba(0,0,0,0.45), 0 4px 16px 0 rgba(0,0,0,0.25);
+            --chip-bg:        rgba(255,255,255,0.03);
+            --chip-border:    rgba(255,255,255,0.08);
+            --chip-text:      #cbd5e1;
+            --pill-bg:        rgba(255,255,255,0.04);
+            --pill-border:    rgba(255,255,255,0.08);
+            --tab-i-bg:       rgba(255,255,255,0.02);
+            --tab-i-border:   rgba(255,255,255,0.06);
+            --tab-i-text:     #94a3b8;
+            --content-bg:     rgba(0,0,0,0.22);
+            --scroll-thumb:   rgba(139,92,246,0.30);
+            --head-text:      #ffffff;
             --card-head-text: #ffffff;
-            --section-text: #f8fafc;
-            --detail-border: rgba(255,255,255,0.08);
+            --section-text:   #f1f5f9;
+            --detail-border:  rgba(255,255,255,0.08);
+            --mesh-color:     rgba(255,255,255,0.018);
         }
 
         html.light {
@@ -126,9 +152,12 @@
             background-color: var(--bg);
             color: var(--text);
             background-image:
-                radial-gradient(circle at 10% 20%, var(--glow1) 0%, transparent 22%),
-                radial-gradient(circle at 90% 80%, var(--glow2) 0%, transparent 22%),
-                radial-gradient(circle at 50% 50%, rgba(16,185,129,0.04) 0%, transparent 30%);
+                linear-gradient(var(--mesh-color) 1px, transparent 1px),
+                linear-gradient(90deg, var(--mesh-color) 1px, transparent 1px),
+                radial-gradient(circle at 10% 20%, var(--glow1) 0%, transparent 25%),
+                radial-gradient(circle at 90% 80%, var(--glow2) 0%, transparent 25%),
+                radial-gradient(circle at 50% 50%, rgba(16,185,129,0.05) 0%, transparent 35%);
+            background-size: 44px 44px, 44px 44px, auto, auto, auto;
             background-attachment: fixed;
             overflow-x: hidden;
             transition: background-color 0.4s ease, color 0.4s ease;
@@ -137,23 +166,50 @@
         /* ── Cards ─────────────────────────────────────────────── */
         .glass-card {
             background: var(--surface);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--border);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid transparent;
             box-shadow: var(--shadow);
-            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease, background 0.4s ease;
+            position: relative;
+            transition: transform 0.35s cubic-bezier(0.16,1,0.3,1), box-shadow 0.4s ease, background 0.4s ease;
         }
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            padding: 1px;
+            background: linear-gradient(135deg,
+                var(--border-grad-a) 0%,
+                rgba(255,255,255,0.03) 45%,
+                var(--border-grad-b) 100%);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+            z-index: 0;
+            transition: background 0.4s ease;
+        }
+        header.glass-card::before { display: none; }
+        header.glass-card { border-bottom: 1px solid var(--border-s); }
         .glass-card:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-h);
-            border-color: rgba(139,92,246,0.25);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-h), 0 0 60px rgba(139,92,246,0.08);
+        }
+        .glass-card:hover::before {
+            background: linear-gradient(135deg,
+                rgba(139,92,246,0.42) 0%,
+                rgba(59,130,246,0.14) 50%,
+                rgba(139,92,246,0.30) 100%);
         }
         .glass-panel {
             background: var(--panel);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             border: 1px solid var(--border-s);
             border-radius: 1rem;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
             transition: background 0.4s ease, border-color 0.3s ease;
         }
 
@@ -165,22 +221,25 @@
 
         /* ── Tabs ──────────────────────────────────────────────── */
         .tab-active {
-            background: linear-gradient(135deg,rgba(59,130,246,0.15),rgba(139,92,246,0.15));
-            border: 1px solid rgba(139,92,246,0.4);
+            background: linear-gradient(135deg, rgba(59,130,246,0.18), rgba(139,92,246,0.18));
+            border: 1px solid rgba(139,92,246,0.45);
             color: var(--section-text);
-            box-shadow: 0 0 20px rgba(139,92,246,0.15);
-            font-weight: 500;
+            box-shadow: 0 0 24px rgba(139,92,246,0.22), 0 0 0 1px rgba(139,92,246,0.12) inset;
+            font-weight: 600;
         }
         .tab-inactive {
             color: var(--tab-i-text);
             border: 1px solid var(--tab-i-border);
             background: var(--tab-i-bg);
             font-weight: 400;
+            transition: all 0.25s cubic-bezier(0.16,1,0.3,1);
         }
         .tab-inactive:hover {
             color: var(--text);
             background: var(--panel);
-            border-color: var(--border);
+            border-color: rgba(139,92,246,0.25);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(139,92,246,0.10);
         }
 
         /* ── Chips ─────────────────────────────────────────────── */
@@ -200,11 +259,11 @@
             gap: 0.4rem;
         }
         .subdept-chip:hover {
-            background: rgba(139,92,246,0.12);
-            border-color: rgba(139,92,246,0.5);
-            color: var(--text);
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(139,92,246,0.18);
+            background: rgba(139,92,246,0.15);
+            border-color: rgba(139,92,246,0.55);
+            color: #fff;
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 6px 18px rgba(139,92,246,0.22), 0 0 0 1px rgba(139,92,246,0.15);
         }
         .chip-dot { width:6px; height:6px; border-radius:50%; flex-shrink:0; }
 
@@ -218,14 +277,15 @@
             width: 100%;
         }
         .lifecycle-pill:hover {
-            border-color: rgba(139,92,246,0.4);
-            background: rgba(139,92,246,0.07);
-            transform: translateY(-2px);
+            border-color: rgba(139,92,246,0.45);
+            background: rgba(139,92,246,0.09);
+            transform: translateY(-2px) scale(1.01);
+            box-shadow: 0 6px 20px rgba(139,92,246,0.12);
         }
         .lifecycle-pill.active {
-            border-color: rgba(139,92,246,0.6);
-            background: rgba(139,92,246,0.1);
-            box-shadow: 0 0 20px rgba(139,92,246,0.12);
+            border-color: rgba(139,92,246,0.65);
+            background: rgba(139,92,246,0.12);
+            box-shadow: 0 0 28px rgba(139,92,246,0.18), 0 0 0 1px rgba(139,92,246,0.12) inset;
         }
 
         /* ── Lifecycle detail panel ────────────────────────────── */
@@ -255,12 +315,6 @@
             background: linear-gradient(-45deg,#3b82f6,#8b5cf6,#3b82f6);
             background-size: 200% 200%;
             animation: gradient-x 4s ease infinite;
-        }
-        .gradient-text {
-            background: linear-gradient(to right,#60a5fa,#c084fc);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
         }
         .animated-gradient-text {
             background: linear-gradient(-45deg,#60a5fa,#c084fc,#34d399,#60a5fa);
@@ -376,25 +430,16 @@
             background: var(--panel);
             border: 1px solid var(--border);
             border-radius: 1rem;
-            transition: all 0.3s ease;
+            transition: all 0.35s cubic-bezier(0.16,1,0.3,1);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
         }
-        .arch-node:hover  {
-            border-color: rgba(6,182,212,0.5);
-            box-shadow: 0 0 25px rgba(6,182,212,0.15);
-            transform: translateY(-2px);
+        .arch-node:hover {
+            border-color: rgba(6,182,212,0.55);
+            box-shadow: 0 0 30px rgba(6,182,212,0.18), 0 8px 24px rgba(0,0,0,0.2), inset 0 1px 0 rgba(6,182,212,0.08);
+            transform: translateY(-3px) scale(1.01);
         }
 
-        /* ── NEW: Glow line connector ──────────────────────────── */
-        .glow-line {
-            height: 2px;
-            background: linear-gradient(90deg, transparent, rgba(6,182,212,0.6), transparent);
-            animation: dataFlow 2s ease-in-out infinite;
-        }
-        .glow-line-v {
-            width: 2px;
-            background: linear-gradient(180deg, transparent, rgba(139,92,246,0.6), transparent);
-            animation: dataFlow 2.5s ease-in-out infinite;
-        }
+        /* glow-line & glow-line-v defined in utility section below */
 
         /* ── NEW: Security radar pulse ─────────────────────────── */
         .radar-ring {
@@ -409,12 +454,13 @@
             background: var(--panel);
             border: 1px solid var(--border-s);
             border-radius: 1rem;
-            transition: all 0.35s ease;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+            transition: all 0.35s cubic-bezier(0.16,1,0.3,1);
         }
         .bento-card:hover {
-            border-color: rgba(139,92,246,0.35);
-            box-shadow: 0 8px 30px rgba(139,92,246,0.1);
-            transform: translateY(-3px);
+            border-color: rgba(139,92,246,0.38);
+            box-shadow: 0 12px 40px rgba(139,92,246,0.14), 0 0 0 1px rgba(139,92,246,0.10), inset 0 1px 0 rgba(255,255,255,0.06);
+            transform: translateY(-4px) scale(1.005);
         }
 
         /* ── NEW: Flow connector dots ──────────────────────────── */
@@ -465,22 +511,164 @@
         /* ── IntersectionObserver trigger class ─────────────────── */
         .reveal-on-scroll {
             opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+            transform: translateY(28px);
+            filter: blur(5px);
+            transition: opacity 0.7s cubic-bezier(0.16,1,0.3,1),
+                        transform 0.7s cubic-bezier(0.16,1,0.3,1),
+                        filter 0.7s ease-out;
         }
         .reveal-on-scroll.revealed {
             opacity: 1;
             transform: translateY(0);
+            filter: blur(0px);
         }
+
+        /* ── Stagger children cascade ──────────────────────────── */
+        .stagger-children > * {
+            opacity: 0;
+            transform: translateY(20px);
+            filter: blur(3px);
+            transition: opacity 0.55s cubic-bezier(0.16,1,0.3,1),
+                        transform 0.55s cubic-bezier(0.16,1,0.3,1),
+                        filter 0.55s ease-out;
+        }
+        .stagger-children.revealed > * {
+            opacity: 1;
+            transform: translateY(0);
+            filter: blur(0px);
+        }
+        .stagger-children.revealed > *:nth-child(1) { transition-delay: 0.08s; }
+        .stagger-children.revealed > *:nth-child(2) { transition-delay: 0.20s; }
+        .stagger-children.revealed > *:nth-child(3) { transition-delay: 0.32s; }
+        .stagger-children.revealed > *:nth-child(4) { transition-delay: 0.44s; }
+        .stagger-children.revealed > *:nth-child(5) { transition-delay: 0.56s; }
+
+        /* ── Neon text glows ───────────────────────────────────── */
+        .neon-blue    { color: #60a5fa; text-shadow: 0 0 20px rgba(96,165,250,0.55),  0 0 40px rgba(96,165,250,0.25); }
+        .neon-violet  { color: #a78bfa; text-shadow: 0 0 20px rgba(167,139,250,0.55), 0 0 40px rgba(167,139,250,0.25); }
+        .neon-cyan    { color: #22d3ee; text-shadow: 0 0 20px rgba(34,211,238,0.55),  0 0 40px rgba(34,211,238,0.25); }
+        .neon-emerald { color: #34d399; text-shadow: 0 0 20px rgba(52,211,153,0.55),  0 0 40px rgba(52,211,153,0.25); }
+        .neon-teal    { color: #2dd4bf; text-shadow: 0 0 20px rgba(45,212,191,0.55),  0 0 40px rgba(45,212,191,0.25); }
+        .neon-rose    { color: #fb7185; text-shadow: 0 0 20px rgba(251,113,133,0.55), 0 0 40px rgba(251,113,133,0.25); }
+
+        /* ── Metric glow numbers ───────────────────────────────── */
+        .metric-glow-blue    { filter: drop-shadow(0 0 12px rgba(96,165,250,0.5)); }
+        .metric-glow-violet  { filter: drop-shadow(0 0 12px rgba(167,139,250,0.5)); }
+        .metric-glow-emerald { filter: drop-shadow(0 0 12px rgba(52,211,153,0.5)); }
+        .metric-glow-teal    { filter: drop-shadow(0 0 12px rgba(45,212,191,0.5)); }
+
+        /* ── Shimmer overlay on static elements ────────────────── */
+        .shimmer-overlay {
+            position: relative;
+            overflow: hidden;
+        }
+        .shimmer-overlay::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(105deg,
+                transparent 40%,
+                rgba(255,255,255,0.06) 50%,
+                transparent 60%);
+            animation: shimmer 3.5s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        /* ── Glow line enhanced ────────────────────────────────── */
+        .glow-line {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(6,182,212,0.7), transparent);
+            animation: dataFlow 2s ease-in-out infinite;
+            border-radius: 1px;
+        }
+        .glow-line-v {
+            width: 2px;
+            background: linear-gradient(180deg, transparent, rgba(139,92,246,0.7), transparent);
+            animation: dataFlow 2.5s ease-in-out infinite;
+            border-radius: 1px;
+        }
+
+        /* ── Roadmap bar enhanced shine ────────────────────────── */
+        .roadmap-bar { position: relative; overflow: hidden; }
+        .roadmap-bar > div {
+            position: relative;
+            overflow: hidden;
+        }
+        .roadmap-bar > div::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 35%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
+            animation: scanLine 2.8s ease-in-out infinite;
+        }
+
+        /* ── Theme toggle enhancement ──────────────────────────── */
+        .theme-btn:hover {
+            border-color: rgba(139,92,246,0.6);
+            background: rgba(139,92,246,0.12);
+            box-shadow: 0 0 18px rgba(139,92,246,0.28);
+            transform: scale(1.05);
+        }
+
+        /* ── Gradient text enhanced ────────────────────────────── */
+        .gradient-text {
+            background: linear-gradient(to right, #60a5fa, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 0 8px rgba(139,92,246,0.3));
+        }
+        .animated-gradient-text {
+            background: linear-gradient(-45deg, #60a5fa, #c084fc, #34d399, #60a5fa);
+            background-size: 300% 300%;
+            animation: gradient-x 6s ease infinite;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* ── Light mode overrides for new classes ──────────────── */
+        html.light .mesh-color { --mesh-color: rgba(0,0,0,0.025); }
+        html.light body {
+            background-image:
+                linear-gradient(rgba(0,0,0,0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,0,0,0.025) 1px, transparent 1px),
+                radial-gradient(circle at 10% 20%, var(--glow1) 0%, transparent 25%),
+                radial-gradient(circle at 90% 80%, var(--glow2) 0%, transparent 25%),
+                radial-gradient(circle at 50% 50%, rgba(16,185,129,0.03) 0%, transparent 35%);
+            background-size: 44px 44px, 44px 44px, auto, auto, auto;
+        }
+        html.light .neon-blue    { text-shadow: none; color: #2563eb; }
+        html.light .neon-violet  { text-shadow: none; color: #7c3aed; }
+        html.light .neon-cyan    { text-shadow: none; color: #0891b2; }
+        html.light .neon-emerald { text-shadow: none; color: #059669; }
+        html.light .neon-teal    { text-shadow: none; color: #0d9488; }
+        html.light .neon-rose    { text-shadow: none; color: #e11d48; }
+        html.light .glass-card::before {
+            background: linear-gradient(135deg,
+                rgba(0,0,0,0.07) 0%,
+                rgba(0,0,0,0.01) 45%,
+                rgba(139,92,246,0.08) 100%);
+        }
+        html.light .glass-card:hover::before {
+            background: linear-gradient(135deg,
+                rgba(139,92,246,0.25) 0%,
+                rgba(59,130,246,0.08) 50%,
+                rgba(139,92,246,0.18) 100%);
+        }
+        html.light .gradient-text { filter: none; }
     </style>
 </head>
 
 <body class="font-sans antialiased pb-20">
 
     <div class="grain"></div>
-    <div class="fixed top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full blur-[120px] pointer-events-none animate-float-slow ambient-glow-1" style="background:rgba(59,130,246,0.10)"></div>
-    <div class="fixed bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full blur-[120px] pointer-events-none animate-float ambient-glow-2" style="background:rgba(139,92,246,0.10)"></div>
-    <div class="fixed top-[40%] left-[30%] w-[25%] h-[25%] rounded-full blur-[100px] pointer-events-none ambient-glow-3" style="background:rgba(16,185,129,0.04)"></div>
+    <div id="blob1" class="fixed top-[-10%] left-[-10%] w-[42%] h-[42%] rounded-full blur-[130px] pointer-events-none animate-float-slow ambient-glow-1" style="background:rgba(59,130,246,0.13)"></div>
+    <div id="blob2" class="fixed bottom-[-10%] right-[-10%] w-[42%] h-[42%] rounded-full blur-[130px] pointer-events-none animate-float ambient-glow-2" style="background:rgba(139,92,246,0.13)"></div>
+    <div id="blob3" class="fixed top-[40%] left-[30%] w-[28%] h-[28%] rounded-full blur-[110px] pointer-events-none animate-float-med ambient-glow-3" style="background:rgba(16,185,129,0.06)"></div>
+    <div id="blob4" class="fixed top-[20%] right-[5%] w-[20%] h-[20%] rounded-full blur-[100px] pointer-events-none animate-glow-pulse" style="background:rgba(236,72,153,0.06)"></div>
 
     <!-- ── Header ──────────────────────────────────────────────── -->
     <header class="glass-card sticky top-0 z-50 border-b-0 border-x-0 border-t-0">
@@ -539,15 +727,15 @@
                         <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8"/></svg>
                         Section 01
                     </div>
-                    <h3 class="text-2xl md:text-3xl font-bold mb-4 section-title">Impact Zones</h3>
+                    <h3 class="text-2xl md:text-3xl font-bold mb-4 tracking-tight section-title">Impact Zones</h3>
                     <p class="text-c-muted leading-relaxed mb-6">Organizational deployment scale mapped to the highest operational ROI. Service Delivery commands the largest share of agents and therefore AI uplift potential.</p>
                     <div class="grid grid-cols-2 gap-3">
-                        <div class="glass-panel p-4">
-                            <div class="text-2xl font-bold section-title">90+</div>
+                        <div class="glass-panel p-4 shimmer-overlay">
+                            <div class="text-2xl font-bold neon-blue metric-glow-blue">90+</div>
                             <div class="text-xs text-c-muted uppercase tracking-wider mt-1">Sub-departments</div>
                         </div>
-                        <div class="glass-panel p-4">
-                            <div class="text-2xl font-bold gradient-text">6</div>
+                        <div class="glass-panel p-4 shimmer-overlay">
+                            <div class="text-2xl font-bold gradient-text metric-glow-violet">6</div>
                             <div class="text-xs text-c-muted uppercase tracking-wider mt-1">Parent Zones</div>
                         </div>
                     </div>
@@ -570,7 +758,7 @@
                             <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8"/></svg>
                             Section 02
                         </div>
-                        <h3 class="text-2xl md:text-3xl font-bold mb-3 section-title">Lifecycle Optimization</h3>
+                        <h3 class="text-2xl md:text-3xl font-bold mb-3 tracking-tight section-title">Lifecycle Optimization</h3>
                         <p class="text-c-muted leading-relaxed">AI compounds across the entire customer lifecycle. Click any stage below to inspect its specific intervention layer.</p>
                     </div>
                     <div class="flex items-center gap-2 text-xs text-c-muted">
@@ -593,7 +781,7 @@
                     <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8"/></svg>
                     Section 03
                 </div>
-                <h3 class="text-2xl md:text-3xl font-bold mb-2 section-title flex items-center gap-2">
+                <h3 class="text-2xl md:text-3xl font-bold mb-2 tracking-tight section-title flex items-center gap-2">
                     <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                     Revenue & Delivery Funnel
                 </h3>
@@ -616,7 +804,7 @@
                     Section 04
                 </div>
                 <div class="max-w-2xl">
-                    <h3 class="text-2xl md:text-3xl font-bold mb-3 section-title">Departmental Blueprints</h3>
+                    <h3 class="text-2xl md:text-3xl font-bold mb-3 tracking-tight section-title">Departmental Blueprints</h3>
                     <p class="text-c-muted leading-relaxed">Targeted LLM and autonomous agent strategies mapped to existing tech stacks. Select a parent department to reveal its strategic playbook and the full sub-department hierarchy.</p>
                 </div>
             </div>
@@ -641,11 +829,11 @@
                     <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8"/></svg>
                     Section 05
                 </div>
-                <h3 class="text-2xl md:text-3xl font-bold mb-3 section-title">Agentic Ecosystem: <span class="text-cyan-400">Gemma 4</span> + <span class="text-indigo-400">OpenClaw</span></h3>
+                <h3 class="text-2xl md:text-3xl font-bold mb-3 tracking-tight section-title">Agentic Ecosystem: <span class="text-cyan-400">Gemma 4</span> + <span class="text-indigo-400">OpenClaw</span></h3>
                 <p class="text-c-muted leading-relaxed max-w-3xl mb-10">The foundation of our on-premise cognitive infrastructure. OpenClaw will serve as the agentic operating system, powered by Gemma 4's 256K context window, communicating with our enterprise stack via the Model Context Protocol (MCP).</p>
 
                 <!-- Architecture Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10 stagger-children">
                     <!-- Node 1: Hardware -->
                     <div class="arch-node p-6 text-center">
                         <div class="w-14 h-14 mx-auto mb-4 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
@@ -737,10 +925,10 @@
                     <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8"/></svg>
                     Section 06
                 </div>
-                <h3 class="text-2xl md:text-3xl font-bold mb-3 section-title">Hybrid Compute Topology</h3>
+                <h3 class="text-2xl md:text-3xl font-bold mb-3 tracking-tight section-title">Hybrid Compute Topology</h3>
                 <p class="text-c-muted leading-relaxed max-w-3xl mb-10">A three-tier architecture will ensure the right model runs on the right hardware — from lightweight edge inference on employee laptops to frontier-class reasoning in the cloud.</p>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 stagger-children">
                     <!-- Tier 1: Edge Laptops -->
                     <div class="bento-card p-6 relative">
                         <div class="absolute top-4 right-4 text-[10px] font-bold uppercase tracking-widest text-emerald-400/60">Tier 01</div>
@@ -816,10 +1004,10 @@
                     <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8"/></svg>
                     Section 07
                 </div>
-                <h3 class="text-2xl md:text-3xl font-bold mb-3 section-title">Enterprise Security & Governance</h3>
+                <h3 class="text-2xl md:text-3xl font-bold mb-3 tracking-tight section-title">Enterprise Security & Governance</h3>
                 <p class="text-c-muted leading-relaxed max-w-3xl mb-10">Three pillars will guarantee that AI operates within the strictest boundaries of data sovereignty, access control, and auditable compliance.</p>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 stagger-children">
                     <!-- Pillar 1 -->
                     <div class="bento-card p-6 border-l-4 border-l-red-500">
                         <div class="w-12 h-12 rounded-xl bg-red-500/10 border border-red-500/30 flex items-center justify-center text-red-400 mb-5">
@@ -859,11 +1047,11 @@
                     <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8"/></svg>
                     Section 08
                 </div>
-                <h3 class="text-2xl md:text-3xl font-bold mb-3 section-title">Dynamic Knowledge Architecture <span class="text-teal-400">(RAG)</span></h3>
+                <h3 class="text-2xl md:text-3xl font-bold mb-3 tracking-tight section-title">Dynamic Knowledge Architecture <span class="text-teal-400">(RAG)</span></h3>
                 <p class="text-c-muted leading-relaxed max-w-3xl mb-10">Retrieval-Augmented Generation will bypass expensive fine-tuning to pull real-time data directly from connected repositories, eliminating hallucination and retraining downtime.</p>
 
                 <!-- RAG Flow Diagram -->
-                <div class="grid grid-cols-1 md:grid-cols-5 gap-4 items-center mb-8">
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-4 items-center mb-8 stagger-children">
                     <div class="arch-node p-5 text-center">
                         <div class="text-teal-400 mb-2"><svg class="w-8 h-8 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg></div>
                         <p class="text-xs font-bold section-title">Agent Query</p>
@@ -897,7 +1085,7 @@
                 <!-- Instant Updates callout -->
                 <div class="glass-panel p-5 flex items-center gap-4 border-l-4 border-l-teal-500">
                     <div class="text-center flex-shrink-0">
-                        <div class="text-3xl font-bold text-teal-400">0s</div>
+                        <div class="text-3xl font-bold neon-teal metric-glow-teal">0s</div>
                         <div class="text-[10px] text-c-muted uppercase tracking-wider">Retraining</div>
                     </div>
                     <div>
@@ -917,7 +1105,7 @@
                     <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8"/></svg>
                     Section 09
                 </div>
-                <h3 class="text-2xl md:text-3xl font-bold mb-3 section-title">Multi-Agent Orchestration Hub</h3>
+                <h3 class="text-2xl md:text-3xl font-bold mb-3 tracking-tight section-title">Multi-Agent Orchestration Hub</h3>
                 <p class="text-c-muted leading-relaxed max-w-3xl mb-10">A single natural language command will trigger a cascade of cross-departmental autonomous actions — coordinated by a central Manager Agent.</p>
 
                 <!-- Trigger -->
@@ -944,7 +1132,7 @@
                 </div>
 
                 <!-- Worker Agents -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 stagger-children">
                     <div class="bento-card p-6 text-center border-t-4 border-t-amber-500">
                         <div class="w-10 h-10 mx-auto rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 mb-3">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
@@ -978,7 +1166,7 @@
                     <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8"/></svg>
                     Section 10
                 </div>
-                <h3 class="text-2xl md:text-3xl font-bold mb-3 section-title">Departmental Agentic Workflows</h3>
+                <h3 class="text-2xl md:text-3xl font-bold mb-3 tracking-tight section-title">Departmental Agentic Workflows</h3>
                 <p class="text-c-muted leading-relaxed max-w-3xl mb-8">Click any department to reveal how autonomous agents will operate at the function level.</p>
 
                 <div class="space-y-3" id="workflow-accordion">
@@ -996,10 +1184,10 @@
                     <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8"/></svg>
                     Section 11
                 </div>
-                <h3 class="text-2xl md:text-3xl font-bold mb-3 section-title">Employee "Quality of Life" <span class="text-emerald-400">AI Workflows</span></h3>
+                <h3 class="text-2xl md:text-3xl font-bold mb-3 tracking-tight section-title">Employee "Quality of Life" <span class="text-emerald-400">AI Workflows</span></h3>
                 <p class="text-c-muted leading-relaxed max-w-3xl mb-10">AI that will serve the humans behind the operation — not just the operation itself.</p>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 stagger-children">
                     <div class="bento-card p-6 border-t-4 border-t-emerald-500 group">
                         <div class="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 mb-5 group-hover:shadow-[0_0_20px_rgba(16,185,129,0.3)] transition-shadow">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
@@ -1036,10 +1224,10 @@
                     <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8"/></svg>
                     Section 12
                 </div>
-                <h3 class="text-2xl md:text-3xl font-bold mb-3 section-title">AI Media & <span class="text-pink-400">Corporate Communications</span> Factory</h3>
+                <h3 class="text-2xl md:text-3xl font-bold mb-3 tracking-tight section-title">AI Media & <span class="text-pink-400">Corporate Communications</span> Factory</h3>
                 <p class="text-c-muted leading-relaxed max-w-3xl mb-10">AI-powered creative production pipelines will accelerate content, campaigns, and corporate communications at scale.</p>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 stagger-children">
                     <div class="bento-card p-6">
                         <div class="w-10 h-10 rounded-xl bg-pink-500/10 border border-pink-500/30 flex items-center justify-center text-pink-400 mb-4">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
@@ -1074,7 +1262,7 @@
                     <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8"/></svg>
                     Section 13
                 </div>
-                <h3 class="text-2xl md:text-3xl font-bold mb-3 section-title">Deployment Strategy & <span class="text-blue-400">Investment</span></h3>
+                <h3 class="text-2xl md:text-3xl font-bold mb-3 tracking-tight section-title">Deployment Strategy & <span class="text-blue-400">Investment</span></h3>
                 <p class="text-c-muted leading-relaxed max-w-3xl mb-10">A phased rollout plan with detailed man-day estimates and a localized financial forecast for Egypt operations.</p>
 
                 <!-- Roadmap Table -->
@@ -1199,7 +1387,7 @@
                 <div class="glass-panel p-6 border-l-4 border-l-emerald-500">
                     <div class="flex flex-col md:flex-row md:items-center gap-6">
                         <div class="flex-shrink-0 text-center">
-                            <div class="text-4xl font-bold text-emerald-400">~65%</div>
+                            <div class="text-4xl font-bold neon-emerald metric-glow-emerald">~65%</div>
                             <div class="text-[10px] text-c-muted uppercase tracking-widest mt-1">Zero-Cost Implementable</div>
                         </div>
                         <div>
@@ -1769,7 +1957,7 @@
         });
     }
 
-    // ── Scroll Reveal ──────────────────────────────────────
+    // ── Scroll Reveal (enhanced: sections + stagger grids) ──
     function initScrollReveal() {
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
@@ -1778,10 +1966,47 @@
                     observer.unobserve(entry.target);
                 }
             });
-        }, { threshold: 0.1 });
+        }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
 
         document.querySelectorAll('.reveal-on-scroll').forEach(el => observer.observe(el));
+
+        // Stagger-children grids get their own observer so they
+        // cascade in as soon as the grid itself enters the viewport
+        const staggerObs = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('revealed');
+                    staggerObs.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.10, rootMargin: '0px 0px -30px 0px' });
+
+        document.querySelectorAll('.stagger-children').forEach(el => staggerObs.observe(el));
     }
+
+    // ── Subtle mouse parallax on ambient blobs ──────────────
+    (function initParallax() {
+        const b1 = document.getElementById('blob1');
+        const b2 = document.getElementById('blob2');
+        const b3 = document.getElementById('blob3');
+        const b4 = document.getElementById('blob4');
+        if (!b1 || !b2) return;
+
+        let ticking = false;
+        document.addEventListener('mousemove', (e) => {
+            if (ticking) return;
+            ticking = true;
+            requestAnimationFrame(() => {
+                const xPct = (e.clientX / window.innerWidth  - 0.5) * 2;
+                const yPct = (e.clientY / window.innerHeight - 0.5) * 2;
+                b1.style.transform = `translate(${xPct * 18}px, ${yPct * 12}px)`;
+                b2.style.transform = `translate(${xPct * -14}px, ${yPct * -10}px)`;
+                if (b3) b3.style.transform = `translate(${xPct * 10}px, ${yPct * 8}px)`;
+                if (b4) b4.style.transform = `translate(${xPct * -8}px, ${yPct * 6}px)`;
+                ticking = false;
+            });
+        });
+    })();
 
     // ── Light-mode text color enforcement ──────────────────
     const lightOverrideStyle = document.createElement('style');
