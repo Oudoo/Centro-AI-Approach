@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enterprise AI Strategy Blueprint | Centro AI</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { 
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Outfit', 'sans-serif']
+                    },
+                    colors: {
+                        background: '#F8FAFC',
+                        surface: '#FFFFFF',
+                        primary: '#2563EB',
+                        secondary: '#4F46E5',
+                        accent: '#10B981',
+                        border: '#E2E8F0',
+                        textMain: '#1E293B',
+                        textMuted: '#64748B',
+                    },
+                    animation: {
+                        'fade-in-up': 'fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                    },
+                    keyframes: {
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(12px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: theme('colors.background');
+            color: theme('colors.textMain');
+            background-image: 
+                radial-gradient(circle at 0% 0%, rgba(37, 99, 235, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 100% 100%, rgba(79, 70, 229, 0.05) 0%, transparent 40%);
+            background-attachment: fixed;
+        }
+
+        .premium-card {
+            background: #FFFFFF;
+            border: 1px solid theme('colors.border');
+            box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.03), 0 1px 2px -1px rgba(15, 23, 42, 0.03);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .premium-card:hover {
+            box-shadow: 0 20px 25px -5px rgba(15, 23, 42, 0.05), 0 8px 10px -6px rgba(15, 23, 42, 0.05);
+            border-color: #CBD5E1;
+            transform: translateY(-2px);
+        }
+
+        .glass-header {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+        }
+
+        .tab-active {
+            background: #FFFFFF;
+            border: 1px solid theme('colors.primary');
+            color: theme('colors.primary');
+            box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.1);
+            font-weight: 600;
+        }
+
+        .tab-inactive {
+            color: theme('colors.textMuted');
+            border: 1px solid theme('colors.border');
+            background: #F8FAFC;
+        }
+
+        .tab-inactive:hover {
+            background: #F1F5F9;
+            color: theme('colors.textMain');
+        }
+
+        .funnel-btn-active {
+            background: theme('colors.primary');
+            color: #FFFFFF;
+            box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.25);
+            border-color: transparent;
+        }
+
+        .funnel-btn-inactive {
+            background: #FFFFFF;
+            color: theme('colors.textMuted');
+            border: 1px solid theme('colors.border');
+        }
+
+        .funnel-btn-inactive:hover {
+            border-color: theme('colors.primary');
+            color: theme('colors.primary');
+            background: rgba(37, 99, 235, 0.02);
+        }
+
+        .hide-scroll::-webkit-scrollbar { display: none; }
+        .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #1E40AF, #4338CA);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stagger-1 { animation-delay: 50ms; opacity: 0; }
+        .stagger-2 { animation-delay: 150ms; opacity: 0; }
+        .stagger-3 { animation-delay: 250ms; opacity: 0; }
+        .stagger-4 { animation-delay: 350ms; opacity: 0; }
+
+        .custom-bullet::before {
+            content: "";
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #3B82F6;
+            margin-right: 12px;
+            vertical-align: middle;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.2);
+        }
+    </style>
+</head>
+
+<body class="font-sans antialiased text-textMain selection:bg-blue-50 pb-20">
+
+    <!-- Header -->
+    <header class="glass-header sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-lg shadow-blue-600/20">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                </div>
+                <h1 class="font-display text-xl font-bold tracking-tight text-slate-900 underline decoration-blue-500/10 decoration-4 underline-offset-4">Centro AI</h1>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="hidden sm:flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-[10px] font-bold uppercase tracking-wider border border-blue-100">
+                    <span class="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></span>
+                    Verified Strategy
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16 space-y-16">
+
+        <!-- Hero Section -->
+        <section class="max-w-4xl animate-fade-in-up stagger-1">
+            <h2 class="font-display text-5xl md:text-7xl font-extrabold text-slate-900 leading-[1.05] tracking-tight mb-8">
+                Enterprise AI <br />
+                <span class="gradient-text">Transformation</span>
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10 text-xl text-textMuted leading-relaxed">
+                <p>
+                    A premium framework for scaling <span class="text-blue-600 font-semibold">Autonomous Agents</span> and AI infrastructure across multinational BPO operations.
+                </p>
+                <p>
+                    Meticulously engineered for deep integration with <span class="text-slate-900 font-bold italic">Genesys, Zoho, and Odoo</span> ecosystems.
+                </p>
+            </div>
+        </section>
+
+        <!-- Analytics Row -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+            
+            <!-- Global Impact Distribution -->
+            <section class="premium-card rounded-3xl p-8 animate-fade-in-up stagger-2 lg:col-span-1 border-slate-200/60">
+                <div class="mb-10">
+                    <h3 class="font-display text-xl font-bold text-slate-900 mb-1">Operational Impact</h3>
+                    <p class="text-sm text-textMuted">ROI distribution by department.</p>
+                </div>
+                <div class="relative h-[300px]">
+                    <canvas id="orgChart"></canvas>
+                </div>
+            </section>
+
+            <!-- Revenue & Delivery Funnel -->
+            <section class="premium-card rounded-3xl p-8 animate-fade-in-up stagger-3 lg:col-span-2 border-slate-200/60">
+                <div class="mb-10 flex items-start justify-between">
+                    <div>
+                        <h3 class="font-display text-xl font-bold text-slate-900 mb-1">Lifecycle Optimization</h3>
+                        <p class="text-sm text-textMuted">AI intervention points across the delivery funnel.</p>
+                    </div>
+                </div>
+
+                <!-- Funnel Nav -->
+                <div class="flex flex-wrap gap-2 mb-10 overflow-x-auto hide-scroll pb-2" id="funnel-nav">
+                    <!-- Buttons Injected by JS -->
+                </div>
+
+                <!-- Content Area -->
+                <div id="funnel-details" class="bg-slate-50/80 rounded-2xl p-8 md:p-10 border border-slate-100 min-h-[260px]">
+                    <div id="funnel-content-wrapper" class="animate-fade-in-up">
+                        <!-- Content Injected by JS -->
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Departmental Deep Dive -->
+        <section class="premium-card rounded-3xl animate-fade-in-up stagger-4 overflow-hidden border-slate-200/60 shadow-xl shadow-slate-200/20">
+            <div class="p-8 md:p-12 border-b border-slate-100 bg-white">
+                <div class="max-w-2xl">
+                    <h3 class="font-display text-2xl font-bold text-slate-900 mb-3">Departmental Deep-Dives</h3>
+                    <p class="text-textMuted leading-relaxed">Specific strategic implementations for each regional and functional hub.</p>
+                </div>
+            </div>
+
+            <!-- Tab Navigation -->
+            <div class="flex overflow-x-auto hide-scroll px-8 md:px-12 py-6 gap-3 bg-slate-50 border-b border-slate-100" id="dept-tabs">
+                <!-- Tabs Injected by JS -->
+            </div>
+
+            <!-- Tab Content -->
+            <div class="p-8 md:p-12 bg-white" id="dept-content-wrapper">
+                <div id="dept-content" class="animate-fade-in-up">
+                    <!-- Content Injected by JS -->
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="max-w-7xl mx-auto px-8 mt-20 pb-12 border-t border-slate-200 pt-8 flex flex-col md:flex-row justify-between items-center gap-6">
+        <p class="text-sm text-textMuted">© 2026 Centro AI Strategy. All rights reserved.</p>
+        <div class="flex gap-6">
+            <a href="#" class="text-xs font-bold text-slate-400 hover:text-blue-600 transition-colors uppercase tracking-widest">Confidential</a>
+            <a href="#" class="text-xs font-bold text-slate-400 hover:text-blue-600 transition-colors uppercase tracking-widest">CTO Approved</a>
+        </div>
+    </footer>
+
+    <script>
+        // Data Models
+        const orgData = {
+            labels: ['Service Delivery', 'Tech & CX', 'Growth & Sales', 'HR & Finance'],
+            datasets: [{
+                data: [65, 15, 10, 10],
+                backgroundColor: ['#2563EB', '#6366F1', '#10B981', '#F59E0B'],
+                borderWidth: 4,
+                borderColor: '#ffffff',
+                hoverOffset: 20
+            }]
+        };
+
+        const funnelPhases = [
+            {
+                id: 'prospecting',
+                title: 'Prospecting',
+                icon: '🎯',
+                content: `
+                    <div class="max-w-2xl">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-[10px] font-bold uppercase tracking-wider mb-6">Phase 01</div>
+                        <h4 class="text-2xl font-bold text-slate-900 mb-6">Predictive Lead Generation</h4>
+                        <ul class="space-y-5">
+                            <li class="custom-bullet text-textMuted leading-relaxed"><strong class="text-slate-900">ML Scoring Models:</strong> Identifying high-value targets within Zoho CRM using historical conversion vectors.</li>
+                            <li class="custom-bullet text-textMuted leading-relaxed"><strong class="text-slate-900">Claude-Powered Personalization:</strong> Creating highly relevant outbound narratives based on real-time company signal data.</li>
+                        </ul>
+                    </div>
+                `
+            },
+            {
+                id: 'delivery',
+                title: 'Delivery',
+                icon: '🚀',
+                content: `
+                    <div class="max-w-2xl">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-100 text-indigo-700 text-[10px] font-bold uppercase tracking-wider mb-6">Phase 03</div>
+                        <h4 class="text-2xl font-bold text-slate-900 mb-6">Augmented Service Delivery</h4>
+                        <ul class="space-y-5">
+                            <li class="custom-bullet text-textMuted leading-relaxed"><strong class="text-slate-900">Agent Copilot:</strong> Real-time next-best-action logic integrated directly into the Genesys agent desktop.</li>
+                            <li class="custom-bullet text-textMuted leading-relaxed"><strong class="text-slate-900">Automated Wrap-up:</strong> Reducing ACW by 55% using high-accuracy call summarization agents.</li>
+                        </ul>
+                    </div>
+                `
+            }
+        ];
+
+        const departmentData = [
+            {
+                id: 'service-delivery',
+                name: 'Service Delivery',
+                icon: '🏢',
+                strategy: `
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-16">
+                        <div class="space-y-8">
+                            <div>
+                                <h4 class="text-2xl font-bold text-slate-900 mb-4">Core Operational Efficiency</h4>
+                                <p class="text-lg text-textMuted leading-relaxed">Focusing on mass automation of repetitive tasks while preserving 'High-Empathy' touchpoints in the customer journey.</p>
+                            </div>
+                            <div class="grid grid-cols-1 gap-4">
+                                <div class="p-5 bg-slate-50 rounded-2xl border border-slate-100">
+                                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] block mb-2">Integration Tier</span>
+                                    <p class="text-slate-900 font-bold">Genesys Cloud + Google CCAI</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="space-y-6">
+                            <h5 class="text-xs font-black text-blue-600 uppercase tracking-[0.2em]">Strategic KPIs</h5>
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between p-4 bg-white border border-slate-100 rounded-xl shadow-sm">
+                                    <span class="text-sm font-medium text-slate-600">AHT Reduction</span>
+                                    <span class="text-lg font-bold text-emerald-600">-28%</span>
+                                </div>
+                                <div class="flex items-center justify-between p-4 bg-white border border-slate-100 rounded-xl shadow-sm">
+                                    <span class="text-sm font-medium text-slate-600">QA Automation</span>
+                                    <span class="text-lg font-bold text-blue-600">100%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `
+            }
+        ];
+
+        // App Logic
+        document.addEventListener('DOMContentLoaded', () => {
+            initChart();
+            initFunnel();
+            initTabs();
+        });
+
+        function initChart() {
+            const ctx = document.getElementById('orgChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: orgData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '80%',
+                    plugins: {
+                        legend: { 
+                            position: 'bottom', 
+                            labels: { 
+                                usePointStyle: true, 
+                                padding: 25, 
+                                font: { family: 'Inter', size: 11, weight: '600' },
+                                color: '#64748B'
+                            } 
+                        }
+                    }
+                }
+            });
+        }
+
+        function initFunnel() {
+            const container = document.getElementById('funnel-nav');
+            const wrapper = document.getElementById('funnel-content-wrapper');
+
+            funnelPhases.forEach((phase, index) => {
+                const btn = document.createElement('button');
+                btn.className = `px-7 py-3 rounded-2xl text-sm font-bold transition-all duration-500 whitespace-nowrap flex items-center gap-3 ${index === 0 ? 'funnel-btn-active' : 'funnel-btn-inactive'}`;
+                btn.innerHTML = `<span>${phase.icon}</span> ${phase.title}`;
+                
+                if (index === 0) wrapper.innerHTML = phase.content;
+
+                btn.onclick = () => {
+                    Array.from(container.children).forEach(b => {
+                        b.className = 'px-7 py-3 rounded-2xl text-sm font-bold transition-all duration-500 whitespace-nowrap flex items-center gap-3 funnel-btn-inactive';
+                    });
+                    btn.className = 'px-7 py-3 rounded-2xl text-sm font-bold transition-all duration-500 whitespace-nowrap flex items-center gap-3 funnel-btn-active';
+                    
+                    wrapper.classList.remove('animate-fade-in-up');
+                    void wrapper.offsetWidth;
+                    wrapper.innerHTML = phase.content;
+                    wrapper.classList.add('animate-fade-in-up');
+                };
+                container.appendChild(btn);
+            });
+        }
+
+        function initTabs() {
+            const container = document.getElementById('dept-tabs');
+            const content = document.getElementById('dept-content');
+
+            departmentData.forEach((dept, index) => {
+                const tab = document.createElement('button');
+                tab.className = `flex items-center gap-3 px-8 py-4 rounded-2xl text-sm transition-all duration-500 focus:outline-none whitespace-nowrap font-bold ${index === 0 ? 'tab-active' : 'tab-inactive'}`;
+                tab.innerHTML = `<span class="text-lg opacity-80">${dept.icon}</span> ${dept.name}`;
+
+                if (index === 0) content.innerHTML = dept.strategy;
+
+                tab.onclick = () => {
+                    Array.from(container.children).forEach(t => {
+                        t.className = 'flex items-center gap-3 px-8 py-4 rounded-2xl text-sm transition-all duration-500 focus:outline-none whitespace-nowrap font-bold tab-inactive';
+                    });
+                    tab.className = 'flex items-center gap-3 px-8 py-4 rounded-2xl text-sm transition-all duration-500 focus:outline-none whitespace-nowrap font-bold tab-active';
+                    
+                    content.classList.remove('animate-fade-in-up');
+                    void content.offsetWidth;
+                    content.innerHTML = dept.strategy;
+                    content.classList.add('animate-fade-in-up');
+                };
+                container.appendChild(tab);
+            });
+        }
+    </script>
+</body>
+
+</html>

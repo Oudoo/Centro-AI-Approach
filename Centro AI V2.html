@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enterprise AI Transformation Blueprint</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Outfit', 'sans-serif'] },
+                    colors: {
+                        background: '#030712', // gray-950
+                        surface: 'rgba(31, 41, 55, 0.4)', // gray-800 translucent
+                        primary: '#3b82f6', // blue-500
+                        accent: '#8b5cf6', // violet-500
+                        textMain: '#f8fafc',
+                        textMuted: '#94a3b8',
+                    },
+                    animation: {
+                        'gradient-x': 'gradient-x 4s ease infinite',
+                        'float': 'float 3s ease-in-out infinite',
+                        'fade-in-up': 'fadeInUp 0.6s ease-out forwards',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        'gradient-x': {
+                            '0%, 100%': { 'background-size': '200% 200%', 'background-position': 'left center' },
+                            '50%': { 'background-size': '200% 200%', 'background-position': 'right center' }
+                        },
+                        'float': {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' }
+                        },
+                        'fadeInUp': {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: theme('colors.background');
+            color: theme('colors.textMain');
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.15) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(139, 92, 246, 0.15) 0%, transparent 20%),
+                radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.05) 0%, transparent 30%);
+            background-attachment: fixed;
+            overflow-x: hidden;
+        }
+
+        .glass-card {
+            background: rgba(17, 24, 39, 0.65);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.4);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .glass-panel {
+            background: rgba(31, 41, 55, 0.4);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 1rem;
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: 300px;
+        }
+
+        .tab-active {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(139, 92, 246, 0.15));
+            border: 1px solid rgba(139, 92, 246, 0.4);
+            color: #fff;
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.15);
+            font-weight: 500;
+        }
+
+        .tab-inactive {
+            color: theme('colors.textMuted');
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.02);
+            font-weight: 400;
+        }
+
+        .tab-inactive:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .hide-scroll::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scroll {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .gradient-text {
+            background: linear-gradient(to right, #60a5fa, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .animated-gradient-text {
+            background: linear-gradient(-45deg, #60a5fa, #c084fc, #34d399, #60a5fa);
+            background-size: 300% 300%;
+            animation: gradient-x 6s ease infinite;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .animated-bg {
+            background: linear-gradient(-45deg, #3b82f6, #8b5cf6, #3b82f6);
+            background-size: 200% 200%;
+            animation: gradient-x 4s ease infinite;
+        }
+
+        .glow-dot {
+            height: 8px;
+            width: 8px;
+            background-color: #34d399;
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 10px #34d399, 0 0 20px #34d399;
+        }
+
+        .stagger-1 { animation-delay: 0.1s; opacity: 0; }
+        .stagger-2 { animation-delay: 0.2s; opacity: 0; }
+        .stagger-3 { animation-delay: 0.3s; opacity: 0; }
+        .stagger-4 { animation-delay: 0.4s; opacity: 0; }
+
+        .custom-bullet::before {
+            content: "✦";
+            color: #8b5cf6;
+            margin-right: 0.75rem;
+            text-shadow: 0 0 8px rgba(139, 92, 246, 0.6);
+        }
+    </style>
+</head>
+
+<body class="font-sans antialiased text-textMain selection:bg-accent selection:text-white pb-20">
+
+    <!-- Ambient background glows -->
+    <div class="fixed top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-blue-600/10 blur-[120px] pointer-events-none"></div>
+    <div class="fixed bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-purple-600/10 blur-[120px] pointer-events-none"></div>
+
+    <!-- Header -->
+    <header class="glass-card sticky top-0 z-50 border-b-0 border-x-0 border-t-0 bg-opacity-70">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-4 group cursor-pointer">
+                <div class="w-10 h-10 rounded-xl animated-bg flex items-center justify-center text-white font-bold text-xl shadow-[0_0_20px_rgba(139,92,246,0.4)] group-hover:shadow-[0_0_30px_rgba(139,92,246,0.6)] transition-all duration-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-blue-400 group-hover:to-purple-400 transition-all duration-300">Centro <span class="font-light">AI</span></h1>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 text-sm font-medium">
+                    <span class="glow-dot animate-pulse"></span>
+                    System Online
+                </div>
+                <div class="text-xs sm:text-sm font-medium text-white/70 bg-white/5 border border-white/10 px-4 py-2 rounded-full backdrop-blur-md">
+                    CTO Review Edition
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 space-y-10 relative z-10">
+
+        <!-- Intro Section -->
+        <section class="glass-card rounded-2xl p-8 lg:p-10 animate-fade-in-up stagger-1 relative overflow-hidden group">
+            <div class="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-blue-500/10 to-purple-500/10 blur-[80px] rounded-full group-hover:opacity-100 opacity-50 transition-opacity duration-700"></div>
+            
+            <div class="relative z-10">
+                <h2 class="text-3xl md:text-5xl font-bold mb-6 tracking-tight leading-tight">
+                    Strategic Integration of <br />
+                    <span class="animated-gradient-text">LLMs & AI Infrastructure</span>
+                </h2>
+                <div class="flex flex-col md:flex-row gap-6 text-lg text-textMuted leading-relaxed">
+                    <p class="flex-1">
+                        This interactive blueprint outlines a comprehensive strategy for deploying advanced AI tools (like
+                        <strong class="text-blue-400">Google AI</strong> and <strong class="text-purple-400">Claude Enterprise</strong>) across our multinational operations.
+                    </p>
+                    <p class="flex-1">
+                        Given our core competencies in BPO, digital transformation, and specific tech stacks (Genesys, Avaya,
+                        Zoho, Odoo), the goal is not just automation, but <strong class="text-white">augmenting human capabilities</strong>.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Top Row: Org Data & Funnel -->
+        <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
+
+            <!-- Org Distribution Chart -->
+            <section class="glass-card rounded-2xl p-8 animate-fade-in-up stagger-2 xl:col-span-1 flex flex-col h-full">
+                <div class="mb-6">
+                    <h3 class="text-xl font-bold text-white mb-2 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path></svg>
+                        Impact Zones
+                    </h3>
+                    <p class="text-sm text-textMuted leading-relaxed">Organizational deployment scale mapped to highest operational ROI.</p>
+                </div>
+                <div class="flex-grow flex items-center justify-center relative min-h-[300px]">
+                    <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                        <div class="w-32 h-32 bg-blue-500/5 rounded-full blur-2xl"></div>
+                    </div>
+                    <div class="chart-container w-full h-full relative z-10">
+                        <canvas id="orgChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Interactive Funnel -->
+            <section class="glass-card rounded-2xl p-8 animate-fade-in-up stagger-3 xl:col-span-2 flex flex-col">
+                <div class="mb-8">
+                    <h3 class="text-xl font-bold text-white mb-2 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                        Revenue & Delivery Funnel
+                    </h3>
+                    <p class="text-sm text-textMuted leading-relaxed">Trace the AI integration touchpoints across the entire customer lifecycle.</p>
+                </div>
+
+                <!-- Funnel Navigation -->
+                <div class="flex flex-wrap gap-3 mb-8" id="funnel-nav">
+                    <!-- Generated via JS -->
+                </div>
+
+                <!-- Funnel Details -->
+                <div id="funnel-details" class="glass-panel p-8 min-h-[250px] relative overflow-hidden transition-all duration-500 rounded-xl flex-grow flex flex-col justify-center">
+                    <!-- Glow effect inside details -->
+                    <div class="absolute -right-20 -top-20 w-64 h-64 bg-blue-500/10 rounded-full blur-[60px] pointer-events-none"></div>
+                    
+                    <div id="funnel-content-wrapper" class="relative z-10 w-full animate-fade-in-up">
+                        <!-- Content -->
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Departmental Deep Dive -->
+        <section class="glass-card rounded-2xl animate-fade-in-up stagger-4 overflow-hidden flex flex-col relative">
+            <!-- Background structural grid -->
+            <div class="absolute inset-0 opacity-[0.03] pointer-events-none" style="background-image: radial-gradient(circle at 2px 2px, white 2px, transparent 0); background-size: 32px 32px;"></div>
+
+            <div class="p-8 lg:p-10 border-b border-white/5 relative z-10">
+                <div class="max-w-2xl">
+                    <h3 class="text-2xl font-bold text-white mb-3">Departmental Blueprints</h3>
+                    <p class="text-textMuted leading-relaxed">Targeted LLM and autonomous agent strategies mapped strictly to existing tech stacks (Genesys, Avaya, Zoho, Odoo).</p>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="flex overflow-x-auto hide-scroll px-8 lg:px-10 py-6 gap-4 relative z-10" id="dept-tabs">
+                <!-- Generated via JS -->
+            </div>
+
+            <!-- Tab Content -->
+            <div class="p-8 lg:px-10 lg:pb-10 relative z-10 bg-black/20" id="dept-content-wrapper">
+                <div id="dept-content" class="animate-fade-in-up">
+                    <!-- Content injected via JS -->
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // --- Data Definitions ---
+
+        // Aggregated data based on user input for the chart
+        const orgData = {
+            labels: ['Service Delivery', 'Tech & CX', 'Growth & Sales', 'HR & Admin', 'Finance'],
+            datasets: [{
+                data: [65, 15, 8, 7, 5],
+                backgroundColor: [
+                    'rgba(59, 130, 246, 0.8)', // Primary Blue
+                    'rgba(139, 92, 246, 0.8)', // Purple
+                    'rgba(16, 185, 129, 0.8)', // Emerald
+                    'rgba(245, 158, 11, 0.8)', // Amber
+                    'rgba(239, 68, 68, 0.8)'   // Rose
+                ],
+                borderColor: 'rgba(17, 24, 39, 1)', // match background to create gaps
+                borderWidth: 2,
+                hoverBorderColor: 'rgba(255, 255, 255, 0.5)',
+                hoverBorderWidth: 2,
+                hoverOffset: 8
+            }]
+        };
+
+        // Funnel Data
+        const funnelPhases = [
+            {
+                id: 'lead-gen',
+                title: '1. Lead Gen',
+                icon: '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>',
+                content: `
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="w-10 h-10 rounded-lg bg-blue-500/20 border border-blue-500/30 flex items-center justify-center text-blue-400">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                        </div>
+                        <h4 class="text-xl font-bold text-white">AI in Lead Generation</h4>
+                    </div>
+                    <ul class="space-y-4 text-textMuted">
+                        <li class="custom-bullet"><strong class="text-white">Predictive Scoring (Zoho):</strong> Analyze historical data to identify prospects most likely to convert.</li>
+                        <li class="custom-bullet"><strong class="text-white">Personalized Outreach (Claude):</strong> Generate highly tailored initial emails based on company news.</li>
+                        <li class="custom-bullet"><strong class="text-white">Market Insights (Google AI):</strong> Synthesize competitor analysis into actionable briefs.</li>
+                    </ul>`
+            },
+            {
+                id: 'client-acq',
+                title: '2. Acquisition',
+                icon: '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>',
+                content: `
+                     <div class="flex items-center gap-3 mb-6">
+                        <div class="w-10 h-10 rounded-lg bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                        </div>
+                        <h4 class="text-xl font-bold text-white">AI During the Pitch</h4>
+                    </div>
+                    <ul class="space-y-4 text-textMuted">
+                        <li class="custom-bullet"><strong class="text-white">Real-time Intelligence:</strong> Live transcription to automatically capture action items and sentiment.</li>
+                        <li class="custom-bullet"><strong class="text-white">Objection Copilot:</strong> Real-time, AI-suggested responses to client objections based on knowledge bases.</li>
+                    </ul>`
+            },
+            {
+                id: 'sow-proposal',
+                title: '3. Proposal',
+                icon: '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>',
+                content: `
+                     <div class="flex items-center gap-3 mb-6">
+                        <div class="w-10 h-10 rounded-lg bg-orange-500/20 border border-orange-500/30 flex items-center justify-center text-orange-400">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        </div>
+                        <h4 class="text-xl font-bold text-white">Accelerating Documentation</h4>
+                    </div>
+                    <ul class="space-y-4 text-textMuted">
+                        <li class="custom-bullet"><strong class="text-white">Automated Drafting (Claude):</strong> Generate SOW drafts aligning our tech capabilities with client needs.</li>
+                        <li class="custom-bullet"><strong class="text-white">Smart Redline Review:</strong> AI scanning of client redlines against standard compliance terms.</li>
+                        <li class="custom-bullet"><strong class="text-white">Resource Estimation:</strong> Models predicting accurate staffing needs based on past projects.</li>
+                    </ul>`
+            },
+            {
+                id: 'delivery',
+                title: '4. Delivery',
+                icon: '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg>',
+                content: `
+                     <div class="flex items-center gap-3 mb-6">
+                        <div class="w-10 h-10 rounded-lg bg-purple-500/20 border border-purple-500/30 flex items-center justify-center text-purple-400">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                        </div>
+                        <h4 class="text-xl font-bold text-white">The Core Engine</h4>
+                    </div>
+                    <ul class="space-y-4 text-textMuted">
+                        <li class="custom-bullet"><strong class="text-white">Agent Assist (Google CCAI):</strong> Surface KB articles and next-best-actions in real-time.</li>
+                        <li class="custom-bullet"><strong class="text-white">Automated Wrap-up:</strong> Reduce ACW by 50% via automated call dispositions and notes.</li>
+                        <li class="custom-bullet"><strong class="text-white">Real-time Translation:</strong> Support multi-national clients instantly on chat and email.</li>
+                    </ul>`
+            },
+            {
+                id: 'support-qa',
+                title: '5. Support / QA',
+                icon: '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path></svg>',
+                content: `
+                     <div class="flex items-center gap-3 mb-6">
+                        <div class="w-10 h-10 rounded-lg bg-rose-500/20 border border-rose-500/30 flex items-center justify-center text-rose-400">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                        </div>
+                        <h4 class="text-xl font-bold text-white">After-Sales & Assurance</h4>
+                    </div>
+                    <ul class="space-y-4 text-textMuted">
+                        <li class="custom-bullet"><strong class="text-white">100% Automated QA:</strong> Analyze every interaction for sentiment, compliance, and tone without random sampling.</li>
+                        <li class="custom-bullet"><strong class="text-white">Internal Helpdesk Bot:</strong> Instantly resolve level-1 IT issues via intelligent self-service.</li>
+                        <li class="custom-bullet"><strong class="text-white">Predictive Churn:</strong> Proactively alert AMs of at-risk accounts based on interaction sentiment metrics.</li>
+                    </ul>`
+            }
+        ];
+
+        // Department Blueprints Data
+        const departmentData = [
+            {
+                id: 'service-delivery',
+                name: 'Service Delivery',
+                icon: '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>',
+                subDepts: 'Call Centers, Live Chat Ops, Back Office',
+                strategy: `
+                    <div class="space-y-8 animate-fade-in-up">
+                        <div class="glass-panel p-6 border-l-4 border-l-blue-500">
+                            <h4 class="text-lg font-bold text-white mb-2">Core Objective: Efficiency & Quality at Scale</h4>
+                            <p class="text-textMuted leading-relaxed">Highest immediate ROI potential through AHT (Average Handle Time) reduction and automated QA.</p>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="glass-panel p-6 hover:border-blue-500/30 transition-colors">
+                                <div class="flex items-center gap-3 mb-4">
+                                    <h5 class="text-lg font-bold text-blue-400">Google Cloud AI</h5>
+                                </div>
+                                <ul class="space-y-3 text-sm text-textMuted">
+                                    <li class="custom-bullet"><strong class="text-white">CCAI Virtual Agents:</strong> Pre-qualify and route incoming interactions.</li>
+                                    <li class="custom-bullet"><strong class="text-white">Continuous Speech-to-Text:</strong> Zero-latency transcription for compliance.</li>
+                                </ul>
+                            </div>
+                            <div class="glass-panel p-6 hover:border-purple-500/30 transition-colors">
+                                <div class="flex items-center gap-3 mb-4">
+                                    <h5 class="text-lg font-bold text-purple-400">Genesys Integrations</h5>
+                                </div>
+                                <ul class="space-y-3 text-sm text-textMuted">
+                                    <li class="custom-bullet"><strong class="text-white">Predictive Routing:</strong> Personality-based skill routing.</li>
+                                    <li class="custom-bullet"><strong class="text-white">AI WFM:</strong> Dynamic shift forecasting based on interaction volume spikes.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                id: 'technology',
+                name: 'Technology & CX',
+                icon: '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>',
+                subDepts: 'Software Dev, IT Ops, Security',
+                strategy: `
+                    <div class="space-y-8 animate-fade-in-up">
+                        <div class="glass-panel p-6 border-l-4 border-l-emerald-500">
+                            <h4 class="text-lg font-bold text-white mb-2">Core Objective: Infrastructure Stability</h4>
+                            <p class="text-textMuted leading-relaxed">Empowering developers and securing the backbone that supports total BPO operations.</p>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="glass-panel p-6 hover:border-emerald-500/30 transition-colors">
+                                <h5 class="text-lg font-bold text-emerald-400 mb-4">Development</h5>
+                                <ul class="space-y-3 text-sm text-textMuted">
+                                    <li class="custom-bullet"><strong class="text-white">Copilots:</strong> Substantially accelerate custom client web portals.</li>
+                                    <li class="custom-bullet"><strong class="text-white">Claude Architecture:</strong> Drafting robust API schemas and PRDs.</li>
+                                </ul>
+                            </div>
+                            <div class="glass-panel p-6 hover:border-emerald-500/30 transition-colors">
+                                <h5 class="text-lg font-bold text-emerald-400 mb-4">SecOps</h5>
+                                <ul class="space-y-3 text-sm text-textMuted">
+                                    <li class="custom-bullet"><strong class="text-white">AIOps Predictive Maintenance:</strong> Prevent downtime before it happens.</li>
+                                    <li class="custom-bullet"><strong class="text-white">Anomaly Detection:</strong> Heuristic analysis of firewall logs at massive scale.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                id: 'hr-finance',
+                name: 'HR & Finance',
+                icon: '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>',
+                subDepts: 'HR, Payroll, Billing (Odoo)',
+                strategy: `
+                    <div class="space-y-8 animate-fade-in-up">
+                        <div class="glass-panel p-6 border-l-4 border-l-amber-500">
+                            <h4 class="text-lg font-bold text-white mb-2">Core Objective: Workflow Automation</h4>
+                            <p class="text-textMuted leading-relaxed">Streamlining the back-office overhead required to manage thousands of agents.</p>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="glass-panel p-6 hover:border-amber-500/30 transition-colors">
+                                <h5 class="text-lg font-bold text-amber-400 mb-4">HR & Recruitment</h5>
+                                <ul class="space-y-3 text-sm text-textMuted">
+                                    <li class="custom-bullet"><strong class="text-white">Automated Screening:</strong> High-volume resume parsing.</li>
+                                    <li class="custom-bullet"><strong class="text-white">Agent Onboarding Bot:</strong> Handle 24/7 policy FAQs.</li>
+                                </ul>
+                            </div>
+                            <div class="glass-panel p-6 hover:border-amber-500/30 transition-colors">
+                                <h5 class="text-lg font-bold text-amber-400 mb-4">Finance (Odoo)</h5>
+                                <ul class="space-y-3 text-sm text-textMuted">
+                                    <li class="custom-bullet"><strong class="text-white">IDP Receipt Scanning:</strong> Automated Accounts Payable.</li>
+                                    <li class="custom-bullet"><strong class="text-white">Reconciliation:</strong> Match client billing data against raw platform logs.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                id: 'growth',
+                name: 'Growth & Comm',
+                icon: '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>',
+                subDepts: 'Sales, Marketing, AM',
+                strategy: `
+                    <div class="space-y-8 animate-fade-in-up">
+                        <div class="glass-panel p-6 border-l-4 border-l-rose-500">
+                            <h4 class="text-lg font-bold text-white mb-2">Core Objective: Revenue Acceleration</h4>
+                            <p class="text-textMuted leading-relaxed">Scaling highly personalized outbound motions and maximizing client LTV.</p>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="glass-panel p-6 hover:border-rose-500/30 transition-colors">
+                                <h5 class="text-lg font-bold text-rose-400 mb-4">Marketing</h5>
+                                <ul class="space-y-3 text-sm text-textMuted">
+                                    <li class="custom-bullet"><strong class="text-white">Content Generation:</strong> Thought leadership and B2B collateral.</li>
+                                    <li class="custom-bullet"><strong class="text-white">Trend Analysis:</strong> Social listening via autonomous agents.</li>
+                                </ul>
+                            </div>
+                            <div class="glass-panel p-6 hover:border-rose-500/30 transition-colors">
+                                <h5 class="text-lg font-bold text-rose-400 mb-4">Accounts (Zoho)</h5>
+                                <ul class="space-y-3 text-sm text-textMuted">
+                                    <li class="custom-bullet"><strong class="text-white">Zoho Zia CRM:</strong> Conversational querying and pipeline anomalies.</li>
+                                    <li class="custom-bullet"><strong class="text-white">Upsell Prediction:</strong> Identify trigger points for contract expansion based on usage.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                `
+            }
+        ];
+
+        // --- Initialization & Logic ---
+        document.addEventListener('DOMContentLoaded', () => {
+            initChart();
+            initFunnel();
+            initTabs();
+        });
+
+        function initChart() {
+            const ctx = document.getElementById('orgChart').getContext('2d');
+            
+            // Set global font color
+            Chart.defaults.color = '#94a3b8';
+            Chart.defaults.font.family = 'Outfit';
+            
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: orgData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { 
+                            position: 'right', 
+                            labels: { 
+                                boxWidth: 15, 
+                                padding: 20,
+                                font: { family: 'Outfit', size: 13, weight: 500 },
+                                color: '#f8fafc'
+                            } 
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                            titleColor: '#fff',
+                            bodyColor: '#cbd5e1',
+                            borderColor: 'rgba(255,255,255,0.1)',
+                            borderWidth: 1,
+                            padding: 12,
+                            boxPadding: 6,
+                            callbacks: {
+                                label: function (context) {
+                                    return ' ' + context.label + ': ' + context.raw + '% impact';
+                                }
+                            }
+                        }
+                    },
+                    cutout: '70%',
+                    layout: { padding: 10 }
+                }
+            });
+        }
+
+        function initFunnel() {
+            const navContainer = document.getElementById('funnel-nav');
+            const contentWrapper = document.getElementById('funnel-content-wrapper');
+            let activePhaseId = null;
+
+            funnelPhases.forEach((phase, index) => {
+                const btn = document.createElement('button');
+                const baseClass = "flex items-center gap-2 px-5 py-2.5 rounded-xl border text-sm font-semibold transition-all duration-300 focus:outline-none";
+                const activeClass = "bg-gradient-to-r from-blue-600 to-purple-600 text-white border-transparent shadow-[0_0_15px_rgba(139,92,246,0.4)] transform scale-105";
+                const inactiveClass = "bg-white/5 text-textMuted border-white/10 hover:border-white/20 hover:text-white hover:bg-white/10";
+                
+                btn.className = `${baseClass} ${index === 0 ? activeClass : inactiveClass}`;
+                btn.innerHTML = `<span class="opacity-80">${phase.icon}</span> ${phase.title}`;
+
+                if (index === 0) { 
+                    activePhaseId = phase.id; 
+                    contentWrapper.innerHTML = phase.content; 
+                }
+
+                btn.addEventListener('click', () => {
+                    Array.from(navContainer.children).forEach(child => child.className = `${baseClass} ${inactiveClass}`);
+                    btn.className = `${baseClass} ${activeClass}`;
+
+                    if (activePhaseId !== phase.id) {
+                        activePhaseId = phase.id;
+                        contentWrapper.classList.remove('animate-fade-in-up');
+                        void contentWrapper.offsetWidth; // trigger reflow
+                        contentWrapper.innerHTML = phase.content;
+                        contentWrapper.classList.add('animate-fade-in-up');
+                    }
+                });
+                navContainer.appendChild(btn);
+            });
+        }
+
+        function initTabs() {
+            const tabsContainer = document.getElementById('dept-tabs');
+            const contentContainer = document.getElementById('dept-content');
+
+            departmentData.forEach((dept, index) => {
+                const tab = document.createElement('button');
+                const baseClass = "flex items-center px-6 py-3.5 rounded-xl text-sm font-medium focus:outline-none transition-all duration-300 whitespace-nowrap gap-3";
+                
+                tab.className = `${baseClass} ${index === 0 ? 'tab-active' : 'tab-inactive'}`;
+                tab.innerHTML = `<span>${dept.icon}</span> ${dept.name}`;
+
+                if (index === 0) renderTabContent(dept);
+
+                tab.addEventListener('click', () => {
+                    Array.from(tabsContainer.children).forEach(child => child.className = `${baseClass} tab-inactive`);
+                    tab.className = `${baseClass} tab-active transform scale-[1.02]`;
+
+                    contentContainer.classList.remove('animate-fade-in-up');
+                    void contentContainer.offsetWidth; // Force reflow
+                    renderTabContent(dept);
+                    contentContainer.classList.add('animate-fade-in-up');
+                });
+
+                tabsContainer.appendChild(tab);
+            });
+
+            function renderTabContent(dept) {
+                contentContainer.innerHTML = `
+                    <div class="mb-8 flex items-center justify-between border-b border-white/10 pb-4">
+                        <div>
+                            <span class="text-xs font-bold uppercase tracking-widest text-blue-400/80 block mb-1">Applicable Hubs</span>
+                            <p class="text-white/90 text-sm font-medium">${dept.subDepts}</p>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/50 shadow-inner">
+                            ${dept.icon}
+                        </div>
+                    </div>
+                    ${dept.strategy}
+                `;
+            }
+        }
+    </script>
+</body>
+
+</html>

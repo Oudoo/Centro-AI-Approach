@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Centro AI — Enterprise AI Transformation Blueprint</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Outfit', 'sans-serif'] },
+                    animation: {
+                        'gradient-x': 'gradient-x 4s ease infinite',
+                        'float':       'float 6s ease-in-out infinite',
+                        'float-slow':  'float 10s ease-in-out infinite',
+                        'fade-in-up':  'fadeInUp 0.5s ease-out forwards',
+                        'slide-down':  'slideDown 0.35s cubic-bezier(0.16,1,0.3,1) forwards',
+                    },
+                    keyframes: {
+                        'gradient-x': {
+                            '0%,100%': { 'background-size':'200% 200%','background-position':'left center' },
+                            '50%':     { 'background-size':'200% 200%','background-position':'right center' }
+                        },
+                        float: {
+                            '0%,100%': { transform:'translateY(0)' },
+                            '50%':     { transform:'translateY(-12px)' }
+                        },
+                        fadeInUp: {
+                            '0%':   { opacity:'0', transform:'translateY(20px)' },
+                            '100%': { opacity:'1', transform:'translateY(0)' }
+                        },
+                        slideDown: {
+                            '0%':   { opacity:'0', transform:'translateY(-10px)', 'max-height':'0' },
+                            '100%': { opacity:'1', transform:'translateY(0)',     'max-height':'600px' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* ── CSS Custom Properties ─────────────────────────────── */
+        :root {
+            --bg:           #030712;
+            --glow1:        rgba(59,130,246,0.15);
+            --glow2:        rgba(139,92,246,0.15);
+            --surface:      rgba(17,24,39,0.65);
+            --panel:        rgba(31,41,55,0.45);
+            --border:       rgba(255,255,255,0.08);
+            --border-s:     rgba(255,255,255,0.05);
+            --text:         #f8fafc;
+            --muted:        #94a3b8;
+            --shadow:       0 8px 32px 0 rgba(0,0,0,0.3);
+            --shadow-h:     0 12px 40px 0 rgba(0,0,0,0.4);
+            --chip-bg:      rgba(255,255,255,0.03);
+            --chip-border:  rgba(255,255,255,0.08);
+            --chip-text:    #cbd5e1;
+            --pill-bg:      rgba(255,255,255,0.04);
+            --pill-border:  rgba(255,255,255,0.08);
+            --tab-i-bg:     rgba(255,255,255,0.02);
+            --tab-i-border: rgba(255,255,255,0.05);
+            --tab-i-text:   #94a3b8;
+            --content-bg:   rgba(0,0,0,0.2);
+            --scroll-thumb: rgba(139,92,246,0.25);
+            --head-text:    #ffffff;
+            --card-head-text: #ffffff;
+            --section-text: #f8fafc;
+            --detail-border: rgba(255,255,255,0.08);
+        }
+
+        html.light {
+            --bg:           #eef2fb;
+            --glow1:        rgba(59,130,246,0.09);
+            --glow2:        rgba(139,92,246,0.09);
+            --surface:      rgba(255,255,255,0.94);
+            --panel:        rgba(238,242,251,0.98);
+            --border:       rgba(0,0,0,0.15);
+            --border-s:     rgba(0,0,0,0.10);
+            --text:         #000000;
+            --muted:        #475569;
+            --shadow:       0 4px 24px 0 rgba(0,0,0,0.09);
+            --shadow-h:     0 8px 32px 0 rgba(0,0,0,0.14);
+            --chip-bg:      rgba(0,0,0,0.035);
+            --chip-border:  rgba(0,0,0,0.15);
+            --chip-text:    #1e293b;
+            --pill-bg:      rgba(0,0,0,0.03);
+            --pill-border:  rgba(0,0,0,0.15);
+            --tab-i-bg:     rgba(0,0,0,0.03);
+            --tab-i-border: rgba(0,0,0,0.13);
+            --tab-i-text:   #334155;
+            --content-bg:   rgba(238,242,251,0.7);
+            --scroll-thumb: rgba(139,92,246,0.25);
+            --head-text:    #000000;
+            --card-head-text: #0f172a;
+            --section-text: #000000;
+            --detail-border: rgba(0,0,0,0.12);
+        }
+
+        /* ── Base ──────────────────────────────────────────────── */
+        html { scroll-behavior: smooth; }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            background-image:
+                radial-gradient(circle at 10% 20%, var(--glow1) 0%, transparent 22%),
+                radial-gradient(circle at 90% 80%, var(--glow2) 0%, transparent 22%),
+                radial-gradient(circle at 50% 50%, rgba(16,185,129,0.04) 0%, transparent 30%);
+            background-attachment: fixed;
+            overflow-x: hidden;
+            transition: background-color 0.4s ease, color 0.4s ease;
+        }
+
+        /* ── Cards ─────────────────────────────────────────────── */
+        .glass-card {
+            background: var(--surface);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease, background 0.4s ease;
+        }
+        .glass-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-h);
+            border-color: rgba(139,92,246,0.25);
+        }
+        .glass-panel {
+            background: var(--panel);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border-s);
+            border-radius: 1rem;
+            transition: background 0.4s ease, border-color 0.3s ease;
+        }
+
+        /* ── Headings in sections ──────────────────────────────── */
+        .section-title  { color: var(--section-text); }
+        .card-head      { color: var(--card-head-text); }
+        .text-c-muted   { color: var(--muted); }
+        .text-c-main    { color: var(--text); }
+
+        /* ── Tabs ──────────────────────────────────────────────── */
+        .tab-active {
+            background: linear-gradient(135deg,rgba(59,130,246,0.15),rgba(139,92,246,0.15));
+            border: 1px solid rgba(139,92,246,0.4);
+            color: var(--section-text);
+            box-shadow: 0 0 20px rgba(139,92,246,0.15);
+            font-weight: 500;
+        }
+        .tab-inactive {
+            color: var(--tab-i-text);
+            border: 1px solid var(--tab-i-border);
+            background: var(--tab-i-bg);
+            font-weight: 400;
+        }
+        .tab-inactive:hover {
+            color: var(--text);
+            background: var(--panel);
+            border-color: var(--border);
+        }
+
+        /* ── Chips ─────────────────────────────────────────────── */
+        .subdept-chip {
+            background: var(--chip-bg);
+            border: 1px solid var(--chip-border);
+            color: var(--chip-text);
+            padding: 0.45rem 0.85rem;
+            border-radius: 9999px;
+            font-size: 0.78rem;
+            font-weight: 500;
+            transition: all 0.22s ease;
+            white-space: nowrap;
+            cursor: default;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .subdept-chip:hover {
+            background: rgba(139,92,246,0.12);
+            border-color: rgba(139,92,246,0.5);
+            color: var(--text);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(139,92,246,0.18);
+        }
+        .chip-dot { width:6px; height:6px; border-radius:50%; flex-shrink:0; }
+
+        /* ── Lifecycle pills ───────────────────────────────────── */
+        .lifecycle-pill {
+            background: var(--pill-bg);
+            border: 1px solid var(--pill-border);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+            width: 100%;
+        }
+        .lifecycle-pill:hover {
+            border-color: rgba(139,92,246,0.4);
+            background: rgba(139,92,246,0.07);
+            transform: translateY(-2px);
+        }
+        .lifecycle-pill.active {
+            border-color: rgba(139,92,246,0.6);
+            background: rgba(139,92,246,0.1);
+            box-shadow: 0 0 20px rgba(139,92,246,0.12);
+        }
+
+        /* ── Lifecycle detail panel ────────────────────────────── */
+        #lifecycle-detail {
+            overflow: hidden;
+            max-height: 0;
+            opacity: 0;
+            transition: max-height 0.4s cubic-bezier(0.16,1,0.3,1), opacity 0.3s ease;
+        }
+        #lifecycle-detail.open {
+            max-height: 600px;
+            opacity: 1;
+        }
+
+        /* ── Funnel detail box ─────────────────────────────────── */
+        #funnel-details {
+            background: var(--panel);
+            border: 1px solid var(--border-s);
+        }
+
+        /* ── Dept content bg ───────────────────────────────────── */
+        #dept-content-wrapper { background: var(--content-bg); }
+        #dept-content .dept-border-b { border-bottom-color: var(--detail-border); }
+
+        /* ── Gradients & FX (unchanged) ────────────────────────── */
+        .animated-bg {
+            background: linear-gradient(-45deg,#3b82f6,#8b5cf6,#3b82f6);
+            background-size: 200% 200%;
+            animation: gradient-x 4s ease infinite;
+        }
+        .gradient-text {
+            background: linear-gradient(to right,#60a5fa,#c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .animated-gradient-text {
+            background: linear-gradient(-45deg,#60a5fa,#c084fc,#34d399,#60a5fa);
+            background-size: 300% 300%;
+            animation: gradient-x 6s ease infinite;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .glow-dot {
+            height:8px; width:8px;
+            background-color:#34d399;
+            border-radius:50%;
+            display:inline-block;
+            box-shadow:0 0 10px #34d399,0 0 20px #34d399;
+        }
+        .custom-bullet { position:relative; padding-left:1.5rem; }
+        .custom-bullet::before {
+            content:"✦";
+            color:#8b5cf6;
+            position:absolute;
+            left:0; top:0;
+            text-shadow:0 0 8px rgba(139,92,246,0.6);
+        }
+
+        /* ── Stagger ───────────────────────────────────────────── */
+        .stagger-1{animation-delay:.1s;opacity:0}
+        .stagger-2{animation-delay:.2s;opacity:0}
+        .stagger-3{animation-delay:.3s;opacity:0}
+        .stagger-4{animation-delay:.4s;opacity:0}
+        .stagger-5{animation-delay:.5s;opacity:0}
+
+        /* ── Scrollbar ─────────────────────────────────────────── */
+        .hide-scroll::-webkit-scrollbar{display:none}
+        .hide-scroll{-ms-overflow-style:none;scrollbar-width:none}
+        .subdept-scroll::-webkit-scrollbar{width:7px}
+        .subdept-scroll::-webkit-scrollbar-track{background:transparent;border-radius:4px}
+        .subdept-scroll::-webkit-scrollbar-thumb{background:var(--scroll-thumb);border-radius:4px}
+
+        /* ── Chips fade-out edge indicator ─────────────────────── */
+        .chips-fade-wrap { position: relative; }
+        .chips-fade-wrap::after {
+            content: '';
+            position: absolute;
+            right: 0; top: 0; bottom: 0;
+            width: 72px;
+            background: linear-gradient(to right, transparent, var(--panel));
+            pointer-events: none;
+            border-radius: 0 1rem 1rem 0;
+            z-index: 2;
+            transition: background 0.4s ease;
+        }
+        /* hide fade when container is scrolled to end */
+        .chips-fade-wrap.at-end::after { opacity: 0; }
+
+        /* ── Theme toggle button ───────────────────────────────── */
+        .theme-btn {
+            width:40px; height:40px;
+            border-radius:50%;
+            display:flex; align-items:center; justify-content:center;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            color: var(--text);
+            cursor:pointer;
+            transition: all 0.3s ease;
+        }
+        .theme-btn:hover {
+            border-color: rgba(139,92,246,0.5);
+            background: rgba(139,92,246,0.1);
+            box-shadow: 0 0 14px rgba(139,92,246,0.2);
+        }
+
+        /* ── Grain ─────────────────────────────────────────────── */
+        .grain {
+            position:fixed; inset:0; pointer-events:none; opacity:0.025; z-index:1;
+            background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        }
+        html.light .grain { opacity: 0.01; }
+
+        /* ── Light mode: chart label & tooltip text ────────────── */
+        html.light .dept-stack-chip {
+            background: rgba(0,0,0,0.04);
+            border-color: rgba(0,0,0,0.1);
+            color: #334155;
+        }
+        html.light .dept-content-heading { color: #0f172a; }
+        html.light .dept-content-muted   { color: #475569; }
+        html.light .dept-strategy-title  { color: #1e293b; }
+        html.light .dept-bullet-strong   { color: #1e293b; }
+        html.light .funnel-content-heading{ color: #1e293b; }
+        html.light .funnel-content-muted  { color: #475569; }
+        html.light .funnel-content-label  { color: #64748b; }
+        html.light .funnel-strong         { color: #1e293b; }
+
+        /* ── Ambient BG override light ─────────────────────────── */
+        html.light .ambient-glow-1 { background: rgba(59,130,246,0.07) !important; }
+        html.light .ambient-glow-2 { background: rgba(139,92,246,0.07) !important; }
+        html.light .ambient-glow-3 { background: rgba(16,185,129,0.04) !important; }
+    </style>
+</head>
+
+<body class="font-sans antialiased pb-20">
+
+    <div class="grain"></div>
+    <div class="fixed top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full blur-[120px] pointer-events-none animate-float-slow ambient-glow-1" style="background:rgba(59,130,246,0.10)"></div>
+    <div class="fixed bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full blur-[120px] pointer-events-none animate-float ambient-glow-2" style="background:rgba(139,92,246,0.10)"></div>
+    <div class="fixed top-[40%] left-[30%] w-[25%] h-[25%] rounded-full blur-[100px] pointer-events-none ambient-glow-3" style="background:rgba(16,185,129,0.04)"></div>
+
+    <!-- ── Header ──────────────────────────────────────────────── -->
+    <header class="glass-card sticky top-0 z-50 border-b-0 border-x-0 border-t-0">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <!-- Logo -->
+            <div class="flex items-center gap-4 group cursor-pointer">
+                <div class="w-10 h-10 rounded-xl animated-bg flex items-center justify-center text-white shadow-[0_0_20px_rgba(139,92,246,0.4)] group-hover:shadow-[0_0_30px_rgba(139,92,246,0.6)] transition-all duration-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
+                </div>
+                <h1 class="text-xl sm:text-2xl font-bold tracking-tight section-title">Centro <span class="font-light">AI</span></h1>
+            </div>
+
+            <!-- Right badges + theme toggle -->
+            <div class="flex items-center gap-3">
+                <div class="hidden sm:block text-xs font-medium px-4 py-2 rounded-full backdrop-blur-md" style="color:var(--muted);background:var(--panel);border:1px solid var(--border)">
+                    CTO Review Edition
+                </div>
+                <!-- Theme Toggle -->
+                <button id="themeToggle" class="theme-btn" title="Toggle light/dark mode" aria-label="Toggle theme">
+                    <!-- Moon icon (shown in dark mode) -->
+                    <svg id="iconMoon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                    </svg>
+                    <!-- Sun icon (shown in light mode) -->
+                    <svg id="iconSun" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m8.66-9h-1M4.34 12h-1m15.07-6.07l-.71.71M6.34 17.66l-.71.71m12.02 0l-.71-.71M6.34 6.34l-.71-.71M12 5a7 7 0 110 14A7 7 0 0112 5z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 space-y-12 relative z-10">
+
+        <!-- ── 01 Intro ────────────────────────────────────────── -->
+        <section class="glass-card rounded-2xl p-8 lg:p-12 animate-fade-in-up stagger-1 relative overflow-hidden group">
+            <div class="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-blue-500/10 to-purple-500/10 blur-[80px] rounded-full opacity-60 group-hover:opacity-100 transition-opacity duration-700 animate-float pointer-events-none"></div>
+            <div class="relative z-10">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium uppercase tracking-widest mb-6" style="background:var(--panel);border:1px solid var(--border);color:var(--muted)">
+                    <span class="glow-dot animate-pulse"></span>
+                    Enterprise Blueprint · 2026
+                </div>
+                <h2 class="text-3xl md:text-5xl lg:text-6xl font-bold mb-6 tracking-tight leading-tight section-title">
+                    Strategic Integration of <br/>
+                    <span class="animated-gradient-text">LLMs & AI Infrastructure</span>
+                </h2>
+                <div class="flex flex-col md:flex-row gap-6 text-lg leading-relaxed max-w-5xl text-c-muted">
+                    <p class="flex-1">This interactive blueprint outlines a comprehensive strategy for deploying advanced AI tools (like <strong class="text-blue-400">Google AI</strong> and <strong class="text-purple-400">Claude Enterprise</strong>) across our multinational operations.</p>
+                    <p class="flex-1">Given our core competencies in BPO, digital transformation, and specific tech stacks (Genesys, Avaya, Zoho, Odoo), the goal is not just automation, but <strong class="section-title">augmenting human capabilities</strong>.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── 02 Impact Zones ────────────────────────────────── -->
+        <section class="glass-card rounded-2xl p-8 lg:p-10 animate-fade-in-up stagger-2 relative overflow-hidden">
+            <div class="absolute -top-20 -right-20 w-72 h-72 bg-blue-500/10 rounded-full blur-[80px] pointer-events-none"></div>
+            <div class="grid grid-cols-1 lg:grid-cols-5 gap-10 items-center relative z-10">
+                <div class="lg:col-span-2">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-400 text-xs font-semibold uppercase tracking-widest mb-4">
+                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8"/></svg>
+                        Section 01
+                    </div>
+                    <h3 class="text-2xl md:text-3xl font-bold mb-4 section-title">Impact Zones</h3>
+                    <p class="text-c-muted leading-relaxed mb-6">Organizational deployment scale mapped to the highest operational ROI. Service Delivery commands the largest share of agents and therefore AI uplift potential.</p>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="glass-panel p-4">
+                            <div class="text-2xl font-bold section-title">90+</div>
+                            <div class="text-xs text-c-muted uppercase tracking-wider mt-1">Sub-departments</div>
+                        </div>
+                        <div class="glass-panel p-4">
+                            <div class="text-2xl font-bold gradient-text">6</div>
+                            <div class="text-xs text-c-muted uppercase tracking-wider mt-1">Parent Zones</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="lg:col-span-3">
+                    <div class="relative" style="height:340px">
+                        <canvas id="orgChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── 03 Lifecycle Optimization ─────────────────────── -->
+        <section class="glass-card rounded-2xl p-8 lg:p-10 animate-fade-in-up stagger-3 relative overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-br from-purple-500/5 via-transparent to-blue-500/5 pointer-events-none"></div>
+            <div class="relative z-10">
+                <!-- Header -->
+                <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-8">
+                    <div class="max-w-2xl">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/30 text-purple-400 text-xs font-semibold uppercase tracking-widest mb-4">
+                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8"/></svg>
+                            Section 02
+                        </div>
+                        <h3 class="text-2xl md:text-3xl font-bold mb-3 section-title">Lifecycle Optimization</h3>
+                        <p class="text-c-muted leading-relaxed">AI compounds across the entire customer lifecycle. Click any stage below to inspect its specific intervention layer.</p>
+                    </div>
+                    <div class="flex items-center gap-2 text-xs text-c-muted">
+                        <span class="glow-dot"></span>
+                        <span>Click a stage to reveal details</span>
+                    </div>
+                </div>
+
+                <!-- Clickable pills -->
+                <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-4" id="lifecycle-pills"></div>
+
+                <!-- Expandable detail panel -->
+                <div id="lifecycle-detail" class="glass-panel overflow-hidden rounded-xl">
+                    <div id="lifecycle-detail-inner" class="p-6 md:p-8"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── 04 Revenue & Delivery Funnel ──────────────────── -->
+        <section class="glass-card rounded-2xl p-8 lg:p-10 animate-fade-in-up stagger-4 relative overflow-hidden">
+            <div class="absolute -bottom-20 -left-20 w-72 h-72 bg-purple-500/10 rounded-full blur-[80px] pointer-events-none"></div>
+            <div class="mb-8 relative z-10">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold uppercase tracking-widest mb-4">
+                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8"/></svg>
+                    Section 03
+                </div>
+                <h3 class="text-2xl md:text-3xl font-bold mb-2 section-title flex items-center gap-2">
+                    <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                    Revenue & Delivery Funnel
+                </h3>
+                <p class="text-c-muted leading-relaxed">Click any phase for its full AI intervention detail.</p>
+            </div>
+            <div class="flex flex-wrap gap-3 mb-8 relative z-10" id="funnel-nav"></div>
+            <div id="funnel-details" class="p-8 min-h-[280px] relative overflow-hidden rounded-xl">
+                <div class="absolute -right-20 -top-20 w-64 h-64 bg-blue-500/10 rounded-full blur-[60px] pointer-events-none"></div>
+                <div class="absolute -left-20 -bottom-20 w-64 h-64 bg-purple-500/10 rounded-full blur-[60px] pointer-events-none"></div>
+                <div id="funnel-content-wrapper" class="relative z-10 w-full animate-fade-in-up"></div>
+            </div>
+        </section>
+
+        <!-- ── 05 Departmental Blueprints ─────────────────────── -->
+        <section class="glass-card rounded-2xl animate-fade-in-up stagger-5 overflow-hidden flex flex-col relative">
+            <div class="absolute inset-0 opacity-[0.025] pointer-events-none" style="background-image:radial-gradient(circle at 2px 2px,white 2px,transparent 0);background-size:32px 32px"></div>
+            <div class="p-8 lg:p-10 relative z-10" style="border-bottom:1px solid var(--border-s)">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-semibold uppercase tracking-widest mb-4">
+                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8"/></svg>
+                    Section 04
+                </div>
+                <div class="max-w-2xl">
+                    <h3 class="text-2xl md:text-3xl font-bold mb-3 section-title">Departmental Blueprints</h3>
+                    <p class="text-c-muted leading-relaxed">Targeted LLM and autonomous agent strategies mapped to existing tech stacks. Select a parent department to reveal its strategic playbook and the full sub-department hierarchy.</p>
+                </div>
+            </div>
+            <div class="flex overflow-x-auto hide-scroll px-8 lg:px-10 py-6 gap-4 relative z-10" id="dept-tabs" style="border-bottom:1px solid var(--border-s)"></div>
+            <div class="p-8 lg:px-10 lg:pb-10 relative z-10 min-h-[500px]" id="dept-content-wrapper">
+                <div id="dept-content" class="animate-fade-in-up"></div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-20 pt-10 flex flex-col md:flex-row justify-between items-center gap-6 relative z-10" style="border-top:1px solid var(--border-s)">
+        <p class="text-xs text-c-muted">© 2026 Centro AI Strategy. Internal Blueprint · Confidential.</p>
+    </footer>
+
+    <script>
+    // ═══════════════════════════════════════════════════════
+    // THEME TOGGLE
+    // ═══════════════════════════════════════════════════════
+    const html = document.documentElement;
+    const themeBtn = document.getElementById('themeToggle');
+    const iconMoon = document.getElementById('iconMoon');
+    const iconSun  = document.getElementById('iconSun');
+
+    let isDark = true;
+
+    function applyTheme() {
+        if (isDark) {
+            html.classList.add('dark');
+            html.classList.remove('light');
+            iconMoon.classList.remove('hidden');
+            iconSun.classList.add('hidden');
+        } else {
+            html.classList.remove('dark');
+            html.classList.add('light');
+            iconMoon.classList.add('hidden');
+            iconSun.classList.remove('hidden');
+        }
+        // update chart colours if already initialized
+        if (window._chart) updateChartTheme();
+    }
+
+    themeBtn.addEventListener('click', () => {
+        isDark = !isDark;
+        applyTheme();
+    });
+
+    // ═══════════════════════════════════════════════════════
+    // DATA
+    // ═══════════════════════════════════════════════════════
+    const orgData = {
+        labels: ['Service Delivery','Technology','Growth & Sales','HR & People','Finance','Governance & Admin'],
+        datasets:[{
+            data:[62,12,9,8,5,4],
+            backgroundColor:[
+                'rgba(59,130,246,0.85)',
+                'rgba(139,92,246,0.85)',
+                'rgba(16,185,129,0.85)',
+                'rgba(245,158,11,0.85)',
+                'rgba(239,68,68,0.85)',
+                'rgba(236,72,153,0.85)'
+            ],
+            borderColor:'rgba(17,24,39,1)',
+            borderWidth:3,
+            hoverBorderColor:'rgba(255,255,255,0.5)',
+            hoverBorderWidth:2,
+            hoverOffset:12
+        }]
+    };
+
+    // Funnel phases — single source of truth used by both Section 03 & the lifecycle pills
+    const funnelPhases = [
+        {
+            id:'lead-gen', title:'Lead Gen', step:'01', color:'blue',
+            tagline:'Predict · Score · Target',
+            summary:'Surface high-intent prospects, draft personalized outreach at scale, and let autonomous agents harvest market signals around the clock.',
+            bullets:[
+                {label:'Predictive Scoring (Zoho Zia)', text:'Historical conversion vectors rank prospects by close probability.'},
+                {label:'Personalized Outreach (Claude)', text:'Generate tailored first-touch emails grounded in real-time company signals.'},
+                {label:'Market Insights (Google AI)', text:'Autonomous competitor synthesis into short, decision-ready briefs.'}
+            ],
+            pillIcon:'<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>',
+            detailIcon:'<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>'
+        },
+        {
+            id:'acquisition', title:'Acquisition', step:'02', color:'emerald',
+            tagline:'Pitch · Copilot · Convert',
+            summary:'Equip solution consultants with a real-time cognitive layer — live transcription, sentiment detection, and instant objection rebuttals.',
+            bullets:[
+                {label:'Real-time Intelligence', text:'Live transcription auto-captures action items, sentiment shifts, and commitments.'},
+                {label:'Objection Copilot', text:'Suggested responses surfaced live against the internal knowledge base.'},
+                {label:'Deal Intelligence (Claude)', text:'Post-call summary with win probability, next-best-action, and champion mapping.'}
+            ],
+            pillIcon:'<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>',
+            detailIcon:'<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>'
+        },
+        {
+            id:'proposal', title:'Proposal', step:'03', color:'orange',
+            tagline:'Draft · Redline · Estimate',
+            summary:'Collapse the 3-week SOW cycle into hours with generative drafting, compliance-aware redline review, and predictive staffing models.',
+            bullets:[
+                {label:'Automated Drafting (Claude)', text:'SOW drafts aligned to our tech capabilities and the client\'s operating model.'},
+                {label:'Smart Redline Review', text:'AI scans client redlines against standard compliance and liability terms.'},
+                {label:'Resource Estimation', text:'Predictive staffing models built on telemetry from past comparable projects.'}
+            ],
+            pillIcon:'<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>',
+            detailIcon:'<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>'
+        },
+        {
+            id:'delivery', title:'Delivery', step:'04', color:'purple',
+            tagline:'Assist · Automate · Scale',
+            summary:'Inside the Genesys / Avaya agent desktop — AI compresses handle time, eliminates wrap-up, and removes language barriers across regions.',
+            bullets:[
+                {label:'Agent Assist (Google CCAI)', text:'Surface KB articles and next-best-actions in-line, during the call.'},
+                {label:'Automated Wrap-up', text:'Reduce ACW by up to 55% via accurate call dispositions and note generation.'},
+                {label:'Real-time Translation', text:'Serve multi-regional clients instantly on chat, email, and voice.'}
+            ],
+            pillIcon:'<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/></svg>',
+            detailIcon:'<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>'
+        },
+        {
+            id:'support-qa', title:'Support / QA', step:'05', color:'rose',
+            tagline:'Monitor · Retain · Improve',
+            summary:'Move from sample-based QA to 100% interaction coverage, deflect L1 tickets to intelligent self-service, and predict churn before it manifests.',
+            bullets:[
+                {label:'100% Automated QA', text:'Every interaction scored for sentiment, compliance, and tone — zero sampling bias.'},
+                {label:'Internal Helpdesk Bot', text:'Resolves level-1 IT issues via intelligent self-service, 24/7.'},
+                {label:'Predictive Churn', text:'Proactively alert Account Managers of at-risk accounts from aggregated signals.'}
+            ],
+            pillIcon:'<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>',
+            detailIcon:'<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>'
+        }
+    ];
+
+    // Color config map
+    const colorMap = {
+        blue:   {bg:'rgba(59,130,246,0.15)',  border:'rgba(59,130,246,0.35)',  text:'text-blue-400',   ring:'rgba(59,130,246,0.25)'},
+        emerald:{bg:'rgba(16,185,129,0.15)',  border:'rgba(16,185,129,0.35)',  text:'text-emerald-400',ring:'rgba(16,185,129,0.25)'},
+        orange: {bg:'rgba(249,115,22,0.15)',  border:'rgba(249,115,22,0.35)',  text:'text-orange-400', ring:'rgba(249,115,22,0.25)'},
+        purple: {bg:'rgba(139,92,246,0.15)',  border:'rgba(139,92,246,0.35)',  text:'text-purple-400', ring:'rgba(139,92,246,0.25)'},
+        rose:   {bg:'rgba(244,63,94,0.15)',   border:'rgba(244,63,94,0.35)',   text:'text-rose-400',   ring:'rgba(244,63,94,0.25)'}
+    };
+
+    // Phase num labels
+    const phaseLabel = {'01':'Phase 01 · Top of Funnel','02':'Phase 02 · Pitch Conversion','03':'Phase 03 · Contracting','04':'Phase 04 · Operations','05':'Phase 05 · Retention'};
+    const phaseHeading = {'01':'AI in Lead Generation','02':'AI During the Pitch','03':'Accelerating Documentation','04':'The Core Engine','05':'After-Sales & Assurance'};
+
+    const departmentData = [
+        {
+            id:'service-delivery', name:'Service Delivery',
+            icon:'<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>',
+            accent:'blue', headline:'Efficiency & Quality at Scale',
+            description:'The operational nucleus — call centers, back office, and regional CX hubs. Highest immediate ROI through AHT reduction, automated QA, and intelligent routing.',
+            objective:'Highest immediate ROI potential through AHT reduction and automated QA across thousands of agents.',
+            stacks:['Genesys Cloud','Avaya','Google CCAI','Claude Enterprise'],
+            strategies:[
+                {title:'Google Cloud AI', color:'blue', points:['<strong class="dept-bullet-strong">CCAI Virtual Agents:</strong> Pre-qualify and route incoming interactions.','<strong class="dept-bullet-strong">Continuous Speech-to-Text:</strong> Zero-latency transcription for compliance.']},
+                {title:'Genesys Integrations', color:'purple', points:['<strong class="dept-bullet-strong">Predictive Routing:</strong> Personality-based skill routing.','<strong class="dept-bullet-strong">AI WFM:</strong> Dynamic shift forecasting based on interaction volume spikes.']}
+            ],
+            subDepts:['Service Delivery','Support Function','BPO','Onshore','Operation Support','CC','CUS','CUS/Spanish','CX Solutions','Client Relations','Account Management Trueblue','Trueblue','Trueblue Operations','Coastline','Coastline Spanish','DRC','Elex','Intake','Intake & Logging','Logging','KSA','KSA Commerical','MB','MR','MR Individual','MR/Annual Rx','Annual Rx','MYF','NW','NW Cairo','NW CS (Spanish)','NW Manila','Pelcro','Pelcro English','Pelcro French','AmRide','Cashpay','Property Finder','Select Quote','Select RX','RCM','TPC','TPC All','TPC Germany','TPC Germany, France & BA','TPC SC','Travel Wings','TTC','Udacity','Udacity Arabic','Udacity Bilingual English']
+        },
+        {
+            id:'technology', name:'Technology',
+            icon:'<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>',
+            accent:'purple', headline:'Infrastructure Stability & Developer Velocity',
+            description:'Empowering developers and securing the backbone that supports total BPO operations. Copilots accelerate shipping; AIOps prevents outages before they happen.',
+            objective:'Empower developers and secure the infrastructure backbone — shifting from reactive incident response to predictive AIOps.',
+            stacks:['GitHub Copilot','Claude Code','Google Gemini','Datadog AIOps'],
+            strategies:[
+                {title:'Development', color:'emerald', points:['<strong class="dept-bullet-strong">Copilots:</strong> Substantially accelerate custom client web portals.','<strong class="dept-bullet-strong">Claude Architecture:</strong> Drafting robust API schemas and PRDs.']},
+                {title:'SecOps & AIOps', color:'emerald', points:['<strong class="dept-bullet-strong">AIOps Predictive Maintenance:</strong> Prevent downtime before it happens.','<strong class="dept-bullet-strong">Anomaly Detection:</strong> Heuristic analysis of firewall logs at massive scale.']}
+            ],
+            subDepts:['Technology','Software Development','Solution Consulting','IT Operations','IT Support','IT Technicians','IOC','Network & Security','Network Operation Center','System Administration','TPC Tech Support']
+        },
+        {
+            id:'growth-sales', name:'Growth & Sales',
+            icon:'<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>',
+            accent:'emerald', headline:'Revenue Acceleration',
+            description:'Scaling hyper-personalized outbound, elevating LTV, and equipping every AM with a cognitive copilot inside Zoho CRM.',
+            objective:'Scale highly personalized outbound motions and maximize client LTV through predictive upsell intelligence.',
+            stacks:['Zoho Zia','Claude Enterprise','LinkedIn Sales Navigator'],
+            strategies:[
+                {title:'Marketing', color:'emerald', points:['<strong class="dept-bullet-strong">Content Generation:</strong> Thought leadership and B2B collateral.','<strong class="dept-bullet-strong">Trend Analysis:</strong> Social listening via autonomous agents.']},
+                {title:'Accounts (Zoho)', color:'emerald', points:['<strong class="dept-bullet-strong">Zoho Zia CRM:</strong> Conversational querying and pipeline anomalies.','<strong class="dept-bullet-strong">Upsell Prediction:</strong> Identify trigger points for contract expansion based on usage.']}
+            ],
+            subDepts:['Growth','Sales','Business Development','Business Soultions','Marketing','PR','Health Care Sales','Trueblue Sales']
+        },
+        {
+            id:'finance', name:'Finance',
+            icon:'<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
+            accent:'amber', headline:'Autonomous Back-Office Finance',
+            description:'From AP to GL, AI collapses invoice cycles and reconciles client billing against raw platform telemetry without human intervention.',
+            objective:'Remove manual toil from AP, billing, and reconciliation — AI handles the ledger, humans handle the judgment calls.',
+            stacks:['Odoo','Claude Enterprise','Google Document AI'],
+            strategies:[
+                {title:'Accounts Payable (Odoo)', color:'amber', points:['<strong class="dept-bullet-strong">IDP Receipt Scanning:</strong> Automated Accounts Payable end-to-end.','<strong class="dept-bullet-strong">Vendor Policy Agent:</strong> Auto-flag off-contract spend before approval.']},
+                {title:'Billing & Reconciliation', color:'amber', points:['<strong class="dept-bullet-strong">Reconciliation:</strong> Match client billing data against raw platform logs.','<strong class="dept-bullet-strong">Forecasting (Claude):</strong> Multi-scenario FP&A narratives from live Odoo data.']}
+            ],
+            subDepts:['Finance','Financial Planning','Account Payable','Bank Accounting','Billing','General Ledger']
+        },
+        {
+            id:'hr-people', name:'HR & People',
+            icon:'<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>',
+            accent:'rose', headline:'Workflow Automation at People-Scale',
+            description:'Streamlining the back-office overhead required to manage thousands of agents across recruitment, payroll, and L&D.',
+            objective:'Collapse recruitment cycles, automate onboarding, and deliver self-service L&D to every agent — in their language.',
+            stacks:['Claude Enterprise','Google AI','Workday'],
+            strategies:[
+                {title:'HR & Recruitment', color:'rose', points:['<strong class="dept-bullet-strong">Automated Screening:</strong> High-volume resume parsing.','<strong class="dept-bullet-strong">Agent Onboarding Bot:</strong> Handle 24/7 policy FAQs.']},
+                {title:'Learning & WFM', color:'rose', points:['<strong class="dept-bullet-strong">Personalized Learning Paths:</strong> AI-curated training per agent skill gap.','<strong class="dept-bullet-strong">WFM Forecasting:</strong> Predictive shift planning tied to historical demand.']}
+            ],
+            subDepts:['Human Resources','HR Business Partner','Employee Relations & Compliance','Talent Management','Learning & Development','Training','Payroll & Personnel','Personnel','WFM']
+        },
+        {
+            id:'governance-admin', name:'Governance & Admin',
+            icon:'<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>',
+            accent:'pink', headline:'Process Excellence & Assurance',
+            description:'Executive oversight, PMO, quality assurance, facilities, and procurement — the governance spine that lets scale happen safely.',
+            objective:'Make governance data-native — AI surfaces non-compliance, quality drift, and procurement risk before they cost.',
+            stacks:['Claude Enterprise','Zoho Projects','Google AI'],
+            strategies:[
+                {title:'Governance & PMO', color:'pink', points:['<strong class="dept-bullet-strong">Program Agent:</strong> Auto-synthesized PMO status from Zoho Projects + Slack.','<strong class="dept-bullet-strong">Policy GPT:</strong> Conversational access to governance and compliance docs.']},
+                {title:'Quality & Procurement', color:'pink', points:['<strong class="dept-bullet-strong">100% QA Coverage:</strong> Every agent interaction auto-scored — no sampling.','<strong class="dept-bullet-strong">Procurement Intelligence:</strong> Auto-analyzed vendor quotes against benchmarks.']}
+            ],
+            subDepts:['Executive Chairman','Governance','Governance & Process Excellence','PMO','Quality','Quality & Training','Facilities','Facilities & Procurement','Procurement']
+        }
+    ];
+
+    const accentDotCls = {blue:'bg-blue-400',purple:'bg-purple-400',emerald:'bg-emerald-400',amber:'bg-amber-400',rose:'bg-rose-400',pink:'bg-pink-400'};
+    const accentTextCls = {blue:'text-blue-400',purple:'text-purple-400',emerald:'text-emerald-400',amber:'text-amber-400',rose:'text-rose-400',pink:'text-pink-400'};
+    const accentBorderCls = {blue:'border-l-blue-500',purple:'border-l-purple-500',emerald:'border-l-emerald-500',amber:'border-l-amber-500',rose:'border-l-rose-500',pink:'border-l-pink-500'};
+
+    // ═══════════════════════════════════════════════════════
+    // INIT
+    // ═══════════════════════════════════════════════════════
+    document.addEventListener('DOMContentLoaded', () => {
+        initChart();
+        initLifecyclePills();
+        initFunnel();
+        initTabs();
+    });
+
+    // ── Chart ──────────────────────────────────────────────
+    function initChart() {
+        const ctx = document.getElementById('orgChart').getContext('2d');
+        Chart.defaults.font.family = 'Outfit';
+
+        window._chart = new Chart(ctx, {
+            type: 'doughnut',
+            data: orgData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: {
+                            boxWidth:12, padding:18,
+                            font:{size:13,weight:500},
+                            color: isDark ? '#f8fafc' : '#1e293b',
+                            usePointStyle:true, pointStyle:'circle'
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: isDark ? 'rgba(15,23,42,0.95)' : 'rgba(255,255,255,0.97)',
+                        titleColor:      isDark ? '#fff'                 : '#0f172a',
+                        bodyColor:       isDark ? '#cbd5e1'              : '#475569',
+                        borderColor:     isDark ? 'rgba(139,92,246,0.3)' : 'rgba(139,92,246,0.2)',
+                        borderWidth:1, padding:14, boxPadding:6,
+                        titleFont:{size:13,weight:600},
+                        callbacks:{ label:(c)=>' '+c.label+': '+c.raw+'% impact' }
+                    }
+                },
+                cutout:'68%',
+                layout:{padding:10}
+            }
+        });
+        // set border colors based on theme
+        updateChartTheme();
+    }
+
+    function updateChartTheme() {
+        const chart = window._chart;
+        if (!chart) return;
+        const dark = isDark;
+        chart.data.datasets[0].borderColor = dark ? 'rgba(17,24,39,1)' : 'rgba(240,244,255,1)';
+        chart.options.plugins.legend.labels.color   = dark ? '#f8fafc' : '#1e293b';
+        chart.options.plugins.tooltip.backgroundColor = dark ? 'rgba(15,23,42,0.95)' : 'rgba(255,255,255,0.97)';
+        chart.options.plugins.tooltip.titleColor      = dark ? '#fff' : '#0f172a';
+        chart.options.plugins.tooltip.bodyColor       = dark ? '#cbd5e1' : '#475569';
+        chart.update();
+    }
+
+    // ── Lifecycle Pills ─────────────────────────────────────
+    function initLifecyclePills() {
+        const pillsContainer  = document.getElementById('lifecycle-pills');
+        const detailPanel     = document.getElementById('lifecycle-detail');
+        const detailInner     = document.getElementById('lifecycle-detail-inner');
+        let activePillId = null;
+
+        const pillColorBg = {
+            blue:'bg-blue-500/20 border-blue-500/30 text-blue-300',
+            emerald:'bg-emerald-500/20 border-emerald-500/30 text-emerald-300',
+            orange:'bg-orange-500/20 border-orange-500/30 text-orange-300',
+            purple:'bg-purple-500/20 border-purple-500/30 text-purple-300',
+            rose:'bg-rose-500/20 border-rose-500/30 text-rose-300'
+        };
+
+        funnelPhases.forEach(phase => {
+            const pill = document.createElement('button');
+            pill.className = 'lifecycle-pill p-4 rounded-xl flex flex-col items-start gap-2';
+            pill.dataset.id = phase.id;
+            pill.innerHTML = `
+                <div class="w-8 h-8 rounded-lg border flex items-center justify-center text-sm font-bold ${pillColorBg[phase.color]}">
+                    ${phase.step}
+                </div>
+                <div class="text-sm font-semibold section-title">${phase.title}</div>
+                <div class="text-[11px] text-c-muted uppercase tracking-wider">${phase.tagline}</div>
+            `;
+
+            pill.addEventListener('click', () => {
+                if (activePillId === phase.id) {
+                    // collapse
+                    activePillId = null;
+                    pill.classList.remove('active');
+                    detailPanel.classList.remove('open');
+                    return;
+                }
+
+                // deactivate all
+                pillsContainer.querySelectorAll('.lifecycle-pill').forEach(p => p.classList.remove('active'));
+                pill.classList.add('active');
+                activePillId = phase.id;
+
+                // build content — summary only (tactical bullets are in Section 04)
+                const c = colorMap[phase.color];
+                detailInner.innerHTML = `
+                    <div class="flex flex-col sm:flex-row items-start gap-5">
+                        <div class="w-12 h-12 rounded-xl flex-shrink-0 flex items-center justify-center" style="background:${c.bg};border:1px solid ${c.border}">
+                            <span style="color:${c.border.replace('0.35','0.9')}">${phase.detailIcon}</span>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex flex-wrap items-center gap-3 mb-2">
+                                <span class="text-[10px] font-bold uppercase tracking-[0.2em] funnel-content-label">${phaseLabel[phase.step]}</span>
+                                <span class="text-[10px] px-2 py-0.5 rounded-full funnel-content-label" style="background:${c.bg};border:1px solid ${c.border}">${phase.tagline}</span>
+                            </div>
+                            <h4 class="text-lg font-bold funnel-content-heading mb-2">${phaseHeading[phase.step]}</h4>
+                            <p class="funnel-content-muted leading-relaxed text-sm max-w-3xl">${phase.summary}</p>
+                            <p class="text-[11px] mt-3 funnel-content-label">↓ See <strong class="funnel-strong">Section 04 — Revenue & Delivery Funnel</strong> for the full tactical breakdown with specific AI tools.</p>
+                        </div>
+                    </div>
+                `;
+                detailPanel.classList.add('open');
+            });
+
+            pillsContainer.appendChild(pill);
+        });
+    }
+
+    // ── Funnel (Section 03) ─────────────────────────────────
+    function initFunnel() {
+        const navContainer   = document.getElementById('funnel-nav');
+        const contentWrapper = document.getElementById('funnel-content-wrapper');
+        let activeId = null;
+
+        const base = "flex items-center gap-2 px-5 py-2.5 rounded-xl border text-sm font-semibold transition-all duration-300 focus:outline-none";
+        const act  = "bg-gradient-to-r from-blue-600 to-purple-600 text-white border-transparent shadow-[0_0_20px_rgba(139,92,246,0.4)] scale-105";
+        const inact = "text-[color:var(--tab-i-text)] border-[color:var(--tab-i-border)] bg-[color:var(--tab-i-bg)] hover:scale-102";
+
+        funnelPhases.forEach((phase, idx) => {
+            const btn = document.createElement('button');
+            btn.className = `${base} ${idx===0 ? act : inact}`;
+            btn.innerHTML = `<span class="text-[10px] font-mono opacity-60">${phase.step}</span> <span class="opacity-80">${phase.pillIcon}</span> ${phase.title}`;
+
+            if (idx === 0) {
+                activeId = phase.id;
+                contentWrapper.innerHTML = buildFunnelContent(phase);
+            }
+
+            btn.addEventListener('click', () => {
+                navContainer.querySelectorAll('button').forEach(b => b.className = `${base} ${inact}`);
+                btn.className = `${base} ${act}`;
+                if (activeId !== phase.id) {
+                    activeId = phase.id;
+                    contentWrapper.classList.remove('animate-fade-in-up');
+                    void contentWrapper.offsetWidth;
+                    contentWrapper.innerHTML = buildFunnelContent(phase);
+                    contentWrapper.classList.add('animate-fade-in-up');
+                }
+            });
+            navContainer.appendChild(btn);
+        });
+    }
+
+    function buildFunnelContent(phase) {
+        const c = colorMap[phase.color];
+        return `
+            <div class="flex items-center gap-4 mb-6">
+                <div class="w-12 h-12 rounded-xl flex items-center justify-center shadow-[0_0_20px_${c.ring}]" style="background:${c.bg};border:1px solid ${c.border}">
+                    <span class="${c.text}">${phase.detailIcon}</span>
+                </div>
+                <div>
+                    <span class="text-[10px] font-bold uppercase tracking-[0.2em] funnel-content-label block">${phaseLabel[phase.step]}</span>
+                    <h4 class="text-2xl font-bold funnel-content-heading">${phaseHeading[phase.step]}</h4>
+                </div>
+            </div>
+            <p class="funnel-content-muted leading-relaxed mb-6 max-w-2xl text-sm">${phase.summary}</p>
+            <ul class="space-y-3 funnel-content-muted leading-relaxed text-sm">
+                ${phase.bullets.map(b=>`<li class="custom-bullet"><strong class="funnel-strong">${b.label}:</strong> ${b.text}</li>`).join('')}
+            </ul>
+        `;
+    }
+
+    // ── Dept Tabs (Section 04) ──────────────────────────────
+    function initTabs() {
+        const tabsCont    = document.getElementById('dept-tabs');
+        const contentCont = document.getElementById('dept-content');
+        const base = "flex items-center px-5 py-3 rounded-xl text-sm font-medium transition-all duration-300 whitespace-nowrap gap-3 focus:outline-none";
+
+        departmentData.forEach((dept, idx) => {
+            const tab = document.createElement('button');
+            tab.className = `${base} ${idx===0 ? 'tab-active' : 'tab-inactive'}`;
+            tab.innerHTML = `
+                <span class="opacity-90">${dept.icon}</span>
+                <span>${dept.name}</span>
+                <span class="text-[10px] px-1.5 py-0.5 rounded-md text-c-muted" style="background:var(--panel);border:1px solid var(--border)">${dept.subDepts.length}</span>
+            `;
+
+            if (idx===0) renderTabContent(dept);
+
+            tab.addEventListener('click', () => {
+                tabsCont.querySelectorAll('button').forEach(t => t.className = `${base} tab-inactive`);
+                tab.className = `${base} tab-active scale-[1.02]`;
+                contentCont.classList.remove('animate-fade-in-up');
+                void contentCont.offsetWidth;
+                renderTabContent(dept);
+                contentCont.classList.add('animate-fade-in-up');
+            });
+            tabsCont.appendChild(tab);
+        });
+
+        function renderTabContent(dept) {
+            const dotCls  = accentDotCls[dept.accent]  || 'bg-blue-400';
+            const txtCls  = accentTextCls[dept.accent]  || 'text-blue-400';
+            const bdrCls  = accentBorderCls[dept.accent] || 'border-l-blue-500';
+
+            const strategies = dept.strategies.map(s => `
+                <div class="glass-panel p-6">
+                    <h5 class="text-lg font-bold ${accentTextCls[s.color]||'text-blue-400'} mb-4 flex items-center gap-2">
+                        <span class="w-1.5 h-1.5 rounded-full ${accentDotCls[s.color]||'bg-blue-400'}"></span>
+                        ${s.title}
+                    </h5>
+                    <ul class="space-y-3 text-sm dept-content-muted leading-relaxed">
+                        ${s.points.map(p=>`<li class="custom-bullet">${p}</li>`).join('')}
+                    </ul>
+                </div>
+            `).join('');
+
+            const stacks = dept.stacks.map(t=>
+                `<span class="dept-stack-chip text-[11px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded-md" style="background:var(--panel);border:1px solid var(--border);color:var(--text)">${t}</span>`
+            ).join('');
+
+            const chips = dept.subDepts.map(sd=>
+                `<span class="subdept-chip"><span class="chip-dot ${dotCls}"></span>${sd}</span>`
+            ).join('');
+
+            // attach fade-scroll listener after next paint
+            setTimeout(() => {
+                const sc = document.getElementById('chips-scroll');
+                const wrap = sc && sc.parentElement;
+                if (sc && wrap) {
+                    const check = () => wrap.classList.toggle('at-end', sc.scrollHeight - sc.scrollTop <= sc.clientHeight + 4);
+                    if (sc._fadeCheck) sc.removeEventListener('scroll', sc._fadeCheck);
+                    sc._fadeCheck = check;
+                    sc.addEventListener('scroll', check, { passive: true });
+                    check();
+                }
+            }, 0);
+
+            contentCont.innerHTML = `
+                <div class="mb-8 flex flex-col md:flex-row md:items-start md:justify-between gap-6 pb-6 dept-border-b" style="border-bottom:1px solid var(--detail-border)">
+                    <div class="flex-1">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="w-10 h-10 rounded-xl flex items-center justify-center ${txtCls}" style="background:${colorMap[dept.accent]?.bg||'rgba(59,130,246,0.15)'};border:1px solid ${colorMap[dept.accent]?.border||'rgba(59,130,246,0.35)'}">
+                                ${dept.icon}
+                            </div>
+                            <div>
+                                <span class="text-[10px] font-bold uppercase tracking-[0.2em] ${txtCls} opacity-70 block">Parent Department</span>
+                                <h4 class="text-2xl font-bold dept-content-heading">${dept.name}</h4>
+                            </div>
+                        </div>
+                        <p class="dept-content-muted leading-relaxed max-w-3xl text-sm">${dept.description}</p>
+                    </div>
+                    <div class="flex flex-wrap gap-2 md:justify-end md:max-w-xs">${stacks}</div>
+                </div>
+
+                <div class="space-y-6 mb-10">
+                    <div class="glass-panel p-6 border-l-4 ${bdrCls}">
+                        <h4 class="text-lg font-bold dept-content-heading mb-2">Core Objective: ${dept.headline}</h4>
+                        <p class="dept-content-muted leading-relaxed text-sm">${dept.objective}</p>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">${strategies}</div>
+                </div>
+
+                <div>
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <span class="text-[10px] font-bold uppercase tracking-[0.2em] ${txtCls} opacity-70 block mb-1">Associated Hubs</span>
+                            <h5 class="text-lg font-bold dept-content-heading">Sub-departments & Teams</h5>
+                        </div>
+                        <span class="text-sm font-medium text-c-muted"><span class="dept-content-heading font-bold">${dept.subDepts.length}</span> units</span>
+                    </div>
+                    <div class="chips-fade-wrap">
+                        <div class="glass-panel p-6 max-h-[380px] overflow-y-auto subdept-scroll" id="chips-scroll">
+                            <div class="flex flex-wrap gap-2">${chips}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+    }
+
+    // ── Light-mode text color enforcement ──────────────────
+    // Since some text classes are Tailwind utilities hard-coded in JS HTML,
+    // we inject a tiny <style> override that responds to html.light.
+    const lightOverrideStyle = document.createElement('style');
+    lightOverrideStyle.textContent = `
+        html.light .funnel-content-heading, html.light .dept-content-heading, html.light .dept-strategy-title { color: #1e293b; }
+        html.light .funnel-content-muted,   html.light .dept-content-muted   { color: #475569; }
+        html.light .funnel-content-label                                       { color: #64748b; }
+        html.light .funnel-strong,          html.light .dept-bullet-strong    { color: #1e293b; }
+        html.light .custom-bullet::before                                      { color: #7c3aed; }
+    `;
+    document.head.appendChild(lightOverrideStyle);
+    </script>
+</body>
+</html>
