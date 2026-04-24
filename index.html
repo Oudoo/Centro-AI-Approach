@@ -146,7 +146,7 @@
         }
 
         /* ── Base ──────────────────────────────────────────────── */
-        html { scroll-behavior: smooth; }
+        html { scroll-behavior: smooth; scroll-padding-top: 84px; }
 
         body {
             background-color: var(--bg);
@@ -825,9 +825,18 @@
                     Strategic Integration of <br/>
                     <span class="animated-gradient-text">LLMs & AI Infrastructure</span>
                 </h2>
-                <div class="flex flex-col md:flex-row gap-6 text-lg leading-relaxed max-w-5xl text-c-muted mb-10">
+                <div class="flex flex-col md:flex-row gap-6 text-lg leading-relaxed max-w-5xl text-c-muted mb-6">
                     <p class="flex-1">This interactive blueprint outlines a comprehensive strategy for deploying advanced AI tools across our multinational operations.</p>
                     <p class="flex-1">The goal is not just automation, but <strong class="section-title">augmenting human capabilities</strong>.</p>
+                </div>
+                <div class="max-w-5xl mb-10">
+                    <div class="flex flex-wrap items-start gap-3 px-5 py-4 rounded-2xl" style="background:rgba(43,168,212,0.05);border:1px solid rgba(43,168,212,0.18)">
+                        <div class="flex items-center gap-2 shrink-0 mt-0.5">
+                            <svg class="w-4 h-4" style="color:#2BA8D4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+                            <span class="text-xs font-bold uppercase tracking-widest" style="color:#2BA8D4">Frontier Capability</span>
+                        </div>
+                        <p class="text-sm text-c-muted leading-relaxed flex-1">Today's frontier AI models are natively <strong class="text-c-text">multimodal</strong> — they can <strong class="text-c-text">read</strong> documents, <strong class="text-c-text">write</strong> code and copy, <strong class="text-c-text">see</strong> images and video, and <strong class="text-c-text">hear</strong> speech with near-human accuracy. This enables end-to-end automation of virtually every knowledge-work touchpoint across our operations, from inbound voice calls to visual QA inspection to written reporting.</p>
+                    </div>
                 </div>
 
                 <!-- ── Blueprint Agenda ──────────────────────────── -->
@@ -2682,6 +2691,64 @@
                             </div>
                             <h4 class="text-sm font-bold section-title mb-2">Media Services</h4>
                             <p class="text-xs text-c-muted leading-relaxed">AI-assisted video animation, hyper-realistic image generation, and agentic coding will rapidly prototype campaigns for entities like Rahala.</p>
+                        </div>
+                    </div>
+
+                    <!-- Open-Source Toolkit -->
+                    <div class="mt-10" style="border-top:1px solid var(--border-s);padding-top:2rem">
+                        <div class="flex items-center gap-2 mb-5">
+                            <svg class="w-4 h-4 text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+                            <span class="text-xs font-bold uppercase tracking-widest text-pink-400">Open-Source Ecosystem</span>
+                        </div>
+                        <p class="text-sm text-c-muted mb-6 max-w-2xl">Leverage battle-tested open-source platforms to build Centro's media production pipeline — zero licensing cost, fully customizable, self-hostable.</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+                            <!-- OiiOii -->
+                            <div class="bento-card p-5 flex flex-col gap-3">
+                                <div class="flex items-start gap-3">
+                                    <div class="w-10 h-10 rounded-xl shrink-0 flex items-center justify-center" style="background:rgba(236,72,153,0.10);border:1px solid rgba(236,72,153,0.30)">
+                                        <svg class="w-5 h-5 text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z"/></svg>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex items-center gap-2 flex-wrap">
+                                            <h4 class="text-sm font-bold section-title">OiiOii</h4>
+                                            <span class="text-[10px] px-2 py-0.5 rounded-full font-semibold" style="background:rgba(236,72,153,0.12);color:#f472b6;border:1px solid rgba(236,72,153,0.25)">Multi-Agent</span>
+                                            <span class="text-[10px] px-2 py-0.5 rounded-full font-semibold" style="background:rgba(100,116,139,0.12);color:#94a3b8;border:1px solid rgba(100,116,139,0.25)">Open Source</span>
+                                        </div>
+                                        <p class="text-xs text-c-muted mt-1 leading-relaxed">Multi-agent AI animation and film studio. Orchestrates multiple AI models to generate coherent animated sequences, short films, and storyboards — enabling Centro to produce branded video content at scale without a traditional production team.</p>
+                                    </div>
+                                </div>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="text-[10px] px-2 py-0.5 rounded" style="background:rgba(236,72,153,0.08);color:#f472b6">AI Animation</span>
+                                    <span class="text-[10px] px-2 py-0.5 rounded" style="background:rgba(236,72,153,0.08);color:#f472b6">Film Production</span>
+                                    <span class="text-[10px] px-2 py-0.5 rounded" style="background:rgba(236,72,153,0.08);color:#f472b6">Agent Orchestration</span>
+                                </div>
+                                <div class="text-[11px] font-mono mt-1" style="color:#64748b">oiioii.ai</div>
+                            </div>
+
+                            <!-- Open-Higgsfield-AI -->
+                            <div class="bento-card p-5 flex flex-col gap-3">
+                                <div class="flex items-start gap-3">
+                                    <div class="w-10 h-10 rounded-xl shrink-0 flex items-center justify-center" style="background:rgba(139,92,246,0.10);border:1px solid rgba(139,92,246,0.30)">
+                                        <svg class="w-5 h-5" style="color:#a78bfa" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex items-center gap-2 flex-wrap">
+                                            <h4 class="text-sm font-bold section-title">Open-Higgsfield-AI</h4>
+                                            <span class="text-[10px] px-2 py-0.5 rounded-full font-semibold" style="background:rgba(139,92,246,0.12);color:#a78bfa;border:1px solid rgba(139,92,246,0.25)">Cinema UI</span>
+                                            <span class="text-[10px] px-2 py-0.5 rounded-full font-semibold" style="background:rgba(100,116,139,0.12);color:#94a3b8;border:1px solid rgba(100,116,139,0.25)">Open Source</span>
+                                        </div>
+                                        <p class="text-xs text-c-muted mt-1 leading-relaxed">Cinema studio UI for multi-model AI video and image generation. Provides a unified interface for running Higgsfield, Kling, Runway, and other video models — enabling Centro's creative team to compare outputs and produce high-quality visual assets through a single self-hosted dashboard.</p>
+                                    </div>
+                                </div>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="text-[10px] px-2 py-0.5 rounded" style="background:rgba(139,92,246,0.08);color:#a78bfa">Video Generation</span>
+                                    <span class="text-[10px] px-2 py-0.5 rounded" style="background:rgba(139,92,246,0.08);color:#a78bfa">Multi-Model</span>
+                                    <span class="text-[10px] px-2 py-0.5 rounded" style="background:rgba(139,92,246,0.08);color:#a78bfa">Self-Hostable</span>
+                                </div>
+                                <div class="text-[11px] font-mono mt-1" style="color:#64748b">github.com/Anil-matcha/Open-Higgsfield-AI</div>
+                            </div>
+
                         </div>
                     </div>
                 </div>
