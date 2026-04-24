@@ -748,6 +748,7 @@
             background: rgba(255,255,255,0.04);
             border: 1px solid var(--border);
             transition: border-color 0.25s, box-shadow 0.25s;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
         .kpi-card:hover { border-color: rgba(43,168,212,0.35); box-shadow: 0 0 24px rgba(43,168,212,0.12); }
         .kpi-value { font-size: 2rem; font-weight: 800; line-height: 1; letter-spacing: -0.02em; }
@@ -829,8 +830,8 @@
                     <span class="animated-gradient-text">LLMs & AI Infrastructure</span>
                 </h2>
                 <div class="flex flex-col md:flex-row gap-6 text-lg leading-relaxed max-w-5xl text-c-muted mb-10">
-                    <p class="flex-1">This interactive blueprint outlines a comprehensive strategy for deploying advanced AI tools (like <strong class="text-blue-400">Google AI</strong> and <strong class="text-purple-400">Claude Enterprise</strong>) across our multinational operations.</p>
-                    <p class="flex-1">Given our core competencies in BPO, digital transformation, and specific tech stacks (Genesys, Avaya, Zoho, Odoo), the goal is not just automation, but <strong class="section-title">augmenting human capabilities</strong>.</p>
+                    <p class="flex-1">This interactive blueprint outlines a comprehensive strategy for deploying advanced AI tools across our multinational operations.</p>
+                    <p class="flex-1">The goal is not just automation, but <strong class="section-title">augmenting human capabilities</strong>.</p>
                 </div>
 
                 <!-- ── Blueprint Agenda ──────────────────────────── -->
@@ -2012,7 +2013,7 @@
                                     <tr>
                                         <td class="pt-3 pr-6 font-bold section-title">Total Annual Cost</td>
                                         <td class="pt-3 pr-6 text-right font-bold text-[#1A7A9E]">~60,000</td>
-                                        <td class="pt-3 text-right text-lg font-black text-red-400">~720,000</td>
+                                        <td class="pt-3 text-right text-lg font-black text-orange-400">~720,000</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -2071,7 +2072,7 @@
                             <div class="space-y-3">
                                 <div class="flex justify-between items-center py-2" style="border-bottom:1px solid var(--border)">
                                     <span class="text-sm text-c-muted">Total Annual Cost</span>
-                                    <span class="text-sm font-bold text-red-400">720,000 EGP</span>
+                                    <span class="text-sm font-bold text-orange-400">720,000 EGP</span>
                                 </div>
                                 <div class="flex justify-between items-center py-2" style="border-bottom:1px solid var(--border)">
                                     <span class="text-sm text-c-muted">Total Annual Benefit</span>
@@ -2085,7 +2086,7 @@
                         </div>
 
                         <!-- ROI Metrics -->
-                        <div class="grid grid-cols-3 gap-3">
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                             <div class="kpi-card text-center">
                                 <div class="kpi-value neon-emerald">9.7×</div>
                                 <div class="kpi-label">Return on Investment</div>
@@ -2105,13 +2106,13 @@
                     <div class="glass-panel p-6">
                         <h5 class="text-sm font-bold section-title mb-4">Scenario Sensitivity</h5>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div class="rounded-xl p-4 text-center" style="background:rgba(248,113,113,0.07);border:1px solid rgba(248,113,113,0.25)">
-                                <div class="text-xs font-bold uppercase tracking-wider text-red-400 mb-2">Worst Case</div>
+                            <div class="rounded-xl p-4 text-center" style="background:rgba(251,146,60,0.07);border:1px solid rgba(251,146,60,0.25)">
+                                <div class="text-xs font-bold uppercase tracking-wider text-orange-400 mb-2">Worst Case</div>
                                 <div class="text-xl font-bold section-title mb-1">15% Uplift</div>
-                                <div class="text-sm font-semibold text-red-400 mb-1">~5,500,000 EGP</div>
+                                <div class="text-sm font-semibold text-orange-400 mb-1">~5,500,000 EGP</div>
                                 <div class="text-xs text-c-muted">ROI: ~5.7×</div>
                                 <div class="mt-2 h-1.5 rounded-full" style="background:var(--panel)">
-                                    <div class="h-1.5 rounded-full" style="width:52%;background:rgba(248,113,113,0.6)"></div>
+                                    <div class="h-1.5 rounded-full" style="width:52%;background:rgba(251,146,60,0.6)"></div>
                                 </div>
                             </div>
                             <div class="rounded-xl p-4 text-center" style="background:rgba(43,168,212,0.07);border:1px solid rgba(43,168,212,0.25)">
@@ -2185,18 +2186,18 @@
                                 <li class="flex items-start gap-2"><span class="text-emerald-400 mt-0.5">→</span> Competitive differentiation locked in early</li>
                             </ul>
                         </div>
-                        <div class="rounded-xl p-5" style="background:rgba(248,113,113,0.06);border:1px solid rgba(248,113,113,0.3)">
+                        <div class="rounded-xl p-5" style="background:rgba(251,146,60,0.06);border:1px solid rgba(251,146,60,0.3)">
                             <div class="flex items-center gap-2 mb-3">
-                                <span class="w-6 h-6 rounded-full bg-red-500/20 text-red-400 flex items-center justify-center">
+                                <span class="w-6 h-6 rounded-full bg-orange-500/20 text-orange-400 flex items-center justify-center">
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
                                 </span>
-                                <span class="text-sm font-bold text-red-400">If Delayed</span>
+                                <span class="text-sm font-bold text-orange-400">If Delayed</span>
                             </div>
                             <ul class="space-y-1.5 text-xs text-c-muted">
-                                <li class="flex items-start gap-2"><span class="text-red-400 mt-0.5">→</span> Continued linear cost growth vs. capacity demand</li>
-                                <li class="flex items-start gap-2"><span class="text-red-400 mt-0.5">→</span> Each month delayed = ~695,000 EGP foregone</li>
-                                <li class="flex items-start gap-2"><span class="text-red-400 mt-0.5">→</span> Competitors adopting AI gain pricing & speed edge</li>
-                                <li class="flex items-start gap-2"><span class="text-red-400 mt-0.5">→</span> Talent pressure grows without productivity offset</li>
+                                <li class="flex items-start gap-2"><span class="text-orange-400 mt-0.5">→</span> Continued linear cost growth vs. capacity demand</li>
+                                <li class="flex items-start gap-2"><span class="text-orange-400 mt-0.5">→</span> Each month delayed = ~695,000 EGP foregone</li>
+                                <li class="flex items-start gap-2"><span class="text-orange-400 mt-0.5">→</span> Competitors adopting AI gain pricing & speed edge</li>
+                                <li class="flex items-start gap-2"><span class="text-orange-400 mt-0.5">→</span> Talent pressure grows without productivity offset</li>
                             </ul>
                         </div>
                     </div>
@@ -2417,10 +2418,6 @@
                         <div class="roadmap-bar w-full bg-rose-500/20 rounded-full"><div class="h-full rounded-full bg-rose-500" style="width:14%"></div></div>
                     </div>
                 </div>
-
-                <!-- Financial Forecast -->
-                <h4 class="text-xl font-bold section-title mb-2">Financial Forecast — Egypt Operations</h4>
-                <p class="text-xs text-c-muted mb-6">Hardware, implementation, and training costs are treated as internal — assumed available or delivered by the internal team. Only recurring software and cloud costs are accounted for below.</p>
 
                 <!-- Cost Savings -->
                 <div class="glass-panel p-6 border-l-4 border-l-emerald-500">
