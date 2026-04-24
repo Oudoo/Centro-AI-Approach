@@ -660,6 +660,32 @@
         }
         html.light .gradient-text { filter: none; }
 
+        /* ── Simulator range sliders ───────────────────────────── */
+        .sim-range {
+            -webkit-appearance: none; appearance: none;
+            height: 4px; border-radius: 9999px; outline: none; cursor: pointer;
+            background: linear-gradient(90deg, #34d399 var(--pct,50%), rgba(255,255,255,0.08) var(--pct,50%));
+        }
+        .sim-range::-webkit-slider-thumb {
+            -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%;
+            background: #34d399; box-shadow: 0 0 8px rgba(52,211,153,0.5);
+            cursor: pointer; transition: transform 0.15s, box-shadow 0.15s;
+        }
+        .sim-range::-webkit-slider-thumb:hover { transform: scale(1.25); box-shadow: 0 0 14px rgba(52,211,153,0.7); }
+        .sim-range::-moz-range-thumb {
+            width: 14px; height: 14px; border-radius: 50%; border: none;
+            background: #34d399; box-shadow: 0 0 8px rgba(52,211,153,0.5); cursor: pointer;
+        }
+        html.light .sim-range { background: linear-gradient(90deg,#059669 var(--pct,50%),rgba(0,0,0,0.1) var(--pct,50%)); }
+        html.light .sim-range::-webkit-slider-thumb { background: #059669; box-shadow: 0 0 8px rgba(5,150,105,0.4); }
+
+        /* ── Agenda nav buttons ────────────────────────────────── */
+        .agenda-btn:hover {
+            transform: translateX(3px);
+            filter: brightness(1.08);
+        }
+        .agenda-btn:hover .section-title { opacity: 1; }
+
         /* ── Department impact / automation badges ─────────────── */
         .dept-badge {
             display: inline-flex; align-items: center; gap: 4px;
@@ -789,7 +815,7 @@
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 space-y-12 relative z-10">
 
         <!-- ── 01 Intro ────────────────────────────────────────── -->
-        <section class="glass-card rounded-2xl p-8 lg:p-12 animate-fade-in-up stagger-1 relative overflow-hidden group">
+        <section class="glass-card rounded-2xl p-8 lg:p-12 animate-fade-in-up stagger-1 relative overflow-hidden group" id="sec-intro">
             <div class="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-blue-500/10 to-purple-500/10 blur-[80px] rounded-full opacity-60 group-hover:opacity-100 transition-opacity duration-700 animate-float pointer-events-none"></div>
             <div class="relative z-10">
                 <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium uppercase tracking-widest mb-6" style="background:var(--panel);border:1px solid var(--border);color:var(--muted)">
@@ -800,15 +826,189 @@
                     Strategic Integration of <br/>
                     <span class="animated-gradient-text">LLMs & AI Infrastructure</span>
                 </h2>
-                <div class="flex flex-col md:flex-row gap-6 text-lg leading-relaxed max-w-5xl text-c-muted">
+                <div class="flex flex-col md:flex-row gap-6 text-lg leading-relaxed max-w-5xl text-c-muted mb-10">
                     <p class="flex-1">This interactive blueprint outlines a comprehensive strategy for deploying advanced AI tools (like <strong class="text-blue-400">Google AI</strong> and <strong class="text-purple-400">Claude Enterprise</strong>) across our multinational operations.</p>
                     <p class="flex-1">Given our core competencies in BPO, digital transformation, and specific tech stacks (Genesys, Avaya, Zoho, Odoo), the goal is not just automation, but <strong class="section-title">augmenting human capabilities</strong>.</p>
                 </div>
+
+                <!-- ── Blueprint Agenda ──────────────────────────── -->
+                <div style="border-top:1px solid var(--border)" class="pt-8">
+                    <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
+                        <div>
+                            <h3 class="text-base font-bold section-title">Blueprint Agenda</h3>
+                            <p class="text-xs text-c-muted mt-0.5">16 sections · click any to jump directly</p>
+                        </div>
+                        <div class="flex gap-2 flex-wrap">
+                            <span class="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full" style="background:rgba(96,165,250,0.12);border:1px solid rgba(96,165,250,0.3);color:#60a5fa">
+                                <span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span>Strategy
+                            </span>
+                            <span class="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full" style="background:rgba(192,132,252,0.12);border:1px solid rgba(192,132,252,0.3);color:#c084fc">
+                                <span class="w-1.5 h-1.5 rounded-full bg-violet-400"></span>Platform
+                            </span>
+                            <span class="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full" style="background:rgba(52,211,153,0.12);border:1px solid rgba(52,211,153,0.3);color:#34d399">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>Outcomes
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+                        <!-- Column 1: Strategy Layer -->
+                        <div class="space-y-2">
+                            <div class="text-[10px] font-bold uppercase tracking-[0.18em] text-blue-400 mb-3 flex items-center gap-2">
+                                <span class="flex-1 h-px" style="background:rgba(96,165,250,0.25)"></span>
+                                Strategy Layer
+                                <span class="flex-1 h-px" style="background:rgba(96,165,250,0.25)"></span>
+                            </div>
+                            <a href="#sec-impact" class="agenda-btn group/a flex items-center gap-3 w-full px-4 py-3 rounded-xl transition-all duration-200" style="background:rgba(96,165,250,0.06);border:1px solid rgba(96,165,250,0.15)">
+                                <span class="text-[10px] font-mono font-bold text-blue-400 w-6 flex-shrink-0">01</span>
+                                <span class="flex-1 text-left">
+                                    <span class="text-sm font-semibold section-title block">Impact Zones</span>
+                                    <span class="text-[10px] text-c-muted">Org-wide deployment scale & ROI map</span>
+                                </span>
+                                <svg class="w-3.5 h-3.5 text-blue-400 opacity-0 group-hover/a:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                            </a>
+                            <a href="#sec-lifecycle-opt" class="agenda-btn group/a flex items-center gap-3 w-full px-4 py-3 rounded-xl transition-all duration-200" style="background:rgba(96,165,250,0.06);border:1px solid rgba(96,165,250,0.15)">
+                                <span class="text-[10px] font-mono font-bold text-blue-400 w-6 flex-shrink-0">02</span>
+                                <span class="flex-1 text-left">
+                                    <span class="text-sm font-semibold section-title block">Lifecycle Optimization</span>
+                                    <span class="text-[10px] text-c-muted">AI across the full customer journey</span>
+                                </span>
+                                <svg class="w-3.5 h-3.5 text-blue-400 opacity-0 group-hover/a:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                            </a>
+                            <a href="#sec-funnel" class="agenda-btn group/a flex items-center gap-3 w-full px-4 py-3 rounded-xl transition-all duration-200" style="background:rgba(96,165,250,0.06);border:1px solid rgba(96,165,250,0.15)">
+                                <span class="text-[10px] font-mono font-bold text-blue-400 w-6 flex-shrink-0">03</span>
+                                <span class="flex-1 text-left">
+                                    <span class="text-sm font-semibold section-title block">Revenue & Delivery Funnel</span>
+                                    <span class="text-[10px] text-c-muted">5-phase sales-to-retention pipeline</span>
+                                </span>
+                                <svg class="w-3.5 h-3.5 text-blue-400 opacity-0 group-hover/a:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                            </a>
+                            <a href="#sec-depts" class="agenda-btn group/a flex items-center gap-3 w-full px-4 py-3 rounded-xl transition-all duration-200" style="background:rgba(96,165,250,0.06);border:1px solid rgba(96,165,250,0.15)">
+                                <span class="text-[10px] font-mono font-bold text-blue-400 w-6 flex-shrink-0">04</span>
+                                <span class="flex-1 text-left">
+                                    <span class="text-sm font-semibold section-title block">Departmental Blueprints</span>
+                                    <span class="text-[10px] text-c-muted">AI strategy per department with impact badges</span>
+                                </span>
+                                <svg class="w-3.5 h-3.5 text-blue-400 opacity-0 group-hover/a:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                            </a>
+                            <a href="#sec-agentic" class="agenda-btn group/a flex items-center gap-3 w-full px-4 py-3 rounded-xl transition-all duration-200" style="background:rgba(96,165,250,0.06);border:1px solid rgba(96,165,250,0.15)">
+                                <span class="text-[10px] font-mono font-bold text-blue-400 w-6 flex-shrink-0">05</span>
+                                <span class="flex-1 text-left">
+                                    <span class="text-sm font-semibold section-title block">OpenClaw Agentic OS</span>
+                                    <span class="text-[10px] text-c-muted">Proprietary AI platform on Gemma 4 + MCP</span>
+                                </span>
+                                <svg class="w-3.5 h-3.5 text-blue-400 opacity-0 group-hover/a:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                            </a>
+                        </div>
+
+                        <!-- Column 2: Platform & Trust -->
+                        <div class="space-y-2">
+                            <div class="text-[10px] font-bold uppercase tracking-[0.18em] text-violet-400 mb-3 flex items-center gap-2">
+                                <span class="flex-1 h-px" style="background:rgba(192,132,252,0.25)"></span>
+                                Platform & Trust
+                                <span class="flex-1 h-px" style="background:rgba(192,132,252,0.25)"></span>
+                            </div>
+                            <a href="#sec-compute" class="agenda-btn group/a flex items-center gap-3 w-full px-4 py-3 rounded-xl transition-all duration-200" style="background:rgba(192,132,252,0.06);border:1px solid rgba(192,132,252,0.15)">
+                                <span class="text-[10px] font-mono font-bold text-violet-400 w-6 flex-shrink-0">06</span>
+                                <span class="flex-1 text-left">
+                                    <span class="text-sm font-semibold section-title block">Hybrid Compute Topology</span>
+                                    <span class="text-[10px] text-c-muted">Edge · cluster · cloud — latency & cost model</span>
+                                </span>
+                                <svg class="w-3.5 h-3.5 text-violet-400 opacity-0 group-hover/a:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                            </a>
+                            <a href="#sec-resilience" class="agenda-btn group/a flex items-center gap-3 w-full px-4 py-3 rounded-xl transition-all duration-200" style="background:rgba(192,132,252,0.06);border:1px solid rgba(192,132,252,0.15)">
+                                <span class="text-[10px] font-mono font-bold text-violet-400 w-6 flex-shrink-0">06B</span>
+                                <span class="flex-1 text-left">
+                                    <span class="text-sm font-semibold section-title block">Resilience & Fallback</span>
+                                    <span class="text-[10px] text-c-muted">Failure modes, fallback flows & thresholds</span>
+                                </span>
+                                <svg class="w-3.5 h-3.5 text-violet-400 opacity-0 group-hover/a:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                            </a>
+                            <a href="#sec-security" class="agenda-btn group/a flex items-center gap-3 w-full px-4 py-3 rounded-xl transition-all duration-200" style="background:rgba(192,132,252,0.06);border:1px solid rgba(192,132,252,0.15)">
+                                <span class="text-[10px] font-mono font-bold text-violet-400 w-6 flex-shrink-0">07</span>
+                                <span class="flex-1 text-left">
+                                    <span class="text-sm font-semibold section-title block">Security & Governance</span>
+                                    <span class="text-[10px] text-c-muted">ISO 27001 · GDPR · RBAC · audit chain</span>
+                                </span>
+                                <svg class="w-3.5 h-3.5 text-violet-400 opacity-0 group-hover/a:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                            </a>
+                            <a href="#sec-rag" class="agenda-btn group/a flex items-center gap-3 w-full px-4 py-3 rounded-xl transition-all duration-200" style="background:rgba(192,132,252,0.06);border:1px solid rgba(192,132,252,0.15)">
+                                <span class="text-[10px] font-mono font-bold text-violet-400 w-6 flex-shrink-0">08</span>
+                                <span class="flex-1 text-left">
+                                    <span class="text-sm font-semibold section-title block">Knowledge Architecture</span>
+                                    <span class="text-[10px] text-c-muted">RAG pipeline · vector search · Zoho WorkDrive</span>
+                                </span>
+                                <svg class="w-3.5 h-3.5 text-violet-400 opacity-0 group-hover/a:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                            </a>
+                            <a href="#sec-lifecycle" class="agenda-btn group/a flex items-center gap-3 w-full px-4 py-3 rounded-xl transition-all duration-200" style="background:rgba(192,132,252,0.06);border:1px solid rgba(192,132,252,0.15)">
+                                <span class="text-[10px] font-mono font-bold text-violet-400 w-6 flex-shrink-0">09B</span>
+                                <span class="flex-1 text-left">
+                                    <span class="text-sm font-semibold section-title block">Request Lifecycle</span>
+                                    <span class="text-[10px] text-c-muted">7-step deterministic pipeline · 4 guarantees</span>
+                                </span>
+                                <svg class="w-3.5 h-3.5 text-violet-400 opacity-0 group-hover/a:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                            </a>
+                        </div>
+
+                        <!-- Column 3: Outcomes -->
+                        <div class="space-y-2">
+                            <div class="text-[10px] font-bold uppercase tracking-[0.18em] text-emerald-400 mb-3 flex items-center gap-2">
+                                <span class="flex-1 h-px" style="background:rgba(52,211,153,0.25)"></span>
+                                Outcomes
+                                <span class="flex-1 h-px" style="background:rgba(52,211,153,0.25)"></span>
+                            </div>
+                            <a href="#sec-agents" class="agenda-btn group/a flex items-center gap-3 w-full px-4 py-3 rounded-xl transition-all duration-200" style="background:rgba(52,211,153,0.06);border:1px solid rgba(52,211,153,0.15)">
+                                <span class="text-[10px] font-mono font-bold text-emerald-400 w-6 flex-shrink-0">09</span>
+                                <span class="flex-1 text-left">
+                                    <span class="text-sm font-semibold section-title block">Multi-Agent Orchestration</span>
+                                    <span class="text-[10px] text-c-muted">Cross-dept autonomous action from one command</span>
+                                </span>
+                                <svg class="w-3.5 h-3.5 text-emerald-400 opacity-0 group-hover/a:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                            </a>
+                            <a href="#sec-workflows" class="agenda-btn group/a flex items-center gap-3 w-full px-4 py-3 rounded-xl transition-all duration-200" style="background:rgba(52,211,153,0.06);border:1px solid rgba(52,211,153,0.15)">
+                                <span class="text-[10px] font-mono font-bold text-emerald-400 w-6 flex-shrink-0">10</span>
+                                <span class="flex-1 text-left">
+                                    <span class="text-sm font-semibold section-title block">Departmental Workflows</span>
+                                    <span class="text-[10px] text-c-muted">Agentic flows per function — 6 departments</span>
+                                </span>
+                                <svg class="w-3.5 h-3.5 text-emerald-400 opacity-0 group-hover/a:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                            </a>
+                            <a href="#sec-qol" class="agenda-btn group/a flex items-center gap-3 w-full px-4 py-3 rounded-xl transition-all duration-200" style="background:rgba(52,211,153,0.06);border:1px solid rgba(52,211,153,0.15)">
+                                <span class="text-[10px] font-mono font-bold text-emerald-400 w-6 flex-shrink-0">11</span>
+                                <span class="flex-1 text-left">
+                                    <span class="text-sm font-semibold section-title block">Employee Quality of Life</span>
+                                    <span class="text-[10px] text-c-muted">Payroll, HR & personal AI tools for staff</span>
+                                </span>
+                                <svg class="w-3.5 h-3.5 text-emerald-400 opacity-0 group-hover/a:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                            </a>
+                            <a href="#sec-roi" class="agenda-btn group/a flex items-center gap-3 w-full px-4 py-3 rounded-xl transition-all duration-200" style="background:rgba(52,211,153,0.06);border:1px solid rgba(52,211,153,0.15)">
+                                <span class="text-[10px] font-mono font-bold text-emerald-400 w-6 flex-shrink-0">12B</span>
+                                <span class="flex-1 text-left">
+                                    <span class="text-sm font-semibold section-title block">Business Impact & ROI</span>
+                                    <span class="text-[10px] text-c-muted">9.7× return · 720K cost · 9.3M benefit</span>
+                                </span>
+                                <svg class="w-3.5 h-3.5 text-emerald-400 opacity-0 group-hover/a:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                            </a>
+                            <a href="#sec-roadmap" class="agenda-btn group/a flex items-center gap-3 w-full px-4 py-3 rounded-xl transition-all duration-200" style="background:rgba(52,211,153,0.06);border:1px solid rgba(52,211,153,0.15)">
+                                <span class="text-[10px] font-mono font-bold text-emerald-400 w-6 flex-shrink-0">13</span>
+                                <span class="flex-1 text-left">
+                                    <span class="text-sm font-semibold section-title block">Implementation Roadmap</span>
+                                    <span class="text-[10px] text-c-muted">90-day phased plan · EGP financial forecast</span>
+                                </span>
+                                <svg class="w-3.5 h-3.5 text-emerald-400 opacity-0 group-hover/a:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+                <!-- ── End Agenda ──────────────────────────────────── -->
+
             </div>
         </section>
 
         <!-- ── 02 Impact Zones ────────────────────────────────── -->
-        <section class="glass-card rounded-2xl p-8 lg:p-10 animate-fade-in-up stagger-2 relative overflow-hidden">
+        <section class="glass-card rounded-2xl p-8 lg:p-10 animate-fade-in-up stagger-2 relative overflow-hidden" id="sec-impact">
             <div class="absolute -top-20 -right-20 w-72 h-72 bg-blue-500/10 rounded-full blur-[80px] pointer-events-none"></div>
             <div class="grid grid-cols-1 lg:grid-cols-5 gap-10 items-center relative z-10">
                 <div class="lg:col-span-2">
@@ -838,7 +1038,7 @@
         </section>
 
         <!-- ── 03 Lifecycle Optimization ─────────────────────── -->
-        <section class="glass-card rounded-2xl p-8 lg:p-10 animate-fade-in-up stagger-3 relative overflow-hidden">
+        <section class="glass-card rounded-2xl p-8 lg:p-10 animate-fade-in-up stagger-3 relative overflow-hidden" id="sec-lifecycle-opt">
             <div class="absolute inset-0 bg-gradient-to-br from-purple-500/5 via-transparent to-blue-500/5 pointer-events-none"></div>
             <div class="relative z-10">
                 <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-8">
@@ -863,7 +1063,7 @@
         </section>
 
         <!-- ── 04 Revenue & Delivery Funnel ──────────────────── -->
-        <section class="glass-card rounded-2xl p-8 lg:p-10 animate-fade-in-up stagger-4 relative overflow-hidden">
+        <section class="glass-card rounded-2xl p-8 lg:p-10 animate-fade-in-up stagger-4 relative overflow-hidden" id="sec-funnel">
             <div class="absolute -bottom-20 -left-20 w-72 h-72 bg-purple-500/10 rounded-full blur-[80px] pointer-events-none"></div>
             <div class="mb-8 relative z-10">
                 <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold uppercase tracking-widest mb-4">
@@ -885,7 +1085,7 @@
         </section>
 
         <!-- ── 05 Departmental Blueprints ─────────────────────── -->
-        <section class="glass-card rounded-2xl animate-fade-in-up stagger-5 overflow-hidden flex flex-col relative">
+        <section class="glass-card rounded-2xl animate-fade-in-up stagger-5 overflow-hidden flex flex-col relative" id="sec-depts">
             <div class="absolute inset-0 opacity-[0.025] pointer-events-none" style="background-image:radial-gradient(circle at 2px 2px,white 2px,transparent 0);background-size:32px 32px"></div>
             <div class="p-8 lg:p-10 relative z-10" style="border-bottom:1px solid var(--border-s)">
                 <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-semibold uppercase tracking-widest mb-4">
@@ -2000,6 +2200,129 @@
                     </div>
 
                 </div>
+
+                <!-- ── Financial Impact Simulator ─────────────────── -->
+                <div style="border-top:1px solid var(--border)" class="mt-8 pt-8">
+                    <div class="flex items-center gap-3 mb-6 flex-wrap">
+                        <div class="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 flex-shrink-0">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 11h.01M12 11h.01M15 11h.01M4 19h16a1 1 0 001-1V6a1 1 0 00-1-1H4a1 1 0 00-1 1v12a1 1 0 001 1z"/></svg>
+                        </div>
+                        <div>
+                            <h4 class="text-lg font-bold section-title">Financial Impact Simulator</h4>
+                            <p class="text-xs text-c-muted">Adjust the inputs — results update instantly</p>
+                        </div>
+                        <span class="ml-auto dept-badge impact-high">Live</span>
+                    </div>
+
+                    <!-- Slider Inputs -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5 mb-8">
+                        <div class="glass-panel p-4">
+                            <label class="text-[10px] font-bold uppercase tracking-[0.14em] text-c-muted block mb-2">Headcount</label>
+                            <div class="flex items-center justify-between mb-1.5">
+                                <span id="lbl-headcount" class="text-lg font-bold section-title">120</span>
+                                <span class="text-[10px] text-c-muted">employees</span>
+                            </div>
+                            <input id="sim-headcount" type="range" min="20" max="500" value="120" step="5"
+                                class="sim-range w-full">
+                            <div class="flex justify-between text-[10px] text-c-muted mt-1"><span>20</span><span>500</span></div>
+                        </div>
+                        <div class="glass-panel p-4">
+                            <label class="text-[10px] font-bold uppercase tracking-[0.14em] text-c-muted block mb-2">Avg Salary (EGP/mo)</label>
+                            <div class="flex items-center justify-between mb-1.5">
+                                <span id="lbl-salary" class="text-lg font-bold section-title">15,000</span>
+                                <span class="text-[10px] text-c-muted">EGP</span>
+                            </div>
+                            <input id="sim-salary" type="range" min="5000" max="60000" value="15000" step="1000"
+                                class="sim-range w-full">
+                            <div class="flex justify-between text-[10px] text-c-muted mt-1"><span>5K</span><span>60K</span></div>
+                        </div>
+                        <div class="glass-panel p-4">
+                            <label class="text-[10px] font-bold uppercase tracking-[0.14em] text-c-muted block mb-2">Productivity Gain</label>
+                            <div class="flex items-center justify-between mb-1.5">
+                                <span id="lbl-productivity" class="text-lg font-bold section-title">25%</span>
+                                <span class="text-[10px] text-c-muted">uplift</span>
+                            </div>
+                            <input id="sim-productivity" type="range" min="5" max="60" value="25" step="1"
+                                class="sim-range w-full">
+                            <div class="flex justify-between text-[10px] text-c-muted mt-1"><span>5%</span><span>60%</span></div>
+                        </div>
+                        <div class="glass-panel p-4">
+                            <label class="text-[10px] font-bold uppercase tracking-[0.14em] text-c-muted block mb-2">Annual AI Cost (EGP)</label>
+                            <div class="flex items-center justify-between mb-1.5">
+                                <span id="lbl-cost" class="text-lg font-bold section-title">720,000</span>
+                                <span class="text-[10px] text-c-muted">EGP/yr</span>
+                            </div>
+                            <input id="sim-cost" type="range" min="120000" max="3000000" value="720000" step="60000"
+                                class="sim-range w-full">
+                            <div class="flex justify-between text-[10px] text-c-muted mt-1"><span>120K</span><span>3M</span></div>
+                        </div>
+                    </div>
+
+                    <!-- Result Cards -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                        <div class="kpi-card text-center">
+                            <div id="sim-benefit" class="kpi-value neon-emerald" style="font-size:1.4rem">—</div>
+                            <div class="kpi-label">Annual Benefit</div>
+                        </div>
+                        <div class="kpi-card text-center">
+                            <div id="sim-net" class="kpi-value" style="font-size:1.4rem;background:linear-gradient(135deg,#34d399,#60a5fa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">—</div>
+                            <div class="kpi-label">Net Annual Gain</div>
+                        </div>
+                        <div class="kpi-card text-center">
+                            <div id="sim-roi" class="kpi-value neon-emerald" style="font-size:1.4rem">—</div>
+                            <div class="kpi-label">Return on Investment</div>
+                        </div>
+                        <div class="kpi-card text-center">
+                            <div id="sim-payback" class="kpi-value" style="font-size:1.4rem;background:linear-gradient(135deg,#fbbf24,#34d399);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">—</div>
+                            <div class="kpi-label">Payback Period</div>
+                        </div>
+                    </div>
+
+                    <!-- Benefit breakdown bar -->
+                    <div class="glass-panel p-5">
+                        <h6 class="text-xs font-bold uppercase tracking-wider text-c-muted mb-4">Benefit Breakdown</h6>
+                        <div class="space-y-3">
+                            <div>
+                                <div class="flex justify-between text-xs mb-1">
+                                    <span class="text-c-muted">Productivity Gain</span>
+                                    <span id="sim-bar-prod-val" class="font-semibold section-title">—</span>
+                                </div>
+                                <div class="h-2 rounded-full" style="background:var(--panel)">
+                                    <div id="sim-bar-prod" class="h-2 rounded-full transition-all duration-500" style="width:0%;background:linear-gradient(90deg,#34d399,#6ee7b7)"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-xs mb-1">
+                                    <span class="text-c-muted">Hiring Reduction</span>
+                                    <span id="sim-bar-hire-val" class="font-semibold section-title">—</span>
+                                </div>
+                                <div class="h-2 rounded-full" style="background:var(--panel)">
+                                    <div id="sim-bar-hire" class="h-2 rounded-full transition-all duration-500" style="width:0%;background:linear-gradient(90deg,#60a5fa,#93c5fd)"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-xs mb-1">
+                                    <span class="text-c-muted">Error Reduction</span>
+                                    <span id="sim-bar-err-val" class="font-semibold section-title">—</span>
+                                </div>
+                                <div class="h-2 rounded-full" style="background:var(--panel)">
+                                    <div id="sim-bar-err" class="h-2 rounded-full transition-all duration-500" style="width:0%;background:linear-gradient(90deg,#c084fc,#ddd6fe)"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-xs mb-1">
+                                    <span class="text-c-muted">Revenue Upside</span>
+                                    <span id="sim-bar-rev-val" class="font-semibold section-title">—</span>
+                                </div>
+                                <div class="h-2 rounded-full" style="background:var(--panel)">
+                                    <div id="sim-bar-rev" class="h-2 rounded-full transition-all duration-500" style="width:0%;background:linear-gradient(90deg,#fbbf24,#fde68a)"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- ── End Simulator ──────────────────────────────── -->
+
             </div>
         </section>
 
@@ -2706,6 +3029,80 @@
     }
 
     // ── Subtle mouse parallax on ambient blobs ──────────────
+    // ═══════════════════════════════════════════════════════
+    // FINANCIAL IMPACT SIMULATOR
+    // ═══════════════════════════════════════════════════════
+    (function initSimulator() {
+        const inputs = {
+            headcount:   { el: document.getElementById('sim-headcount'),   lbl: document.getElementById('lbl-headcount'),   fmt: v => Math.round(v).toLocaleString() },
+            salary:      { el: document.getElementById('sim-salary'),      lbl: document.getElementById('lbl-salary'),      fmt: v => Number(v).toLocaleString() },
+            productivity:{ el: document.getElementById('sim-productivity'), lbl: document.getElementById('lbl-productivity'), fmt: v => v + '%' },
+            cost:        { el: document.getElementById('sim-cost'),        lbl: document.getElementById('lbl-cost'),        fmt: v => Number(v).toLocaleString() }
+        };
+
+        function updateTrack(input) {
+            const min = +input.min, max = +input.max, val = +input.value;
+            const pct = ((val - min) / (max - min) * 100).toFixed(1) + '%';
+            input.style.setProperty('--pct', pct);
+        }
+
+        function egp(n) {
+            return (n >= 1_000_000
+                ? (n / 1_000_000).toFixed(2) + 'M'
+                : n >= 1_000
+                ? (n / 1_000).toFixed(0) + 'K'
+                : n.toFixed(0)) + ' EGP';
+        }
+
+        function calc() {
+            const hc   = +inputs.headcount.el.value;
+            const sal  = +inputs.salary.el.value;
+            const prod = +inputs.productivity.el.value / 100;
+            const cost = +inputs.cost.el.value;
+
+            const prodBenefit = hc * prod * sal * 12;
+            const hireBenefit = 10 * sal * 12;
+            const errBenefit  = 900_000;
+            const revBenefit  = 1_200_000;
+            const total = prodBenefit + hireBenefit + errBenefit + revBenefit;
+            const net   = total - cost;
+            const roi   = total / cost;
+            const payback = cost / (total / 12);
+
+            document.getElementById('sim-benefit').textContent  = egp(total);
+            document.getElementById('sim-net').textContent      = egp(net);
+            document.getElementById('sim-roi').textContent      = roi.toFixed(1) + '×';
+            document.getElementById('sim-payback').textContent  = payback.toFixed(1) + ' mo';
+
+            document.getElementById('sim-bar-prod-val').textContent = egp(prodBenefit);
+            document.getElementById('sim-bar-hire-val').textContent = egp(hireBenefit);
+            document.getElementById('sim-bar-err-val').textContent  = egp(errBenefit);
+            document.getElementById('sim-bar-rev-val').textContent  = egp(revBenefit);
+
+            const bars = [
+                { id: 'sim-bar-prod', val: prodBenefit },
+                { id: 'sim-bar-hire', val: hireBenefit },
+                { id: 'sim-bar-err',  val: errBenefit },
+                { id: 'sim-bar-rev',  val: revBenefit }
+            ];
+            bars.forEach(b => {
+                const w = Math.min(100, (b.val / total) * 100).toFixed(1);
+                document.getElementById(b.id).style.width = w + '%';
+            });
+        }
+
+        Object.values(inputs).forEach(({ el, lbl, fmt }) => {
+            updateTrack(el);
+            el.addEventListener('input', () => {
+                lbl.textContent = fmt(el.value);
+                updateTrack(el);
+                calc();
+            });
+        });
+
+        calc();
+    })();
+
     (function initParallax() {
         const b1 = document.getElementById('blob1');
         const b2 = document.getElementById('blob2');
