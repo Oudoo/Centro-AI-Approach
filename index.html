@@ -1781,57 +1781,190 @@
                 </div>
 
                 <!-- ROI + Break-even panels -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-6">
+
+                    <!-- ROI Breakdown Table -->
                     <div class="glass-panel p-6">
-                        <h5 class="text-sm font-bold section-title mb-4">ROI Projection</h5>
-                        <div class="space-y-3">
-                            <div class="flex justify-between items-center py-2" style="border-bottom:1px solid var(--border)">
-                                <span class="text-xs text-c-muted">Year 1 infra cost (all tiers)</span>
-                                <span class="text-xs font-semibold section-title">≈ $18,840</span>
+                        <h5 class="text-sm font-bold section-title mb-1">ROI Breakdown — Annual Value</h5>
+                        <p class="text-xs text-c-muted mb-4">Based on 120 employees · avg salary 15,000 EGP/mo · annual payroll 21,600,000 EGP</p>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm">
+                                <thead>
+                                    <tr style="border-bottom:1px solid var(--border)">
+                                        <th class="text-left py-2 pr-4 text-xs font-bold uppercase tracking-wider text-c-muted">Value Category</th>
+                                        <th class="text-left py-2 pr-4 text-xs font-bold uppercase tracking-wider text-c-muted">Basis</th>
+                                        <th class="text-right py-2 text-xs font-bold uppercase tracking-wider text-c-muted">Annual (EGP)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr style="border-bottom:1px solid var(--border)">
+                                        <td class="py-3 pr-4 section-title font-semibold">Productivity Gain</td>
+                                        <td class="py-3 pr-4 text-xs text-c-muted">25% uplift ≈ 30 FTE capacity · 30 × 15,000 × 12</td>
+                                        <td class="py-3 text-right font-bold text-emerald-400">5,400,000</td>
+                                    </tr>
+                                    <tr style="border-bottom:1px solid var(--border)">
+                                        <td class="py-3 pr-4 section-title font-semibold">Reduced Hiring</td>
+                                        <td class="py-3 pr-4 text-xs text-c-muted">Avoid 10 hires/yr · 10 × 15,000 × 12</td>
+                                        <td class="py-3 text-right font-bold text-emerald-400">1,800,000</td>
+                                    </tr>
+                                    <tr style="border-bottom:1px solid var(--border)">
+                                        <td class="py-3 pr-4 section-title font-semibold">Error Reduction</td>
+                                        <td class="py-3 pr-4 text-xs text-c-muted">~75,000 EGP/mo in rework, escalation & compliance costs</td>
+                                        <td class="py-3 text-right font-bold text-emerald-400">900,000</td>
+                                    </tr>
+                                    <tr style="border-bottom:1px solid var(--border)">
+                                        <td class="py-3 pr-4 section-title font-semibold">Revenue Upside</td>
+                                        <td class="py-3 pr-4 text-xs text-c-muted">1 new client/mo enabled by AI-driven capacity · ~100,000 EGP</td>
+                                        <td class="py-3 text-right font-bold text-emerald-400">1,200,000</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="pt-3 pr-4 font-bold section-title text-base">Total Annual Benefit</td>
+                                        <td class="pt-3 pr-4"></td>
+                                        <td class="pt-3 text-right text-xl font-black text-emerald-400">9,300,000</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Net Impact + Key Metrics -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Net Impact -->
+                        <div class="glass-panel p-6 border-l-4 border-l-emerald-500">
+                            <h5 class="text-sm font-bold section-title mb-4">Net Impact Summary</h5>
+                            <div class="space-y-3">
+                                <div class="flex justify-between items-center py-2" style="border-bottom:1px solid var(--border)">
+                                    <span class="text-sm text-c-muted">Total Annual Cost</span>
+                                    <span class="text-sm font-bold text-red-400">960,000 EGP</span>
+                                </div>
+                                <div class="flex justify-between items-center py-2" style="border-bottom:1px solid var(--border)">
+                                    <span class="text-sm text-c-muted">Total Annual Benefit</span>
+                                    <span class="text-sm font-bold text-emerald-400">9,300,000 EGP</span>
+                                </div>
+                                <div class="flex justify-between items-center pt-1">
+                                    <span class="text-base font-bold section-title">Net Annual Gain</span>
+                                    <span class="text-xl font-black neon-emerald">~8,340,000 EGP</span>
+                                </div>
                             </div>
-                            <div class="flex justify-between items-center py-2" style="border-bottom:1px solid var(--border)">
-                                <span class="text-xs text-c-muted">Equivalent SaaS stack cost (Y1)</span>
-                                <span class="text-xs font-semibold text-red-400">≈ $180,000</span>
+                        </div>
+
+                        <!-- ROI Metrics -->
+                        <div class="grid grid-cols-3 gap-3">
+                            <div class="kpi-card text-center">
+                                <div class="kpi-value neon-emerald">9.7×</div>
+                                <div class="kpi-label">Return on Investment</div>
                             </div>
-                            <div class="flex justify-between items-center py-2" style="border-bottom:1px solid var(--border)">
-                                <span class="text-xs text-c-muted">Est. productivity uplift (labor value)</span>
-                                <span class="text-xs font-semibold text-emerald-400">$120,000 – $200,000</span>
+                            <div class="kpi-card text-center">
+                                <div class="kpi-value" style="background:linear-gradient(135deg,#60a5fa,#34d399);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">1.5</div>
+                                <div class="kpi-label">Month Payback</div>
                             </div>
-                            <div class="flex justify-between items-center py-2" style="border-bottom:1px solid var(--border)">
-                                <span class="text-xs text-c-muted">AHT savings (agent-hours reclaimed)</span>
-                                <span class="text-xs font-semibold text-emerald-400">≈ 14,000 hrs / yr</span>
-                            </div>
-                            <div class="flex justify-between items-center pt-2">
-                                <span class="text-sm font-bold section-title">Estimated Net Benefit (Y1)</span>
-                                <span class="text-sm font-bold text-emerald-400">$300,000 – $380,000</span>
+                            <div class="kpi-card text-center">
+                                <div class="kpi-value" style="font-size:1.3rem;background:linear-gradient(135deg,#fbbf24,#34d399);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">695K</div>
+                                <div class="kpi-label">EGP Net / Month</div>
                             </div>
                         </div>
                     </div>
+
+                    <!-- Scenario Sensitivity -->
                     <div class="glass-panel p-6">
-                        <h5 class="text-sm font-bold section-title mb-2">Break-Even Analysis</h5>
-                        <div class="flex items-end gap-3 mb-4">
-                            <span class="text-3xl font-bold text-emerald-400">6–9</span>
-                            <span class="text-sm text-c-muted pb-1">months to break-even</span>
-                        </div>
-                        <p class="text-xs text-c-muted leading-relaxed mb-4">Based on infrastructure capex of ~$48,000 (hardware) + $18,840 annual opex against a conservative 25–40% productivity uplift across the agent pool.</p>
-                        <div class="space-y-2">
-                            <div class="flex items-center gap-2">
-                                <span class="text-emerald-400 text-xs font-bold">25%</span>
-                                <div class="flex-1 h-2 rounded-full" style="background:var(--panel)">
-                                    <div class="h-2 rounded-full" style="width:62%;background:rgba(52,211,153,0.5)"></div>
+                        <h5 class="text-sm font-bold section-title mb-4">Scenario Sensitivity</h5>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="rounded-xl p-4 text-center" style="background:rgba(248,113,113,0.07);border:1px solid rgba(248,113,113,0.25)">
+                                <div class="text-xs font-bold uppercase tracking-wider text-red-400 mb-2">Worst Case</div>
+                                <div class="text-xl font-bold section-title mb-1">15% Uplift</div>
+                                <div class="text-sm font-semibold text-red-400 mb-1">~5,500,000 EGP</div>
+                                <div class="text-xs text-c-muted">ROI: ~5.7×</div>
+                                <div class="mt-2 h-1.5 rounded-full" style="background:var(--panel)">
+                                    <div class="h-1.5 rounded-full" style="width:52%;background:rgba(248,113,113,0.6)"></div>
                                 </div>
-                                <span class="text-xs text-c-muted">Conservative</span>
                             </div>
-                            <div class="flex items-center gap-2">
-                                <span class="text-emerald-400 text-xs font-bold">40%</span>
-                                <div class="flex-1 h-2 rounded-full" style="background:var(--panel)">
-                                    <div class="h-2 rounded-full" style="width:90%;background:linear-gradient(90deg,#34d399,#6ee7b7)"></div>
+                            <div class="rounded-xl p-4 text-center" style="background:rgba(96,165,250,0.07);border:1px solid rgba(96,165,250,0.25)">
+                                <div class="text-xs font-bold uppercase tracking-wider text-blue-400 mb-2">Base Case</div>
+                                <div class="text-xl font-bold section-title mb-1">25% Uplift</div>
+                                <div class="text-sm font-semibold text-blue-400 mb-1">~9,300,000 EGP</div>
+                                <div class="text-xs text-c-muted">ROI: ~9.7×</div>
+                                <div class="mt-2 h-1.5 rounded-full" style="background:var(--panel)">
+                                    <div class="h-1.5 rounded-full" style="width:75%;background:rgba(96,165,250,0.7)"></div>
                                 </div>
-                                <span class="text-xs text-c-muted">Optimistic</span>
+                            </div>
+                            <div class="rounded-xl p-4 text-center" style="background:rgba(52,211,153,0.07);border:1px solid rgba(52,211,153,0.25)">
+                                <div class="text-xs font-bold uppercase tracking-wider text-emerald-400 mb-2">Best Case</div>
+                                <div class="text-xl font-bold section-title mb-1">40% Uplift</div>
+                                <div class="text-sm font-semibold text-emerald-400 mb-1">~11,000,000+ EGP</div>
+                                <div class="text-xs text-c-muted">ROI: ~11×+</div>
+                                <div class="mt-2 h-1.5 rounded-full" style="background:var(--panel)">
+                                    <div class="h-1.5 rounded-full" style="width:100%;background:linear-gradient(90deg,#34d399,#6ee7b7)"></div>
+                                </div>
                             </div>
                         </div>
-                        <p class="text-[10px] text-c-muted mt-4">Productivity uplift range reflects comparable BPO deployments at Teleperformance, Concentrix, and TTEC (2023–2024 published results).</p>
                     </div>
+
+                    <!-- Board Interpretation Block -->
+                    <div class="rounded-2xl p-6" style="background:linear-gradient(135deg,rgba(52,211,153,0.08),rgba(96,165,250,0.05));border:1px solid rgba(52,211,153,0.25)">
+                        <p class="text-sm font-bold section-title mb-3">This initiative is not a cost center.</p>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="flex items-start gap-3">
+                                <div class="w-8 h-8 rounded-lg bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 flex-shrink-0">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+                                </div>
+                                <div>
+                                    <div class="text-xs font-bold text-emerald-400 uppercase tracking-wider mb-1">Margin Expansion Engine</div>
+                                    <p class="text-xs text-c-muted leading-relaxed">Each automation layer compounds — the 9.7× return grows as headcount scales without proportional cost growth.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <div class="w-8 h-8 rounded-lg bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-blue-400 flex-shrink-0">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197"/></svg>
+                                </div>
+                                <div>
+                                    <div class="text-xs font-bold text-blue-400 uppercase tracking-wider mb-1">Headcount Optimization</div>
+                                    <p class="text-xs text-c-muted leading-relaxed">Avoid hiring 10 employees/year while absorbing higher workload — equivalent to 30 FTE capacity at 25% uplift.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <div class="w-8 h-8 rounded-lg bg-violet-500/15 border border-violet-500/30 flex items-center justify-center text-violet-400 flex-shrink-0">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                                </div>
+                                <div>
+                                    <div class="text-xs font-bold text-violet-400 uppercase tracking-wider mb-1">Revenue Acceleration Layer</div>
+                                    <p class="text-xs text-c-muted leading-relaxed">AI-enabled capacity opens one additional client acquisition channel per month — a compounding revenue flywheel.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Decision Block -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="rounded-xl p-5" style="background:rgba(52,211,153,0.06);border:1px solid rgba(52,211,153,0.3)">
+                            <div class="flex items-center gap-2 mb-3">
+                                <span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                </span>
+                                <span class="text-sm font-bold text-emerald-400">If Approved</span>
+                            </div>
+                            <ul class="space-y-1.5 text-xs text-c-muted">
+                                <li class="flex items-start gap-2"><span class="text-emerald-400 mt-0.5">→</span> AI-enabled operations live within 6 months</li>
+                                <li class="flex items-start gap-2"><span class="text-emerald-400 mt-0.5">→</span> Payback in ~1.5 months from go-live</li>
+                                <li class="flex items-start gap-2"><span class="text-emerald-400 mt-0.5">→</span> ~695,000 EGP net gain every month thereafter</li>
+                                <li class="flex items-start gap-2"><span class="text-emerald-400 mt-0.5">→</span> Competitive differentiation locked in early</li>
+                            </ul>
+                        </div>
+                        <div class="rounded-xl p-5" style="background:rgba(248,113,113,0.06);border:1px solid rgba(248,113,113,0.3)">
+                            <div class="flex items-center gap-2 mb-3">
+                                <span class="w-6 h-6 rounded-full bg-red-500/20 text-red-400 flex items-center justify-center">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
+                                </span>
+                                <span class="text-sm font-bold text-red-400">If Delayed</span>
+                            </div>
+                            <ul class="space-y-1.5 text-xs text-c-muted">
+                                <li class="flex items-start gap-2"><span class="text-red-400 mt-0.5">→</span> Continued linear cost growth vs. capacity demand</li>
+                                <li class="flex items-start gap-2"><span class="text-red-400 mt-0.5">→</span> Each month delayed = ~695,000 EGP foregone</li>
+                                <li class="flex items-start gap-2"><span class="text-red-400 mt-0.5">→</span> Competitors adopting AI gain pricing & speed edge</li>
+                                <li class="flex items-start gap-2"><span class="text-red-400 mt-0.5">→</span> Talent pressure grows without productivity offset</li>
+                            </ul>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </section>
@@ -1927,42 +2060,43 @@
                 </div>
 
                 <!-- Financial Forecast -->
-                <h4 class="text-xl font-bold section-title mb-6">Financial Forecast — Egypt Operations</h4>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                    <div class="glass-panel p-6">
-                        <h5 class="text-sm font-bold text-blue-400 uppercase tracking-widest mb-4">Capital Expenditure (CapEx)</h5>
-                        <div class="space-y-3">
-                            <div class="flex justify-between text-sm" style="border-bottom:1px solid var(--border-s);padding-bottom:0.75rem">
-                                <span class="text-c-muted">Hardware / GPU Servers (RTX 5090 × 3, Mac Mini × 5)</span>
-                                <span class="font-bold section-title">$18,000 <span class="text-c-muted text-xs">(~EGP 900,000)</span></span>
-                            </div>
-                            <div class="flex justify-between text-sm" style="border-bottom:1px solid var(--border-s);padding-bottom:0.75rem">
-                                <span class="text-c-muted">Network & Cloudflare Setup</span>
-                                <span class="font-bold section-title">$1,200 <span class="text-c-muted text-xs">(~EGP 60,000)</span></span>
-                            </div>
-                            <div class="flex justify-between text-sm font-bold mt-2">
-                                <span class="text-blue-400">Total CapEx</span>
-                                <span class="section-title">$19,200 <span class="text-c-muted text-xs">(~EGP 960,000)</span></span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="glass-panel p-6">
-                        <h5 class="text-sm font-bold text-purple-400 uppercase tracking-widest mb-4">Operational Expenditure (OpEx / month)</h5>
-                        <div class="space-y-3">
-                            <div class="flex justify-between text-sm" style="border-bottom:1px solid var(--border-s);padding-bottom:0.75rem">
-                                <span class="text-c-muted">Cloud Compute (RunPod / GCP fallback)</span>
-                                <span class="font-bold section-title">$400/mo <span class="text-c-muted text-xs">(~EGP 20,000)</span></span>
-                            </div>
-                            <div class="flex justify-between text-sm" style="border-bottom:1px solid var(--border-s);padding-bottom:0.75rem">
-                                <span class="text-c-muted">Integration / Maintenance Dev</span>
-                                <span class="font-bold section-title">$600/mo <span class="text-c-muted text-xs">(~EGP 30,000)</span></span>
-                            </div>
-                            <div class="flex justify-between text-sm font-bold mt-2">
-                                <span class="text-purple-400">Total OpEx</span>
-                                <span class="section-title">$1,000/mo <span class="text-c-muted text-xs">(~EGP 50,000)</span></span>
-                            </div>
-                        </div>
+                <h4 class="text-xl font-bold section-title mb-2">Financial Forecast — Egypt Operations</h4>
+                <p class="text-xs text-c-muted mb-6">Hardware, implementation, and training costs are treated as internal — assumed available or delivered by the internal team. Only recurring software and cloud costs are accounted for below.</p>
+                <div class="glass-panel p-6 mb-6">
+                    <h5 class="text-sm font-bold text-violet-400 uppercase tracking-widest mb-1">Software & AI Cost (Annual)</h5>
+                    <p class="text-xs text-c-muted mb-4">System is designed to prioritize local and internal compute to minimize recurring costs. Cloud and Claude usage are fallback layers, not primary.</p>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead>
+                                <tr style="border-bottom:1px solid var(--border)">
+                                    <th class="text-left py-2 pr-6 text-xs font-bold uppercase tracking-wider text-c-muted">Item</th>
+                                    <th class="text-right py-2 pr-6 text-xs font-bold uppercase tracking-wider text-c-muted">Monthly (EGP)</th>
+                                    <th class="text-right py-2 text-xs font-bold uppercase tracking-wider text-c-muted">Annual (EGP)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr style="border-bottom:1px solid var(--border)">
+                                    <td class="py-3 pr-6 section-title">Claude Enterprise <span class="text-[10px] text-c-muted font-normal">(optional fallback)</span></td>
+                                    <td class="py-3 pr-6 text-right text-c-muted">~50,000</td>
+                                    <td class="py-3 text-right font-semibold section-title">~600,000</td>
+                                </tr>
+                                <tr style="border-bottom:1px solid var(--border)">
+                                    <td class="py-3 pr-6 section-title">Cloud GPU <span class="text-[10px] text-c-muted font-normal">(minimal usage)</span></td>
+                                    <td class="py-3 pr-6 text-right text-c-muted">~20,000</td>
+                                    <td class="py-3 text-right font-semibold section-title">~240,000</td>
+                                </tr>
+                                <tr style="border-bottom:1px solid var(--border)">
+                                    <td class="py-3 pr-6 section-title">Misc APIs / Tools</td>
+                                    <td class="py-3 pr-6 text-right text-c-muted">~10,000</td>
+                                    <td class="py-3 text-right font-semibold section-title">~120,000</td>
+                                </tr>
+                                <tr>
+                                    <td class="pt-3 pr-6 font-bold section-title">Total Annual Cost</td>
+                                    <td class="pt-3 pr-6 text-right font-bold text-violet-400">~80,000</td>
+                                    <td class="pt-3 text-right text-lg font-black text-red-400">~960,000</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
 
