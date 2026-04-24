@@ -1783,6 +1783,40 @@
                 <!-- ROI + Break-even panels -->
                 <div class="space-y-6">
 
+                    <!-- Software & AI Cost -->
+                    <div class="glass-panel p-6">
+                        <h5 class="text-sm font-bold text-violet-400 uppercase tracking-widest mb-1">Software & AI Cost (Annual)</h5>
+                        <p class="text-xs text-c-muted mb-4">System is designed to prioritize local and internal compute to minimize recurring costs. Cloud and Claude usage are fallback layers, not primary.</p>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm">
+                                <thead>
+                                    <tr style="border-bottom:1px solid var(--border)">
+                                        <th class="text-left py-2 pr-6 text-xs font-bold uppercase tracking-wider text-c-muted">Item</th>
+                                        <th class="text-right py-2 pr-6 text-xs font-bold uppercase tracking-wider text-c-muted">Monthly (EGP)</th>
+                                        <th class="text-right py-2 text-xs font-bold uppercase tracking-wider text-c-muted">Annual (EGP)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr style="border-bottom:1px solid var(--border)">
+                                        <td class="py-3 pr-6 section-title">Claude Enterprise <span class="text-[10px] text-c-muted font-normal">(optional fallback)</span></td>
+                                        <td class="py-3 pr-6 text-right text-c-muted">~50,000</td>
+                                        <td class="py-3 text-right font-semibold section-title">~600,000</td>
+                                    </tr>
+                                    <tr style="border-bottom:1px solid var(--border)">
+                                        <td class="py-3 pr-6 section-title">Misc APIs / Tools</td>
+                                        <td class="py-3 pr-6 text-right text-c-muted">~10,000</td>
+                                        <td class="py-3 text-right font-semibold section-title">~120,000</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="pt-3 pr-6 font-bold section-title">Total Annual Cost</td>
+                                        <td class="pt-3 pr-6 text-right font-bold text-violet-400">~60,000</td>
+                                        <td class="pt-3 text-right text-lg font-black text-red-400">~720,000</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
                     <!-- ROI Breakdown Table -->
                     <div class="glass-panel p-6">
                         <h5 class="text-sm font-bold section-title mb-1">ROI Breakdown — Annual Value</h5>
@@ -1835,7 +1869,7 @@
                             <div class="space-y-3">
                                 <div class="flex justify-between items-center py-2" style="border-bottom:1px solid var(--border)">
                                     <span class="text-sm text-c-muted">Total Annual Cost</span>
-                                    <span class="text-sm font-bold text-red-400">960,000 EGP</span>
+                                    <span class="text-sm font-bold text-red-400">720,000 EGP</span>
                                 </div>
                                 <div class="flex justify-between items-center py-2" style="border-bottom:1px solid var(--border)">
                                     <span class="text-sm text-c-muted">Total Annual Benefit</span>
@@ -1843,7 +1877,7 @@
                                 </div>
                                 <div class="flex justify-between items-center pt-1">
                                     <span class="text-base font-bold section-title">Net Annual Gain</span>
-                                    <span class="text-xl font-black neon-emerald">~8,340,000 EGP</span>
+                                    <span class="text-xl font-black neon-emerald">~8,580,000 EGP</span>
                                 </div>
                             </div>
                         </div>
@@ -2007,8 +2041,8 @@
                             </tr>
                             <tr style="border-bottom:1px solid var(--border-s)">
                                 <td class="py-4 pr-4"><span class="text-emerald-400 font-mono font-bold">03</span></td>
-                                <td class="py-4 pr-4">MCP Integration (Zoho, Odoo, Genesys APIs)</td>
-                                <td class="py-4 pr-4 text-right font-bold">30</td>
+                                <td class="py-4 pr-4">Integrations and MCPs (Zoho, Odoo, Genesys APIs)</td>
+                                <td class="py-4 pr-4 text-right font-bold">15</td>
                                 <td class="py-4 text-right text-c-muted">Week 5-11</td>
                             </tr>
                             <tr style="border-bottom:1px solid var(--border-s)">
@@ -2028,7 +2062,7 @@
                             <tr style="border-top:2px solid var(--border)">
                                 <td class="pt-4 pr-4 font-bold text-blue-400">Total</td>
                                 <td class="pt-4 pr-4"></td>
-                                <td class="pt-4 pr-4 text-right font-bold text-2xl gradient-text">105</td>
+                                <td class="pt-4 pr-4 text-right font-bold text-2xl gradient-text">90</td>
                                 <td class="pt-4 text-right text-c-muted font-bold">~14 Weeks</td>
                             </tr>
                         </tfoot>
@@ -2046,8 +2080,8 @@
                         <div class="roadmap-bar w-full bg-purple-500/20 rounded-full"><div class="h-full rounded-full bg-purple-500" style="width:24%"></div></div>
                     </div>
                     <div>
-                        <div class="flex justify-between text-xs mb-1"><span class="text-c-muted">MCP Integration</span><span class="font-bold section-title">30 days</span></div>
-                        <div class="roadmap-bar w-full bg-emerald-500/20 rounded-full"><div class="h-full rounded-full bg-emerald-500" style="width:29%"></div></div>
+                        <div class="flex justify-between text-xs mb-1"><span class="text-c-muted">Integrations and MCPs</span><span class="font-bold section-title">15 days</span></div>
+                        <div class="roadmap-bar w-full bg-emerald-500/20 rounded-full"><div class="h-full rounded-full bg-emerald-500" style="width:14%"></div></div>
                     </div>
                     <div>
                         <div class="flex justify-between text-xs mb-1"><span class="text-c-muted">Chatbot UI</span><span class="font-bold section-title">20 days</span></div>
@@ -2062,43 +2096,6 @@
                 <!-- Financial Forecast -->
                 <h4 class="text-xl font-bold section-title mb-2">Financial Forecast — Egypt Operations</h4>
                 <p class="text-xs text-c-muted mb-6">Hardware, implementation, and training costs are treated as internal — assumed available or delivered by the internal team. Only recurring software and cloud costs are accounted for below.</p>
-                <div class="glass-panel p-6 mb-6">
-                    <h5 class="text-sm font-bold text-violet-400 uppercase tracking-widest mb-1">Software & AI Cost (Annual)</h5>
-                    <p class="text-xs text-c-muted mb-4">System is designed to prioritize local and internal compute to minimize recurring costs. Cloud and Claude usage are fallback layers, not primary.</p>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-sm">
-                            <thead>
-                                <tr style="border-bottom:1px solid var(--border)">
-                                    <th class="text-left py-2 pr-6 text-xs font-bold uppercase tracking-wider text-c-muted">Item</th>
-                                    <th class="text-right py-2 pr-6 text-xs font-bold uppercase tracking-wider text-c-muted">Monthly (EGP)</th>
-                                    <th class="text-right py-2 text-xs font-bold uppercase tracking-wider text-c-muted">Annual (EGP)</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr style="border-bottom:1px solid var(--border)">
-                                    <td class="py-3 pr-6 section-title">Claude Enterprise <span class="text-[10px] text-c-muted font-normal">(optional fallback)</span></td>
-                                    <td class="py-3 pr-6 text-right text-c-muted">~50,000</td>
-                                    <td class="py-3 text-right font-semibold section-title">~600,000</td>
-                                </tr>
-                                <tr style="border-bottom:1px solid var(--border)">
-                                    <td class="py-3 pr-6 section-title">Cloud GPU <span class="text-[10px] text-c-muted font-normal">(minimal usage)</span></td>
-                                    <td class="py-3 pr-6 text-right text-c-muted">~20,000</td>
-                                    <td class="py-3 text-right font-semibold section-title">~240,000</td>
-                                </tr>
-                                <tr style="border-bottom:1px solid var(--border)">
-                                    <td class="py-3 pr-6 section-title">Misc APIs / Tools</td>
-                                    <td class="py-3 pr-6 text-right text-c-muted">~10,000</td>
-                                    <td class="py-3 text-right font-semibold section-title">~120,000</td>
-                                </tr>
-                                <tr>
-                                    <td class="pt-3 pr-6 font-bold section-title">Total Annual Cost</td>
-                                    <td class="pt-3 pr-6 text-right font-bold text-violet-400">~80,000</td>
-                                    <td class="pt-3 text-right text-lg font-black text-red-400">~960,000</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
 
                 <!-- Cost Savings -->
                 <div class="glass-panel p-6 border-l-4 border-l-emerald-500">
