@@ -1007,266 +1007,134 @@
         <!-- ── 02 Impact Zones ────────────────────────────────── -->
         <section class="glass-card rounded-2xl p-8 lg:p-10 animate-fade-in-up stagger-2 relative overflow-hidden" id="sec-impact">
             <div class="absolute -top-20 -right-20 w-72 h-72 bg-blue-500/10 rounded-full blur-[80px] pointer-events-none"></div>
-            <div class="absolute -bottom-16 -left-16 w-56 h-56 bg-cyan-500/5 rounded-full blur-[60px] pointer-events-none"></div>
 
-            <!-- Header row -->
+            <!-- Header -->
             <div class="relative z-10 mb-8">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-widest mb-4" style="background:rgba(43,168,212,0.10);border:1px solid rgba(43,168,212,0.30);color:#2BA8D4">
+                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8"/></svg>
+                    Section 01
+                </div>
                 <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
                     <div>
-                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-widest mb-4" style="background:rgba(43,168,212,0.10);border:1px solid rgba(43,168,212,0.30);color:#2BA8D4">
-                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8"/></svg>
-                            Section 01
-                        </div>
                         <h3 class="text-2xl md:text-3xl font-bold tracking-tight section-title">Impact Zones</h3>
-                        <p class="text-c-muted leading-relaxed mt-2 max-w-xl">Organizational deployment scale mapped to the highest operational ROI. Service Delivery commands the largest share of agents and therefore AI uplift potential.</p>
+                        <p class="text-c-muted leading-relaxed mt-2 max-w-xl">Organizational deployment scale mapped to the highest operational ROI across 6 parent zones and 90+ sub-departments.</p>
                     </div>
-                    <!-- KPI strip -->
-                    <div class="flex flex-wrap gap-3 lg:gap-4 shrink-0">
-                        <div class="glass-panel px-4 py-3 text-center min-w-[90px]">
-                            <div class="text-2xl font-bold neon-blue metric-glow-blue">90+</div>
-                            <div class="text-[10px] text-c-muted uppercase tracking-wider mt-0.5">Sub-depts</div>
+                    <div class="flex gap-4 shrink-0">
+                        <div class="text-center">
+                            <div class="text-3xl font-bold neon-blue">90+</div>
+                            <div class="text-[10px] text-c-muted uppercase tracking-wider">Sub-depts</div>
                         </div>
-                        <div class="glass-panel px-4 py-3 text-center min-w-[90px]">
-                            <div class="text-2xl font-bold gradient-text">6</div>
-                            <div class="text-[10px] text-c-muted uppercase tracking-wider mt-0.5">Parent Zones</div>
+                        <div class="w-px self-stretch" style="background:var(--border-s)"></div>
+                        <div class="text-center">
+                            <div class="text-3xl font-bold gradient-text">6</div>
+                            <div class="text-[10px] text-c-muted uppercase tracking-wider">Parent Zones</div>
                         </div>
-                        <div class="glass-panel px-4 py-3 text-center min-w-[90px]">
-                            <div class="text-2xl font-bold" style="color:#34d399">~120</div>
-                            <div class="text-[10px] text-c-muted uppercase tracking-wider mt-0.5">Total Staff</div>
-                        </div>
-                        <div class="glass-panel px-4 py-3 text-center min-w-[90px]">
-                            <div class="text-2xl font-bold" style="color:#f59e0b">5+</div>
-                            <div class="text-[10px] text-c-muted uppercase tracking-wider mt-0.5">AI Use Cases</div>
+                        <div class="w-px self-stretch" style="background:var(--border-s)"></div>
+                        <div class="text-center">
+                            <div class="text-3xl font-bold" style="color:#34d399">~120</div>
+                            <div class="text-[10px] text-c-muted uppercase tracking-wider">Total Staff</div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Main content grid -->
+            <!-- Chart + Zone cards -->
             <div class="grid grid-cols-1 lg:grid-cols-5 gap-8 relative z-10">
 
-                <!-- Left: Dept breakdown bars -->
-                <div class="lg:col-span-2 space-y-3">
-                    <div class="text-xs font-semibold uppercase tracking-widest mb-4" style="color:#2BA8D4">Deployment Distribution</div>
+                <!-- Chart -->
+                <div class="lg:col-span-2 flex items-center justify-center">
+                    <div class="w-full" style="max-width:320px;height:320px">
+                        <canvas id="orgChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Zone cards 2×3 -->
+                <div class="lg:col-span-3 grid grid-cols-2 md:grid-cols-3 gap-3">
 
                     <!-- Service Delivery -->
-                    <div class="glass-panel p-3 rounded-xl">
-                        <div class="flex items-center justify-between mb-2">
-                            <div class="flex items-center gap-2">
-                                <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background:rgba(26,122,158,0.92)"></span>
-                                <span class="text-sm font-medium text-c-text">Service Delivery</span>
+                    <div class="bento-card p-5 flex flex-col gap-3 col-span-2 md:col-span-1" style="border-left:3px solid rgba(26,122,158,0.7)">
+                        <div class="flex items-start justify-between">
+                            <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:rgba(26,122,158,0.12)">
+                                <svg class="w-4 h-4" style="color:#1A7A9E" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>
                             </div>
-                            <div class="flex items-center gap-2 text-xs text-c-muted">
-                                <span class="font-semibold" style="color:#1A7A9E">~74 staff</span>
-                                <span class="font-bold text-c-text">62%</span>
-                            </div>
+                            <span class="text-2xl font-black" style="color:#1A7A9E">62%</span>
                         </div>
-                        <div class="h-1.5 rounded-full" style="background:rgba(255,255,255,0.06)">
-                            <div class="h-full rounded-full transition-all duration-700" style="width:62%;background:rgba(26,122,158,0.85)"></div>
-                        </div>
-                        <div class="flex gap-2 mt-2 flex-wrap">
-                            <span class="text-[10px] px-1.5 py-0.5 rounded" style="background:rgba(26,122,158,0.15);color:#1A7A9E">Inbound Ops</span>
-                            <span class="text-[10px] px-1.5 py-0.5 rounded" style="background:rgba(26,122,158,0.15);color:#1A7A9E">QA &amp; Coaching</span>
-                            <span class="text-[10px] px-1.5 py-0.5 rounded" style="background:rgba(26,122,212,0.15);color:#2BA8D4">HIGH ROI</span>
+                        <div>
+                            <div class="text-sm font-bold text-c-text">Service Delivery</div>
+                            <p class="text-[11px] text-c-muted mt-1 leading-snug">Inbound ops, QA automation &amp; real-time agent coaching.</p>
                         </div>
                     </div>
 
                     <!-- Technology -->
-                    <div class="glass-panel p-3 rounded-xl">
-                        <div class="flex items-center justify-between mb-2">
-                            <div class="flex items-center gap-2">
-                                <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background:rgba(43,168,212,0.90)"></span>
-                                <span class="text-sm font-medium text-c-text">Technology</span>
+                    <div class="bento-card p-5 flex flex-col gap-3" style="border-left:3px solid rgba(43,168,212,0.7)">
+                        <div class="flex items-start justify-between">
+                            <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:rgba(43,168,212,0.12)">
+                                <svg class="w-4 h-4" style="color:#2BA8D4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/></svg>
                             </div>
-                            <div class="flex items-center gap-2 text-xs text-c-muted">
-                                <span class="font-semibold" style="color:#2BA8D4">~14 staff</span>
-                                <span class="font-bold text-c-text">12%</span>
-                            </div>
+                            <span class="text-2xl font-black" style="color:#2BA8D4">12%</span>
                         </div>
-                        <div class="h-1.5 rounded-full" style="background:rgba(255,255,255,0.06)">
-                            <div class="h-full rounded-full transition-all duration-700" style="width:12%;background:rgba(43,168,212,0.85)"></div>
-                        </div>
-                        <div class="flex gap-2 mt-2 flex-wrap">
-                            <span class="text-[10px] px-1.5 py-0.5 rounded" style="background:rgba(43,168,212,0.15);color:#2BA8D4">Infrastructure</span>
-                            <span class="text-[10px] px-1.5 py-0.5 rounded" style="background:rgba(43,168,212,0.15);color:#2BA8D4">Dev &amp; AI Ops</span>
+                        <div>
+                            <div class="text-sm font-bold text-c-text">Technology</div>
+                            <p class="text-[11px] text-c-muted mt-1 leading-snug">Infrastructure, Dev &amp; AI Ops pipelines.</p>
                         </div>
                     </div>
 
                     <!-- Growth & Sales -->
-                    <div class="glass-panel p-3 rounded-xl">
-                        <div class="flex items-center justify-between mb-2">
-                            <div class="flex items-center gap-2">
-                                <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background:rgba(52,211,153,0.88)"></span>
-                                <span class="text-sm font-medium text-c-text">Growth &amp; Sales</span>
+                    <div class="bento-card p-5 flex flex-col gap-3" style="border-left:3px solid rgba(52,211,153,0.7)">
+                        <div class="flex items-start justify-between">
+                            <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:rgba(52,211,153,0.12)">
+                                <svg class="w-4 h-4" style="color:#34d399" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
                             </div>
-                            <div class="flex items-center gap-2 text-xs text-c-muted">
-                                <span class="font-semibold" style="color:#34d399">~11 staff</span>
-                                <span class="font-bold text-c-text">9%</span>
-                            </div>
+                            <span class="text-2xl font-black" style="color:#34d399">9%</span>
                         </div>
-                        <div class="h-1.5 rounded-full" style="background:rgba(255,255,255,0.06)">
-                            <div class="h-full rounded-full transition-all duration-700" style="width:9%;background:rgba(52,211,153,0.85)"></div>
-                        </div>
-                        <div class="flex gap-2 mt-2 flex-wrap">
-                            <span class="text-[10px] px-1.5 py-0.5 rounded" style="background:rgba(52,211,153,0.12);color:#34d399">Bid Automation</span>
-                            <span class="text-[10px] px-1.5 py-0.5 rounded" style="background:rgba(52,211,153,0.12);color:#34d399">CRM AI</span>
+                        <div>
+                            <div class="text-sm font-bold text-c-text">Growth &amp; Sales</div>
+                            <p class="text-[11px] text-c-muted mt-1 leading-snug">Bid automation, CRM AI &amp; pipeline intelligence.</p>
                         </div>
                     </div>
 
                     <!-- HR & People -->
-                    <div class="glass-panel p-3 rounded-xl">
-                        <div class="flex items-center justify-between mb-2">
-                            <div class="flex items-center gap-2">
-                                <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background:rgba(251,191,36,0.88)"></span>
-                                <span class="text-sm font-medium text-c-text">HR &amp; People</span>
+                    <div class="bento-card p-5 flex flex-col gap-3" style="border-left:3px solid rgba(251,191,36,0.7)">
+                        <div class="flex items-start justify-between">
+                            <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:rgba(251,191,36,0.12)">
+                                <svg class="w-4 h-4" style="color:#f59e0b" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                             </div>
-                            <div class="flex items-center gap-2 text-xs text-c-muted">
-                                <span class="font-semibold" style="color:#f59e0b">~10 staff</span>
-                                <span class="font-bold text-c-text">8%</span>
-                            </div>
+                            <span class="text-2xl font-black" style="color:#f59e0b">8%</span>
                         </div>
-                        <div class="h-1.5 rounded-full" style="background:rgba(255,255,255,0.06)">
-                            <div class="h-full rounded-full transition-all duration-700" style="width:8%;background:rgba(251,191,36,0.85)"></div>
-                        </div>
-                        <div class="flex gap-2 mt-2 flex-wrap">
-                            <span class="text-[10px] px-1.5 py-0.5 rounded" style="background:rgba(251,191,36,0.12);color:#f59e0b">Recruiting AI</span>
-                            <span class="text-[10px] px-1.5 py-0.5 rounded" style="background:rgba(251,191,36,0.12);color:#f59e0b">Training Bots</span>
+                        <div>
+                            <div class="text-sm font-bold text-c-text">HR &amp; People</div>
+                            <p class="text-[11px] text-c-muted mt-1 leading-snug">Recruiting AI, onboarding bots &amp; L&amp;D assistants.</p>
                         </div>
                     </div>
 
                     <!-- Finance -->
-                    <div class="glass-panel p-3 rounded-xl">
-                        <div class="flex items-center justify-between mb-2">
-                            <div class="flex items-center gap-2">
-                                <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background:rgba(248,113,113,0.85)"></span>
-                                <span class="text-sm font-medium text-c-text">Finance</span>
+                    <div class="bento-card p-5 flex flex-col gap-3" style="border-left:3px solid rgba(248,113,113,0.7)">
+                        <div class="flex items-start justify-between">
+                            <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:rgba(248,113,113,0.12)">
+                                <svg class="w-4 h-4" style="color:#f87171" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                             </div>
-                            <div class="flex items-center gap-2 text-xs text-c-muted">
-                                <span class="font-semibold" style="color:#f87171">~6 staff</span>
-                                <span class="font-bold text-c-text">5%</span>
-                            </div>
+                            <span class="text-2xl font-black" style="color:#f87171">5%</span>
                         </div>
-                        <div class="h-1.5 rounded-full" style="background:rgba(255,255,255,0.06)">
-                            <div class="h-full rounded-full transition-all duration-700" style="width:5%;background:rgba(248,113,113,0.80)"></div>
-                        </div>
-                        <div class="flex gap-2 mt-2 flex-wrap">
-                            <span class="text-[10px] px-1.5 py-0.5 rounded" style="background:rgba(248,113,113,0.12);color:#f87171">Reporting AI</span>
-                            <span class="text-[10px] px-1.5 py-0.5 rounded" style="background:rgba(248,113,113,0.12);color:#f87171">Forecasting</span>
+                        <div>
+                            <div class="text-sm font-bold text-c-text">Finance</div>
+                            <p class="text-[11px] text-c-muted mt-1 leading-snug">Automated reporting, forecasting &amp; anomaly detection.</p>
                         </div>
                     </div>
 
                     <!-- Governance -->
-                    <div class="glass-panel p-3 rounded-xl">
-                        <div class="flex items-center justify-between mb-2">
-                            <div class="flex items-center gap-2">
-                                <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background:rgba(100,116,139,0.85)"></span>
-                                <span class="text-sm font-medium text-c-text">Governance</span>
+                    <div class="bento-card p-5 flex flex-col gap-3" style="border-left:3px solid rgba(100,116,139,0.7)">
+                        <div class="flex items-start justify-between">
+                            <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:rgba(100,116,139,0.12)">
+                                <svg class="w-4 h-4" style="color:#94a3b8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
                             </div>
-                            <div class="flex items-center gap-2 text-xs text-c-muted">
-                                <span class="font-semibold" style="color:#94a3b8">~5 staff</span>
-                                <span class="font-bold text-c-text">4%</span>
-                            </div>
+                            <span class="text-2xl font-black" style="color:#94a3b8">4%</span>
                         </div>
-                        <div class="h-1.5 rounded-full" style="background:rgba(255,255,255,0.06)">
-                            <div class="h-full rounded-full transition-all duration-700" style="width:4%;background:rgba(100,116,139,0.80)"></div>
+                        <div>
+                            <div class="text-sm font-bold text-c-text">Governance</div>
+                            <p class="text-[11px] text-c-muted mt-1 leading-snug">Risk monitoring, compliance AI &amp; audit trails.</p>
                         </div>
-                        <div class="flex gap-2 mt-2 flex-wrap">
-                            <span class="text-[10px] px-1.5 py-0.5 rounded" style="background:rgba(100,116,139,0.12);color:#94a3b8">Risk Monitoring</span>
-                            <span class="text-[10px] px-1.5 py-0.5 rounded" style="background:rgba(100,116,139,0.12);color:#94a3b8">Compliance AI</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Right: Chart + Readiness -->
-                <div class="lg:col-span-3 flex flex-col gap-6">
-                    <div class="relative" style="height:280px">
-                        <canvas id="orgChart"></canvas>
                     </div>
 
-                    <!-- AI Readiness indicators -->
-                    <div class="glass-panel p-4 rounded-xl">
-                        <div class="text-xs font-semibold uppercase tracking-widest mb-4" style="color:#2BA8D4">AI Readiness by Zone</div>
-                        <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
-                            <div class="flex items-center gap-2">
-                                <div class="flex gap-0.5">
-                                    <span class="w-2 h-5 rounded-sm" style="background:rgba(26,122,158,0.9)"></span>
-                                    <span class="w-2 h-5 rounded-sm" style="background:rgba(26,122,158,0.9)"></span>
-                                    <span class="w-2 h-5 rounded-sm" style="background:rgba(26,122,158,0.9)"></span>
-                                    <span class="w-2 h-5 rounded-sm" style="background:rgba(26,122,158,0.9)"></span>
-                                    <span class="w-2 h-5 rounded-sm" style="background:rgba(255,255,255,0.08)"></span>
-                                </div>
-                                <div>
-                                    <div class="text-xs font-medium text-c-text">Service Delivery</div>
-                                    <div class="text-[10px]" style="color:#1A7A9E">HIGH</div>
-                                </div>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <div class="flex gap-0.5">
-                                    <span class="w-2 h-5 rounded-sm" style="background:rgba(43,168,212,0.9)"></span>
-                                    <span class="w-2 h-5 rounded-sm" style="background:rgba(43,168,212,0.9)"></span>
-                                    <span class="w-2 h-5 rounded-sm" style="background:rgba(43,168,212,0.9)"></span>
-                                    <span class="w-2 h-5 rounded-sm" style="background:rgba(43,168,212,0.9)"></span>
-                                    <span class="w-2 h-5 rounded-sm" style="background:rgba(255,255,255,0.08)"></span>
-                                </div>
-                                <div>
-                                    <div class="text-xs font-medium text-c-text">Technology</div>
-                                    <div class="text-[10px]" style="color:#2BA8D4">HIGH</div>
-                                </div>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <div class="flex gap-0.5">
-                                    <span class="w-2 h-5 rounded-sm" style="background:rgba(52,211,153,0.9)"></span>
-                                    <span class="w-2 h-5 rounded-sm" style="background:rgba(52,211,153,0.9)"></span>
-                                    <span class="w-2 h-5 rounded-sm" style="background:rgba(52,211,153,0.9)"></span>
-                                    <span class="w-2 h-5 rounded-sm" style="background:rgba(255,255,255,0.08)"></span>
-                                    <span class="w-2 h-5 rounded-sm" style="background:rgba(255,255,255,0.08)"></span>
-                                </div>
-                                <div>
-                                    <div class="text-xs font-medium text-c-text">Growth &amp; Sales</div>
-                                    <div class="text-[10px]" style="color:#34d399">MEDIUM</div>
-                                </div>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <div class="flex gap-0.5">
-                                    <span class="w-2 h-5 rounded-sm" style="background:rgba(251,191,36,0.9)"></span>
-                                    <span class="w-2 h-5 rounded-sm" style="background:rgba(251,191,36,0.9)"></span>
-                                    <span class="w-2 h-5 rounded-sm" style="background:rgba(251,191,36,0.9)"></span>
-                                    <span class="w-2 h-5 rounded-sm" style="background:rgba(255,255,255,0.08)"></span>
-                                    <span class="w-2 h-5 rounded-sm" style="background:rgba(255,255,255,0.08)"></span>
-                                </div>
-                                <div>
-                                    <div class="text-xs font-medium text-c-text">HR &amp; People</div>
-                                    <div class="text-[10px]" style="color:#f59e0b">MEDIUM</div>
-                                </div>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <div class="flex gap-0.5">
-                                    <span class="w-2 h-5 rounded-sm" style="background:rgba(248,113,113,0.9)"></span>
-                                    <span class="w-2 h-5 rounded-sm" style="background:rgba(248,113,113,0.9)"></span>
-                                    <span class="w-2 h-5 rounded-sm" style="background:rgba(255,255,255,0.08)"></span>
-                                    <span class="w-2 h-5 rounded-sm" style="background:rgba(255,255,255,0.08)"></span>
-                                    <span class="w-2 h-5 rounded-sm" style="background:rgba(255,255,255,0.08)"></span>
-                                </div>
-                                <div>
-                                    <div class="text-xs font-medium text-c-text">Finance</div>
-                                    <div class="text-[10px]" style="color:#f87171">BUILDING</div>
-                                </div>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <div class="flex gap-0.5">
-                                    <span class="w-2 h-5 rounded-sm" style="background:rgba(100,116,139,0.9)"></span>
-                                    <span class="w-2 h-5 rounded-sm" style="background:rgba(100,116,139,0.9)"></span>
-                                    <span class="w-2 h-5 rounded-sm" style="background:rgba(255,255,255,0.08)"></span>
-                                    <span class="w-2 h-5 rounded-sm" style="background:rgba(255,255,255,0.08)"></span>
-                                    <span class="w-2 h-5 rounded-sm" style="background:rgba(255,255,255,0.08)"></span>
-                                </div>
-                                <div>
-                                    <div class="text-xs font-medium text-c-text">Governance</div>
-                                    <div class="text-[10px]" style="color:#94a3b8">BUILDING</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </section>
