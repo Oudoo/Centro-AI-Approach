@@ -7,14 +7,14 @@
     <title>Centro AI — Enterprise AI Transformation Blueprint</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
     <script>
         tailwind.config = {
             darkMode: 'class',
             theme: {
                 extend: {
-                    fontFamily: { sans: ['Outfit', 'sans-serif'] },
+                    fontFamily: { sans: ['Montserrat', 'sans-serif'] },
                     animation: {
                         'gradient-x':  'gradient-x 4s ease infinite',
                         'float':       'float 6s ease-in-out infinite',
@@ -86,16 +86,16 @@
     <style>
         /* ── CSS Custom Properties ─────────────────────────────── */
         :root {
-            --bg:             #020810;
-            --glow1:          rgba(59,130,246,0.20);
-            --glow2:          rgba(139,92,246,0.20);
-            --glow3:          rgba(16,185,129,0.08);
-            --surface:        rgba(15,22,36,0.72);
-            --panel:          rgba(26,36,52,0.55);
+            --bg:             #04151F;
+            --glow1:          rgba(26,122,158,0.22);
+            --glow2:          rgba(10,76,106,0.28);
+            --glow3:          rgba(43,168,212,0.08);
+            --surface:        rgba(4,28,42,0.78);
+            --panel:          rgba(7,42,62,0.55);
             --border:         rgba(255,255,255,0.09);
             --border-s:       rgba(255,255,255,0.06);
             --border-grad-a:  rgba(255,255,255,0.11);
-            --border-grad-b:  rgba(139,92,246,0.16);
+            --border-grad-b:  rgba(26,122,158,0.22);
             --text:           #f1f5f9;
             --muted:          #94a3b8;
             --shadow:         0 8px 32px 0 rgba(0,0,0,0.35), 0 2px 8px 0 rgba(0,0,0,0.2);
@@ -109,7 +109,7 @@
             --tab-i-border:   rgba(255,255,255,0.06);
             --tab-i-text:     #94a3b8;
             --content-bg:     rgba(0,0,0,0.22);
-            --scroll-thumb:   rgba(139,92,246,0.30);
+            --scroll-thumb:   rgba(26,122,158,0.35);
             --head-text:      #ffffff;
             --card-head-text: #ffffff;
             --section-text:   #f1f5f9;
@@ -118,9 +118,9 @@
         }
 
         html.light {
-            --bg:           #eef2fb;
-            --glow1:        rgba(59,130,246,0.09);
-            --glow2:        rgba(139,92,246,0.09);
+            --bg:           #eef4f8;
+            --glow1:        rgba(26,122,158,0.10);
+            --glow2:        rgba(10,76,106,0.10);
             --surface:      rgba(255,255,255,0.94);
             --panel:        rgba(238,242,251,0.98);
             --border:       rgba(0,0,0,0.15);
@@ -138,7 +138,7 @@
             --tab-i-border: rgba(0,0,0,0.13);
             --tab-i-text:   #334155;
             --content-bg:   rgba(238,242,251,0.7);
-            --scroll-thumb: rgba(139,92,246,0.25);
+            --scroll-thumb: rgba(26,122,158,0.30);
             --head-text:    #000000;
             --card-head-text: #0f172a;
             --section-text: #000000;
@@ -156,7 +156,7 @@
                 linear-gradient(90deg, var(--mesh-color) 1px, transparent 1px),
                 radial-gradient(circle at 10% 20%, var(--glow1) 0%, transparent 25%),
                 radial-gradient(circle at 90% 80%, var(--glow2) 0%, transparent 25%),
-                radial-gradient(circle at 50% 50%, rgba(16,185,129,0.05) 0%, transparent 35%);
+                radial-gradient(circle at 50% 50%, rgba(43,168,212,0.05) 0%, transparent 35%);
             background-size: 44px 44px, 44px 44px, auto, auto, auto;
             background-attachment: fixed;
             overflow-x: hidden;
@@ -195,13 +195,13 @@
         header.glass-card { border-bottom: 1px solid var(--border-s); }
         .glass-card:hover {
             transform: translateY(-3px);
-            box-shadow: var(--shadow-h), 0 0 60px rgba(139,92,246,0.08);
+            box-shadow: var(--shadow-h), 0 0 60px rgba(10,76,106,0.08);
         }
         .glass-card:hover::before {
             background: linear-gradient(135deg,
-                rgba(139,92,246,0.42) 0%,
-                rgba(59,130,246,0.14) 50%,
-                rgba(139,92,246,0.30) 100%);
+                rgba(10,76,106,0.42) 0%,
+                rgba(26,122,158,0.14) 50%,
+                rgba(10,76,106,0.30) 100%);
         }
         .glass-panel {
             background: var(--panel);
@@ -221,10 +221,10 @@
 
         /* ── Tabs ──────────────────────────────────────────────── */
         .tab-active {
-            background: linear-gradient(135deg, rgba(59,130,246,0.18), rgba(139,92,246,0.18));
-            border: 1px solid rgba(139,92,246,0.45);
+            background: linear-gradient(135deg, rgba(26,122,158,0.18), rgba(10,76,106,0.18));
+            border: 1px solid rgba(10,76,106,0.45);
             color: var(--section-text);
-            box-shadow: 0 0 24px rgba(139,92,246,0.22), 0 0 0 1px rgba(139,92,246,0.12) inset;
+            box-shadow: 0 0 24px rgba(10,76,106,0.22), 0 0 0 1px rgba(10,76,106,0.12) inset;
             font-weight: 600;
         }
         .tab-inactive {
@@ -237,9 +237,9 @@
         .tab-inactive:hover {
             color: var(--text);
             background: var(--panel);
-            border-color: rgba(139,92,246,0.25);
+            border-color: rgba(10,76,106,0.25);
             transform: translateY(-1px);
-            box-shadow: 0 4px 16px rgba(139,92,246,0.10);
+            box-shadow: 0 4px 16px rgba(10,76,106,0.10);
         }
 
         /* ── Chips ─────────────────────────────────────────────── */
@@ -259,11 +259,11 @@
             gap: 0.4rem;
         }
         .subdept-chip:hover {
-            background: rgba(139,92,246,0.15);
-            border-color: rgba(139,92,246,0.55);
+            background: rgba(10,76,106,0.15);
+            border-color: rgba(10,76,106,0.55);
             color: #fff;
             transform: translateY(-2px) scale(1.02);
-            box-shadow: 0 6px 18px rgba(139,92,246,0.22), 0 0 0 1px rgba(139,92,246,0.15);
+            box-shadow: 0 6px 18px rgba(10,76,106,0.22), 0 0 0 1px rgba(10,76,106,0.15);
         }
         .chip-dot { width:6px; height:6px; border-radius:50%; flex-shrink:0; }
 
@@ -277,15 +277,15 @@
             width: 100%;
         }
         .lifecycle-pill:hover {
-            border-color: rgba(139,92,246,0.45);
-            background: rgba(139,92,246,0.09);
+            border-color: rgba(10,76,106,0.45);
+            background: rgba(10,76,106,0.09);
             transform: translateY(-2px) scale(1.01);
-            box-shadow: 0 6px 20px rgba(139,92,246,0.12);
+            box-shadow: 0 6px 20px rgba(10,76,106,0.12);
         }
         .lifecycle-pill.active {
-            border-color: rgba(139,92,246,0.65);
-            background: rgba(139,92,246,0.12);
-            box-shadow: 0 0 28px rgba(139,92,246,0.18), 0 0 0 1px rgba(139,92,246,0.12) inset;
+            border-color: rgba(10,76,106,0.65);
+            background: rgba(10,76,106,0.12);
+            box-shadow: 0 0 28px rgba(10,76,106,0.18), 0 0 0 1px rgba(10,76,106,0.12) inset;
         }
 
         /* ── Lifecycle detail panel ────────────────────────────── */
@@ -312,12 +312,12 @@
 
         /* ── Gradients & FX ────────────────────────────────────── */
         .animated-bg {
-            background: linear-gradient(-45deg,#3b82f6,#8b5cf6,#3b82f6);
+            background: linear-gradient(-45deg,#0A4C6A,#1A7A9E,#0A4C6A);
             background-size: 200% 200%;
             animation: gradient-x 4s ease infinite;
         }
         .animated-gradient-text {
-            background: linear-gradient(-45deg,#60a5fa,#c084fc,#34d399,#60a5fa);
+            background: linear-gradient(-45deg,#1A7A9E,#2BA8D4,#34d399,#1A7A9E);
             background-size: 300% 300%;
             animation: gradient-x 6s ease infinite;
             -webkit-background-clip: text;
@@ -334,10 +334,10 @@
         .custom-bullet { position:relative; padding-left:1.5rem; }
         .custom-bullet::before {
             content:"✦";
-            color:#8b5cf6;
+            color:#1A7A9E;
             position:absolute;
             left:0; top:0;
-            text-shadow:0 0 8px rgba(139,92,246,0.6);
+            text-shadow:0 0 8px rgba(26,122,158,0.6);
         }
 
         /* ── Stagger ───────────────────────────────────────────── */
@@ -381,9 +381,9 @@
             transition: all 0.3s ease;
         }
         .theme-btn:hover {
-            border-color: rgba(139,92,246,0.5);
-            background: rgba(139,92,246,0.1);
-            box-shadow: 0 0 14px rgba(139,92,246,0.2);
+            border-color: rgba(10,76,106,0.5);
+            background: rgba(10,76,106,0.1);
+            box-shadow: 0 0 14px rgba(10,76,106,0.2);
         }
 
         /* ── Grain ─────────────────────────────────────────────── */
@@ -409,14 +409,14 @@
         html.light .funnel-strong         { color: #1e293b; }
 
         /* ── Ambient BG override light ─────────────────────────── */
-        html.light .ambient-glow-1 { background: rgba(59,130,246,0.07) !important; }
-        html.light .ambient-glow-2 { background: rgba(139,92,246,0.07) !important; }
-        html.light .ambient-glow-3 { background: rgba(16,185,129,0.04) !important; }
+        html.light .ambient-glow-1 { background: rgba(26,122,158,0.07) !important; }
+        html.light .ambient-glow-2 { background: rgba(10,76,106,0.07) !important; }
+        html.light .ambient-glow-3 { background: rgba(43,168,212,0.04) !important; }
 
         /* ── NEW: Copilot chat bubbles ─────────────────────────── */
         .chat-bubble-user {
-            background: rgba(59,130,246,0.15);
-            border: 1px solid rgba(59,130,246,0.3);
+            background: rgba(26,122,158,0.15);
+            border: 1px solid rgba(26,122,158,0.3);
             border-radius: 1rem 1rem 0.25rem 1rem;
         }
         .chat-bubble-ai {
@@ -458,8 +458,8 @@
             transition: all 0.35s cubic-bezier(0.16,1,0.3,1);
         }
         .bento-card:hover {
-            border-color: rgba(139,92,246,0.38);
-            box-shadow: 0 12px 40px rgba(139,92,246,0.14), 0 0 0 1px rgba(139,92,246,0.10), inset 0 1px 0 rgba(255,255,255,0.06);
+            border-color: rgba(10,76,106,0.38);
+            box-shadow: 0 12px 40px rgba(10,76,106,0.14), 0 0 0 1px rgba(10,76,106,0.10), inset 0 1px 0 rgba(255,255,255,0.06);
             transform: translateY(-4px) scale(1.005);
         }
 
@@ -544,16 +544,16 @@
         .stagger-children.revealed > *:nth-child(5) { transition-delay: 0.56s; }
 
         /* ── Neon text glows ───────────────────────────────────── */
-        .neon-blue    { color: #60a5fa; text-shadow: 0 0 20px rgba(96,165,250,0.55),  0 0 40px rgba(96,165,250,0.25); }
-        .neon-violet  { color: #a78bfa; text-shadow: 0 0 20px rgba(167,139,250,0.55), 0 0 40px rgba(167,139,250,0.25); }
+        .neon-blue    { color: #2BA8D4; text-shadow: 0 0 20px rgba(43,168,212,0.55),  0 0 40px rgba(43,168,212,0.25); }
+        .neon-violet  { color: #1A7A9E; text-shadow: 0 0 20px rgba(26,122,158,0.55), 0 0 40px rgba(26,122,158,0.25); }
         .neon-cyan    { color: #22d3ee; text-shadow: 0 0 20px rgba(34,211,238,0.55),  0 0 40px rgba(34,211,238,0.25); }
         .neon-emerald { color: #34d399; text-shadow: 0 0 20px rgba(52,211,153,0.55),  0 0 40px rgba(52,211,153,0.25); }
         .neon-teal    { color: #2dd4bf; text-shadow: 0 0 20px rgba(45,212,191,0.55),  0 0 40px rgba(45,212,191,0.25); }
         .neon-rose    { color: #fb7185; text-shadow: 0 0 20px rgba(251,113,133,0.55), 0 0 40px rgba(251,113,133,0.25); }
 
         /* ── Metric glow numbers ───────────────────────────────── */
-        .metric-glow-blue    { filter: drop-shadow(0 0 12px rgba(96,165,250,0.5)); }
-        .metric-glow-violet  { filter: drop-shadow(0 0 12px rgba(167,139,250,0.5)); }
+        .metric-glow-blue    { filter: drop-shadow(0 0 12px rgba(43,168,212,0.5)); }
+        .metric-glow-violet  { filter: drop-shadow(0 0 12px rgba(26,122,158,0.5)); }
         .metric-glow-emerald { filter: drop-shadow(0 0 12px rgba(52,211,153,0.5)); }
         .metric-glow-teal    { filter: drop-shadow(0 0 12px rgba(45,212,191,0.5)); }
 
@@ -583,7 +583,7 @@
         }
         .glow-line-v {
             width: 2px;
-            background: linear-gradient(180deg, transparent, rgba(139,92,246,0.7), transparent);
+            background: linear-gradient(180deg, transparent, rgba(10,76,106,0.7), transparent);
             animation: dataFlow 2.5s ease-in-out infinite;
             border-radius: 1px;
         }
@@ -606,22 +606,22 @@
 
         /* ── Theme toggle enhancement ──────────────────────────── */
         .theme-btn:hover {
-            border-color: rgba(139,92,246,0.6);
-            background: rgba(139,92,246,0.12);
-            box-shadow: 0 0 18px rgba(139,92,246,0.28);
+            border-color: rgba(10,76,106,0.6);
+            background: rgba(10,76,106,0.12);
+            box-shadow: 0 0 18px rgba(10,76,106,0.28);
             transform: scale(1.05);
         }
 
         /* ── Gradient text enhanced ────────────────────────────── */
         .gradient-text {
-            background: linear-gradient(to right, #60a5fa, #c084fc);
+            background: linear-gradient(to right, #2BA8D4, #1A7A9E);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            filter: drop-shadow(0 0 8px rgba(139,92,246,0.3));
+            filter: drop-shadow(0 0 8px rgba(26,122,158,0.3));
         }
         .animated-gradient-text {
-            background: linear-gradient(-45deg, #60a5fa, #c084fc, #34d399, #60a5fa);
+            background: linear-gradient(-45deg, #1A7A9E, #2BA8D4, #34d399, #1A7A9E);
             background-size: 300% 300%;
             animation: gradient-x 6s ease infinite;
             -webkit-background-clip: text;
@@ -637,11 +637,11 @@
                 linear-gradient(90deg, rgba(0,0,0,0.025) 1px, transparent 1px),
                 radial-gradient(circle at 10% 20%, var(--glow1) 0%, transparent 25%),
                 radial-gradient(circle at 90% 80%, var(--glow2) 0%, transparent 25%),
-                radial-gradient(circle at 50% 50%, rgba(16,185,129,0.03) 0%, transparent 35%);
+                radial-gradient(circle at 50% 50%, rgba(43,168,212,0.03) 0%, transparent 35%);
             background-size: 44px 44px, 44px 44px, auto, auto, auto;
         }
-        html.light .neon-blue    { text-shadow: none; color: #2563eb; }
-        html.light .neon-violet  { text-shadow: none; color: #7c3aed; }
+        html.light .neon-blue    { text-shadow: none; color: #1A7A9E; }
+        html.light .neon-violet  { text-shadow: none; color: #0A4C6A; }
         html.light .neon-cyan    { text-shadow: none; color: #0891b2; }
         html.light .neon-emerald { text-shadow: none; color: #059669; }
         html.light .neon-teal    { text-shadow: none; color: #0d9488; }
@@ -650,13 +650,13 @@
             background: linear-gradient(135deg,
                 rgba(0,0,0,0.07) 0%,
                 rgba(0,0,0,0.01) 45%,
-                rgba(139,92,246,0.08) 100%);
+                rgba(10,76,106,0.08) 100%);
         }
         html.light .glass-card:hover::before {
             background: linear-gradient(135deg,
-                rgba(139,92,246,0.25) 0%,
-                rgba(59,130,246,0.08) 50%,
-                rgba(139,92,246,0.18) 100%);
+                rgba(10,76,106,0.25) 0%,
+                rgba(26,122,158,0.08) 50%,
+                rgba(10,76,106,0.18) 100%);
         }
         html.light .gradient-text { filter: none; }
 
@@ -695,20 +695,20 @@
         .impact-high   { background: rgba(52,211,153,0.15); color: #34d399; border: 1px solid rgba(52,211,153,0.35); }
         .impact-medium { background: rgba(251,191,36,0.15); color: #fbbf24; border: 1px solid rgba(251,191,36,0.35); }
         .impact-low    { background: rgba(148,163,184,0.15); color: #94a3b8; border: 1px solid rgba(148,163,184,0.3); }
-        .auto-full     { background: rgba(96,165,250,0.15); color: #60a5fa; border: 1px solid rgba(96,165,250,0.35); }
-        .auto-semi     { background: rgba(192,132,252,0.15); color: #c084fc; border: 1px solid rgba(192,132,252,0.35); }
+        .auto-full     { background: rgba(43,168,212,0.15); color: #2BA8D4; border: 1px solid rgba(43,168,212,0.35); }
+        .auto-semi     { background: rgba(26,122,158,0.15); color: #1A7A9E; border: 1px solid rgba(26,122,158,0.35); }
         .auto-assist   { background: rgba(251,146,60,0.15); color: #fb923c; border: 1px solid rgba(251,146,60,0.35); }
         html.light .impact-high   { background: rgba(5,150,105,0.1); color: #059669; border-color: rgba(5,150,105,0.3); }
         html.light .impact-medium { background: rgba(180,83,9,0.1); color: #b45309; border-color: rgba(180,83,9,0.3); }
         html.light .impact-low    { background: rgba(71,85,105,0.1); color: #475569; border-color: rgba(71,85,105,0.25); }
-        html.light .auto-full     { background: rgba(37,99,235,0.1); color: #2563eb; border-color: rgba(37,99,235,0.3); }
-        html.light .auto-semi     { background: rgba(124,58,237,0.1); color: #7c3aed; border-color: rgba(124,58,237,0.3); }
+        html.light .auto-full     { background: rgba(26,122,158,0.1); color: #1A7A9E; border-color: rgba(26,122,158,0.3); }
+        html.light .auto-semi     { background: rgba(10,76,106,0.1); color: #0A4C6A; border-color: rgba(10,76,106,0.3); }
         html.light .auto-assist   { background: rgba(194,65,12,0.1); color: #c2410c; border-color: rgba(194,65,12,0.3); }
 
         /* ── Latency / perf table rows ─────────────────────────── */
         .perf-row { display: grid; grid-template-columns: 1fr 90px 90px; align-items: center; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--border); }
         .perf-row:last-child { border-bottom: none; }
-        .latency-fill { height: 4px; border-radius: 9999px; background: linear-gradient(90deg, #60a5fa, #c084fc); }
+        .latency-fill { height: 4px; border-radius: 9999px; background: linear-gradient(90deg, #2BA8D4, #1A7A9E); }
 
         /* ── Fallback flow steps ────────────────────────────────── */
         .fallback-step {
@@ -718,7 +718,7 @@
         }
         .fallback-step .fs-num {
             flex-shrink: 0; width: 20px; height: 20px; border-radius: 50%;
-            background: rgba(96,165,250,0.2); color: #60a5fa;
+            background: rgba(43,168,212,0.2); color: #2BA8D4;
             display: flex; align-items: center; justify-content: center;
             font-size: 0.65rem; font-weight: 700; margin-top: 1px;
         }
@@ -731,16 +731,16 @@
         }
         .req-step-num {
             flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%;
-            background: linear-gradient(135deg, rgba(96,165,250,0.25), rgba(192,132,252,0.25));
-            border: 1px solid rgba(96,165,250,0.4);
+            background: linear-gradient(135deg, rgba(43,168,212,0.25), rgba(26,122,158,0.25));
+            border: 1px solid rgba(43,168,212,0.4);
             display: flex; align-items: center; justify-content: center;
-            font-size: 0.7rem; font-weight: 700; color: #93c5fd;
+            font-size: 0.7rem; font-weight: 700; color: #2BA8D4;
         }
         .req-connector {
-            width: 1px; background: linear-gradient(180deg, rgba(96,165,250,0.4), rgba(192,132,252,0.15));
+            width: 1px; background: linear-gradient(180deg, rgba(43,168,212,0.4), rgba(26,122,158,0.15));
             margin-left: 13px; height: 20px;
         }
-        html.light .req-step-num { color: #2563eb; background: rgba(37,99,235,0.1); border-color: rgba(37,99,235,0.35); }
+        html.light .req-step-num { color: #1A7A9E; background: rgba(26,122,158,0.1); border-color: rgba(26,122,158,0.35); }
 
         /* ── KPI / ROI cards ────────────────────────────────────── */
         .kpi-card {
@@ -748,8 +748,9 @@
             background: rgba(255,255,255,0.04);
             border: 1px solid var(--border);
             transition: border-color 0.25s, box-shadow 0.25s;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
-        .kpi-card:hover { border-color: rgba(96,165,250,0.35); box-shadow: 0 0 24px rgba(96,165,250,0.12); }
+        .kpi-card:hover { border-color: rgba(43,168,212,0.35); box-shadow: 0 0 24px rgba(43,168,212,0.12); }
         .kpi-value { font-size: 2rem; font-weight: 800; line-height: 1; letter-spacing: -0.02em; }
         .kpi-label { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin-top: 4px; }
         html.light .kpi-card { background: rgba(0,0,0,0.03); }
@@ -758,12 +759,12 @@
         .trace-node {
             display: flex; align-items: center; gap: 8px; padding: 8px 14px;
             border-radius: 8px; font-size: 0.72rem; font-weight: 600;
-            border: 1px solid rgba(96,165,250,0.25);
-            background: rgba(96,165,250,0.07);
-            color: #93c5fd; white-space: nowrap;
+            border: 1px solid rgba(43,168,212,0.25);
+            background: rgba(43,168,212,0.07);
+            color: #2BA8D4; white-space: nowrap;
         }
         .trace-arrow { color: var(--muted); font-size: 0.8rem; flex-shrink: 0; }
-        html.light .trace-node { background: rgba(37,99,235,0.08); color: #1d4ed8; border-color: rgba(37,99,235,0.25); }
+        html.light .trace-node { background: rgba(26,122,158,0.08); color: #1d4ed8; border-color: rgba(26,122,158,0.25); }
 
         /* ── Copilot annotation tags ────────────────────────────── */
         .cop-tag {
@@ -771,27 +772,29 @@
             text-transform: uppercase; padding: 2px 7px; border-radius: 4px; margin-left: 6px; vertical-align: middle;
         }
         .cop-tag-warn   { background: rgba(251,191,36,0.2); color: #fbbf24; border: 1px solid rgba(251,191,36,0.35); }
-        .cop-tag-action { background: rgba(96,165,250,0.2); color: #60a5fa; border: 1px solid rgba(96,165,250,0.35); }
+        .cop-tag-action { background: rgba(43,168,212,0.2); color: #2BA8D4; border: 1px solid rgba(43,168,212,0.35); }
         .cop-tag-ok     { background: rgba(52,211,153,0.2); color: #34d399; border: 1px solid rgba(52,211,153,0.35); }
-        .cop-tag-check  { background: rgba(192,132,252,0.2); color: #c084fc; border: 1px solid rgba(192,132,252,0.35); }
+        .cop-tag-check  { background: rgba(26,122,158,0.2); color: #1A7A9E; border: 1px solid rgba(26,122,158,0.35); }
     </style>
 </head>
 
 <body class="font-sans antialiased pb-20">
 
     <div class="grain"></div>
-    <div id="blob1" class="fixed top-[-10%] left-[-10%] w-[42%] h-[42%] rounded-full blur-[130px] pointer-events-none animate-float-slow ambient-glow-1" style="background:rgba(59,130,246,0.13)"></div>
-    <div id="blob2" class="fixed bottom-[-10%] right-[-10%] w-[42%] h-[42%] rounded-full blur-[130px] pointer-events-none animate-float ambient-glow-2" style="background:rgba(139,92,246,0.13)"></div>
-    <div id="blob3" class="fixed top-[40%] left-[30%] w-[28%] h-[28%] rounded-full blur-[110px] pointer-events-none animate-float-med ambient-glow-3" style="background:rgba(16,185,129,0.06)"></div>
-    <div id="blob4" class="fixed top-[20%] right-[5%] w-[20%] h-[20%] rounded-full blur-[100px] pointer-events-none animate-float-med" style="background:rgba(236,72,153,0.06)"></div>
+    <div id="blob1" class="fixed top-[-10%] left-[-10%] w-[42%] h-[42%] rounded-full blur-[130px] pointer-events-none animate-float-slow ambient-glow-1" style="background:rgba(26,122,158,0.13)"></div>
+    <div id="blob2" class="fixed bottom-[-10%] right-[-10%] w-[42%] h-[42%] rounded-full blur-[130px] pointer-events-none animate-float ambient-glow-2" style="background:rgba(10,76,106,0.13)"></div>
+    <div id="blob3" class="fixed top-[40%] left-[30%] w-[28%] h-[28%] rounded-full blur-[110px] pointer-events-none animate-float-med ambient-glow-3" style="background:rgba(43,168,212,0.07)"></div>
+    <div id="blob4" class="fixed top-[20%] right-[5%] w-[20%] h-[20%] rounded-full blur-[100px] pointer-events-none animate-float-med" style="background:rgba(10,76,106,0.08)"></div>
 
     <!-- ── Header ──────────────────────────────────────────────── -->
     <header class="glass-card sticky top-0 z-50 border-b-0 border-x-0 border-t-0">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
             <div class="flex items-center gap-4 group cursor-pointer">
-                <div class="w-10 h-10 rounded-xl animated-bg flex items-center justify-center text-white shadow-[0_0_20px_rgba(139,92,246,0.4)] group-hover:shadow-[0_0_30px_rgba(139,92,246,0.6)] transition-all duration-300">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                <div class="w-10 h-10 flex items-center justify-center shadow-[0_0_20px_rgba(26,122,158,0.45)] group-hover:shadow-[0_0_32px_rgba(26,122,158,0.65)] transition-all duration-300">
+                    <svg viewBox="0 0 56 50" class="w-10 h-10" xmlns="http://www.w3.org/2000/svg">
+                        <polygon points="14,1 42,1 56,25 42,49 14,49 0,25" fill="#0A4C6A"/>
+                        <polygon points="8,17 22,17 29,25 22,33 8,33 15,25" fill="white"/>
+                        <polygon points="22,17 34,17 41,25 34,33 22,33 29,25" fill="white" opacity="0.82"/>
                     </svg>
                 </div>
                 <h1 class="text-xl sm:text-2xl font-bold tracking-tight section-title">Centro <span class="font-light">AI</span></h1>
@@ -827,8 +830,8 @@
                     <span class="animated-gradient-text">LLMs & AI Infrastructure</span>
                 </h2>
                 <div class="flex flex-col md:flex-row gap-6 text-lg leading-relaxed max-w-5xl text-c-muted mb-10">
-                    <p class="flex-1">This interactive blueprint outlines a comprehensive strategy for deploying advanced AI tools (like <strong class="text-blue-400">Google AI</strong> and <strong class="text-purple-400">Claude Enterprise</strong>) across our multinational operations.</p>
-                    <p class="flex-1">Given our core competencies in BPO, digital transformation, and specific tech stacks (Genesys, Avaya, Zoho, Odoo), the goal is not just automation, but <strong class="section-title">augmenting human capabilities</strong>.</p>
+                    <p class="flex-1">This interactive blueprint outlines a comprehensive strategy for deploying advanced AI tools across our multinational operations.</p>
+                    <p class="flex-1">The goal is not just automation, but <strong class="section-title">augmenting human capabilities</strong>.</p>
                 </div>
 
                 <!-- ── Blueprint Agenda ──────────────────────────── -->
@@ -839,11 +842,11 @@
                             <p class="text-xs text-c-muted mt-0.5">16 sections · click any to jump directly</p>
                         </div>
                         <div class="flex gap-2 flex-wrap">
-                            <span class="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full" style="background:rgba(96,165,250,0.12);border:1px solid rgba(96,165,250,0.3);color:#60a5fa">
+                            <span class="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full" style="background:rgba(43,168,212,0.12);border:1px solid rgba(43,168,212,0.3);color:#2BA8D4">
                                 <span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span>Strategy
                             </span>
-                            <span class="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full" style="background:rgba(192,132,252,0.12);border:1px solid rgba(192,132,252,0.3);color:#c084fc">
-                                <span class="w-1.5 h-1.5 rounded-full bg-violet-400"></span>Platform
+                            <span class="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full" style="background:rgba(26,122,158,0.12);border:1px solid rgba(26,122,158,0.3);color:#1A7A9E">
+                                <span class="w-1.5 h-1.5 rounded-full bg-[#1A7A9E]"></span>Platform
                             </span>
                             <span class="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full" style="background:rgba(52,211,153,0.12);border:1px solid rgba(52,211,153,0.3);color:#34d399">
                                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>Outcomes
@@ -856,11 +859,11 @@
                         <!-- Column 1: Strategy Layer -->
                         <div class="space-y-2">
                             <div class="text-[10px] font-bold uppercase tracking-[0.18em] text-blue-400 mb-3 flex items-center gap-2">
-                                <span class="flex-1 h-px" style="background:rgba(96,165,250,0.25)"></span>
+                                <span class="flex-1 h-px" style="background:rgba(43,168,212,0.25)"></span>
                                 Strategy Layer
-                                <span class="flex-1 h-px" style="background:rgba(96,165,250,0.25)"></span>
+                                <span class="flex-1 h-px" style="background:rgba(43,168,212,0.25)"></span>
                             </div>
-                            <a href="#sec-impact" class="agenda-btn group/a flex items-center gap-3 w-full px-4 py-3 rounded-xl transition-all duration-200" style="background:rgba(96,165,250,0.06);border:1px solid rgba(96,165,250,0.15)">
+                            <a href="#sec-impact" class="agenda-btn group/a flex items-center gap-3 w-full px-4 py-3 rounded-xl transition-all duration-200" style="background:rgba(43,168,212,0.06);border:1px solid rgba(43,168,212,0.15)">
                                 <span class="text-[10px] font-mono font-bold text-blue-400 w-6 flex-shrink-0">01</span>
                                 <span class="flex-1 text-left">
                                     <span class="text-sm font-semibold section-title block">Impact Zones</span>
@@ -868,7 +871,7 @@
                                 </span>
                                 <svg class="w-3.5 h-3.5 text-blue-400 opacity-0 group-hover/a:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                             </a>
-                            <a href="#sec-lifecycle-opt" class="agenda-btn group/a flex items-center gap-3 w-full px-4 py-3 rounded-xl transition-all duration-200" style="background:rgba(96,165,250,0.06);border:1px solid rgba(96,165,250,0.15)">
+                            <a href="#sec-lifecycle-opt" class="agenda-btn group/a flex items-center gap-3 w-full px-4 py-3 rounded-xl transition-all duration-200" style="background:rgba(43,168,212,0.06);border:1px solid rgba(43,168,212,0.15)">
                                 <span class="text-[10px] font-mono font-bold text-blue-400 w-6 flex-shrink-0">02</span>
                                 <span class="flex-1 text-left">
                                     <span class="text-sm font-semibold section-title block">Lifecycle Optimization</span>
@@ -876,7 +879,7 @@
                                 </span>
                                 <svg class="w-3.5 h-3.5 text-blue-400 opacity-0 group-hover/a:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                             </a>
-                            <a href="#sec-funnel" class="agenda-btn group/a flex items-center gap-3 w-full px-4 py-3 rounded-xl transition-all duration-200" style="background:rgba(96,165,250,0.06);border:1px solid rgba(96,165,250,0.15)">
+                            <a href="#sec-funnel" class="agenda-btn group/a flex items-center gap-3 w-full px-4 py-3 rounded-xl transition-all duration-200" style="background:rgba(43,168,212,0.06);border:1px solid rgba(43,168,212,0.15)">
                                 <span class="text-[10px] font-mono font-bold text-blue-400 w-6 flex-shrink-0">03</span>
                                 <span class="flex-1 text-left">
                                     <span class="text-sm font-semibold section-title block">Revenue & Delivery Funnel</span>
@@ -884,7 +887,7 @@
                                 </span>
                                 <svg class="w-3.5 h-3.5 text-blue-400 opacity-0 group-hover/a:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                             </a>
-                            <a href="#sec-depts" class="agenda-btn group/a flex items-center gap-3 w-full px-4 py-3 rounded-xl transition-all duration-200" style="background:rgba(96,165,250,0.06);border:1px solid rgba(96,165,250,0.15)">
+                            <a href="#sec-depts" class="agenda-btn group/a flex items-center gap-3 w-full px-4 py-3 rounded-xl transition-all duration-200" style="background:rgba(43,168,212,0.06);border:1px solid rgba(43,168,212,0.15)">
                                 <span class="text-[10px] font-mono font-bold text-blue-400 w-6 flex-shrink-0">04</span>
                                 <span class="flex-1 text-left">
                                     <span class="text-sm font-semibold section-title block">Departmental Blueprints</span>
@@ -892,7 +895,7 @@
                                 </span>
                                 <svg class="w-3.5 h-3.5 text-blue-400 opacity-0 group-hover/a:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                             </a>
-                            <a href="#sec-agentic" class="agenda-btn group/a flex items-center gap-3 w-full px-4 py-3 rounded-xl transition-all duration-200" style="background:rgba(96,165,250,0.06);border:1px solid rgba(96,165,250,0.15)">
+                            <a href="#sec-agentic" class="agenda-btn group/a flex items-center gap-3 w-full px-4 py-3 rounded-xl transition-all duration-200" style="background:rgba(43,168,212,0.06);border:1px solid rgba(43,168,212,0.15)">
                                 <span class="text-[10px] font-mono font-bold text-blue-400 w-6 flex-shrink-0">05</span>
                                 <span class="flex-1 text-left">
                                     <span class="text-sm font-semibold section-title block">OpenClaw Agentic OS</span>
@@ -904,50 +907,50 @@
 
                         <!-- Column 2: Platform & Trust -->
                         <div class="space-y-2">
-                            <div class="text-[10px] font-bold uppercase tracking-[0.18em] text-violet-400 mb-3 flex items-center gap-2">
-                                <span class="flex-1 h-px" style="background:rgba(192,132,252,0.25)"></span>
+                            <div class="text-[10px] font-bold uppercase tracking-[0.18em] text-[#1A7A9E] mb-3 flex items-center gap-2">
+                                <span class="flex-1 h-px" style="background:rgba(26,122,158,0.25)"></span>
                                 Platform & Trust
-                                <span class="flex-1 h-px" style="background:rgba(192,132,252,0.25)"></span>
+                                <span class="flex-1 h-px" style="background:rgba(26,122,158,0.25)"></span>
                             </div>
-                            <a href="#sec-compute" class="agenda-btn group/a flex items-center gap-3 w-full px-4 py-3 rounded-xl transition-all duration-200" style="background:rgba(192,132,252,0.06);border:1px solid rgba(192,132,252,0.15)">
-                                <span class="text-[10px] font-mono font-bold text-violet-400 w-6 flex-shrink-0">06</span>
+                            <a href="#sec-compute" class="agenda-btn group/a flex items-center gap-3 w-full px-4 py-3 rounded-xl transition-all duration-200" style="background:rgba(26,122,158,0.06);border:1px solid rgba(26,122,158,0.15)">
+                                <span class="text-[10px] font-mono font-bold text-[#1A7A9E] w-6 flex-shrink-0">06</span>
                                 <span class="flex-1 text-left">
                                     <span class="text-sm font-semibold section-title block">Hybrid Compute Topology</span>
                                     <span class="text-[10px] text-c-muted">Edge · cluster · cloud — latency & cost model</span>
                                 </span>
-                                <svg class="w-3.5 h-3.5 text-violet-400 opacity-0 group-hover/a:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                <svg class="w-3.5 h-3.5 text-[#1A7A9E] opacity-0 group-hover/a:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                             </a>
-                            <a href="#sec-resilience" class="agenda-btn group/a flex items-center gap-3 w-full px-4 py-3 rounded-xl transition-all duration-200" style="background:rgba(192,132,252,0.06);border:1px solid rgba(192,132,252,0.15)">
-                                <span class="text-[10px] font-mono font-bold text-violet-400 w-6 flex-shrink-0">06B</span>
+                            <a href="#sec-resilience" class="agenda-btn group/a flex items-center gap-3 w-full px-4 py-3 rounded-xl transition-all duration-200" style="background:rgba(26,122,158,0.06);border:1px solid rgba(26,122,158,0.15)">
+                                <span class="text-[10px] font-mono font-bold text-[#1A7A9E] w-6 flex-shrink-0">06B</span>
                                 <span class="flex-1 text-left">
                                     <span class="text-sm font-semibold section-title block">Resilience & Fallback</span>
                                     <span class="text-[10px] text-c-muted">Failure modes, fallback flows & thresholds</span>
                                 </span>
-                                <svg class="w-3.5 h-3.5 text-violet-400 opacity-0 group-hover/a:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                <svg class="w-3.5 h-3.5 text-[#1A7A9E] opacity-0 group-hover/a:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                             </a>
-                            <a href="#sec-security" class="agenda-btn group/a flex items-center gap-3 w-full px-4 py-3 rounded-xl transition-all duration-200" style="background:rgba(192,132,252,0.06);border:1px solid rgba(192,132,252,0.15)">
-                                <span class="text-[10px] font-mono font-bold text-violet-400 w-6 flex-shrink-0">07</span>
+                            <a href="#sec-security" class="agenda-btn group/a flex items-center gap-3 w-full px-4 py-3 rounded-xl transition-all duration-200" style="background:rgba(26,122,158,0.06);border:1px solid rgba(26,122,158,0.15)">
+                                <span class="text-[10px] font-mono font-bold text-[#1A7A9E] w-6 flex-shrink-0">07</span>
                                 <span class="flex-1 text-left">
                                     <span class="text-sm font-semibold section-title block">Security & Governance</span>
                                     <span class="text-[10px] text-c-muted">ISO 27001 · GDPR · RBAC · audit chain</span>
                                 </span>
-                                <svg class="w-3.5 h-3.5 text-violet-400 opacity-0 group-hover/a:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                <svg class="w-3.5 h-3.5 text-[#1A7A9E] opacity-0 group-hover/a:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                             </a>
-                            <a href="#sec-rag" class="agenda-btn group/a flex items-center gap-3 w-full px-4 py-3 rounded-xl transition-all duration-200" style="background:rgba(192,132,252,0.06);border:1px solid rgba(192,132,252,0.15)">
-                                <span class="text-[10px] font-mono font-bold text-violet-400 w-6 flex-shrink-0">08</span>
+                            <a href="#sec-rag" class="agenda-btn group/a flex items-center gap-3 w-full px-4 py-3 rounded-xl transition-all duration-200" style="background:rgba(26,122,158,0.06);border:1px solid rgba(26,122,158,0.15)">
+                                <span class="text-[10px] font-mono font-bold text-[#1A7A9E] w-6 flex-shrink-0">08</span>
                                 <span class="flex-1 text-left">
                                     <span class="text-sm font-semibold section-title block">Knowledge Architecture</span>
                                     <span class="text-[10px] text-c-muted">RAG pipeline · vector search · Zoho WorkDrive</span>
                                 </span>
-                                <svg class="w-3.5 h-3.5 text-violet-400 opacity-0 group-hover/a:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                <svg class="w-3.5 h-3.5 text-[#1A7A9E] opacity-0 group-hover/a:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                             </a>
-                            <a href="#sec-lifecycle" class="agenda-btn group/a flex items-center gap-3 w-full px-4 py-3 rounded-xl transition-all duration-200" style="background:rgba(192,132,252,0.06);border:1px solid rgba(192,132,252,0.15)">
-                                <span class="text-[10px] font-mono font-bold text-violet-400 w-6 flex-shrink-0">09B</span>
+                            <a href="#sec-lifecycle" class="agenda-btn group/a flex items-center gap-3 w-full px-4 py-3 rounded-xl transition-all duration-200" style="background:rgba(26,122,158,0.06);border:1px solid rgba(26,122,158,0.15)">
+                                <span class="text-[10px] font-mono font-bold text-[#1A7A9E] w-6 flex-shrink-0">09B</span>
                                 <span class="flex-1 text-left">
                                     <span class="text-sm font-semibold section-title block">Request Lifecycle</span>
                                     <span class="text-[10px] text-c-muted">7-step deterministic pipeline · 4 guarantees</span>
                                 </span>
-                                <svg class="w-3.5 h-3.5 text-violet-400 opacity-0 group-hover/a:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                <svg class="w-3.5 h-3.5 text-[#1A7A9E] opacity-0 group-hover/a:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                             </a>
                         </div>
 
@@ -1278,9 +1281,9 @@
 
         <!-- ── SECTION 06: Hybrid Compute Topology ───────────── -->
         <section class="glass-card rounded-2xl p-8 lg:p-10 relative overflow-hidden reveal-on-scroll" id="sec-compute">
-            <div class="absolute -bottom-20 -right-20 w-96 h-96 bg-violet-500/10 rounded-full blur-[100px] pointer-events-none"></div>
+            <div class="absolute -bottom-20 -right-20 w-96 h-96 bg-[rgba(10,76,106,0.10)] rounded-full blur-[100px] pointer-events-none"></div>
             <div class="relative z-10">
-                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-violet-500/10 border border-violet-500/30 text-violet-400 text-xs font-semibold uppercase tracking-widest mb-4">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[rgba(10,76,106,0.10)] border border-[rgba(10,76,106,0.30)] text-[#1A7A9E] text-xs font-semibold uppercase tracking-widest mb-4">
                     <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8"/></svg>
                     Section 06
                 </div>
@@ -1303,9 +1306,9 @@
                     </div>
 
                     <!-- Tier 2: Super PC Cluster -->
-                    <div class="bento-card p-6 relative border-violet-500/20">
-                        <div class="absolute top-4 right-4 text-[10px] font-bold uppercase tracking-widest text-violet-400/60">Tier 02</div>
-                        <div class="w-12 h-12 rounded-xl bg-violet-500/10 border border-violet-500/30 flex items-center justify-center text-violet-400 mb-5">
+                    <div class="bento-card p-6 relative border-[rgba(10,76,106,0.20)]">
+                        <div class="absolute top-4 right-4 text-[10px] font-bold uppercase tracking-widest text-[#1A7A9E]/60">Tier 02</div>
+                        <div class="w-12 h-12 rounded-xl bg-[rgba(10,76,106,0.10)] border border-[rgba(10,76,106,0.30)] flex items-center justify-center text-[#1A7A9E] mb-5">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"/></svg>
                         </div>
                         <h4 class="text-lg font-bold section-title mb-2">Super PC Cluster</h4>
@@ -1333,7 +1336,7 @@
 
                 <!-- Remote Management callout -->
                 <div class="glass-panel p-5 mt-6 flex items-center gap-4 border-l-4 border-l-violet-500">
-                    <div class="w-10 h-10 rounded-xl bg-violet-500/10 border border-violet-500/30 flex items-center justify-center text-violet-400 flex-shrink-0">
+                    <div class="w-10 h-10 rounded-xl bg-[rgba(10,76,106,0.10)] border border-[rgba(10,76,106,0.30)] flex items-center justify-center text-[#1A7A9E] flex-shrink-0">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
                     </div>
                     <div>
@@ -1361,8 +1364,8 @@
                             </div>
                             <div class="perf-row">
                                 <span class="text-xs text-c-muted">Cloud (70B · A100)</span>
-                                <span class="text-xs font-semibold text-violet-400">3 – 8 s</span>
-                                <div class="latency-fill" style="width:80%;background:linear-gradient(90deg,#60a5fa,#c084fc)"></div>
+                                <span class="text-xs font-semibold text-[#1A7A9E]">3 – 8 s</span>
+                                <div class="latency-fill" style="width:80%;background:linear-gradient(90deg,#2BA8D4,#1A7A9E)"></div>
                             </div>
                             <div class="perf-row">
                                 <span class="text-xs text-c-muted">Claude API (complex)</span>
@@ -1389,8 +1392,8 @@
                             </div>
                             <div class="perf-row">
                                 <span class="text-xs text-c-muted">Cloud compute (RunPod)</span>
-                                <span class="text-xs font-semibold text-violet-400">~$800 / mo</span>
-                                <div class="latency-fill" style="width:55%;background:linear-gradient(90deg,#60a5fa,#c084fc)"></div>
+                                <span class="text-xs font-semibold text-[#1A7A9E]">~$800 / mo</span>
+                                <div class="latency-fill" style="width:55%;background:linear-gradient(90deg,#2BA8D4,#1A7A9E)"></div>
                             </div>
                             <div class="perf-row">
                                 <span class="text-xs text-c-muted">Claude API (overflow only)</span>
@@ -1438,7 +1441,7 @@
                     </div>
                     <!-- Fallback: Cluster failure -->
                     <div class="bento-card p-6 border-l-4 border-l-violet-500">
-                        <h5 class="text-sm font-bold text-violet-400 mb-3 flex items-center gap-2">
+                        <h5 class="text-sm font-bold text-[#1A7A9E] mb-3 flex items-center gap-2">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2"/></svg>
                             Super PC Cluster Failure
                         </h5>
@@ -1552,7 +1555,7 @@
 
                     <!-- Pillar 3 -->
                     <div class="bento-card p-6 border-l-4 border-l-violet-500">
-                        <div class="w-12 h-12 rounded-xl bg-violet-500/10 border border-violet-500/30 flex items-center justify-center text-violet-400 mb-5">
+                        <div class="w-12 h-12 rounded-xl bg-[rgba(10,76,106,0.10)] border border-[rgba(10,76,106,0.30)] flex items-center justify-center text-[#1A7A9E] mb-5">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4"/></svg>
                         </div>
                         <h4 class="text-lg font-bold section-title mb-2">MCP & RBAC</h4>
@@ -1607,7 +1610,7 @@
                         </ul>
                     </div>
                     <div class="bento-card p-5">
-                        <h5 class="text-xs font-bold text-violet-400 uppercase tracking-widest mb-3">RBAC Policy</h5>
+                        <h5 class="text-xs font-bold text-[#1A7A9E] uppercase tracking-widest mb-3">RBAC Policy</h5>
                         <ul class="space-y-1.5 text-xs text-c-muted">
                             <li class="flex items-start gap-2"><span class="text-emerald-400 mt-0.5">✓</span> Least-privilege: AI inherits caller's exact permission set</li>
                             <li class="flex items-start gap-2"><span class="text-emerald-400 mt-0.5">✓</span> No cross-department data bleed — RAG scoped per role</li>
@@ -1680,9 +1683,9 @@
 
         <!-- ── SECTION 09: Multi-Agent Orchestration Hub ──────── -->
         <section class="glass-card rounded-2xl p-8 lg:p-10 relative overflow-hidden reveal-on-scroll" id="sec-agents">
-            <div class="absolute -bottom-20 -right-20 w-80 h-80 bg-violet-500/10 rounded-full blur-[100px] pointer-events-none animate-float-slow"></div>
+            <div class="absolute -bottom-20 -right-20 w-80 h-80 bg-[rgba(10,76,106,0.10)] rounded-full blur-[100px] pointer-events-none animate-float-slow"></div>
             <div class="relative z-10">
-                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-violet-500/10 border border-violet-500/30 text-violet-400 text-xs font-semibold uppercase tracking-widest mb-4">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[rgba(10,76,106,0.10)] border border-[rgba(10,76,106,0.30)] text-[#1A7A9E] text-xs font-semibold uppercase tracking-widest mb-4">
                     <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8"/></svg>
                     Section 09
                 </div>
@@ -1690,8 +1693,8 @@
                 <p class="text-c-muted leading-relaxed max-w-3xl mb-10">A single natural language command will trigger a cascade of cross-departmental autonomous actions — coordinated by a central Manager Agent.</p>
 
                 <!-- Trigger -->
-                <div class="glass-panel p-5 mb-6 border border-violet-500/20 max-w-3xl mx-auto text-center">
-                    <div class="text-[10px] font-bold uppercase tracking-widest text-violet-400 mb-2">Natural Language Trigger</div>
+                <div class="glass-panel p-5 mb-6 border border-[rgba(10,76,106,0.20)] max-w-3xl mx-auto text-center">
+                    <div class="text-[10px] font-bold uppercase tracking-widest text-[#1A7A9E] mb-2">Natural Language Trigger</div>
                     <p class="text-lg font-bold section-title italic">"We just signed a 3-year renewal with Coastline — onboard 20 new bilingual agents and update their knowledge base by Monday."</p>
                 </div>
 
@@ -1699,8 +1702,8 @@
                 <div class="flex justify-center mb-2">
                     <div class="glow-line-v h-10"></div>
                 </div>
-                <div class="glass-panel p-4 max-w-xs mx-auto text-center mb-2 border-violet-500/30">
-                    <div class="w-10 h-10 mx-auto rounded-xl bg-violet-500/10 border border-violet-500/30 flex items-center justify-center text-violet-400 mb-2">
+                <div class="glass-panel p-4 max-w-xs mx-auto text-center mb-2 border-[rgba(10,76,106,0.30)]">
+                    <div class="w-10 h-10 mx-auto rounded-xl bg-[rgba(10,76,106,0.10)] border border-[rgba(10,76,106,0.30)] flex items-center justify-center text-[#1A7A9E] mb-2">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                     </div>
                     <h5 class="text-sm font-bold section-title">Manager Agent</h5>
@@ -1837,7 +1840,7 @@
                             <p class="text-xs text-c-muted">Every tool-call (CRM update, schedule change, email send) produces a visible confirmation step and an audit entry. Nothing happens "behind the scenes."</p>
                         </div>
                         <div class="bento-card p-5 border-l-4 border-l-violet-500">
-                            <h6 class="text-sm font-bold text-violet-400 mb-1">No Single Model Dependency</h6>
+                            <h6 class="text-sm font-bold text-[#1A7A9E] mb-1">No Single Model Dependency</h6>
                             <p class="text-xs text-c-muted">Each step can be served by a different model or tier. A cloud outage does not break steps 1–4 — only reduces the complexity ceiling.</p>
                         </div>
                         <div class="bento-card p-5 border-l-4 border-l-amber-500">
@@ -1934,7 +1937,7 @@
                         <p class="text-xs text-c-muted leading-relaxed">AI will generate fictional production assets, documentation, and interface designs for post-production workflows.</p>
                     </div>
                     <div class="bento-card p-6">
-                        <div class="w-10 h-10 rounded-xl bg-violet-500/10 border border-violet-500/30 flex items-center justify-center text-violet-400 mb-4">
+                        <div class="w-10 h-10 rounded-xl bg-[rgba(10,76,106,0.10)] border border-[rgba(10,76,106,0.30)] flex items-center justify-center text-[#1A7A9E] mb-4">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
                         </div>
                         <h4 class="text-sm font-bold section-title mb-2">Media Services</h4>
@@ -1964,7 +1967,7 @@
                         <p class="text-[10px] text-c-muted mt-2 leading-relaxed">Measured as interactions resolved per agent-hour. Driven by real-time copilot assist and automated post-call work.</p>
                     </div>
                     <div class="kpi-card text-center">
-                        <div class="kpi-value" style="background:linear-gradient(135deg,#60a5fa,#c084fc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">-20%</div>
+                        <div class="kpi-value" style="background:linear-gradient(135deg,#2BA8D4,#1A7A9E);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">-20%</div>
                         <div class="kpi-label">Avg Handle Time</div>
                         <p class="text-[10px] text-c-muted mt-2 leading-relaxed">AHT reduction via instant knowledge retrieval — agents stop placing callers on hold to search for answers.</p>
                     </div>
@@ -1985,7 +1988,7 @@
 
                     <!-- Software & AI Cost -->
                     <div class="glass-panel p-6">
-                        <h5 class="text-sm font-bold text-violet-400 uppercase tracking-widest mb-1">Software & AI Cost (Annual)</h5>
+                        <h5 class="text-sm font-bold text-[#1A7A9E] uppercase tracking-widest mb-1">Software & AI Cost (Annual)</h5>
                         <p class="text-xs text-c-muted mb-4">System is designed to prioritize local and internal compute to minimize recurring costs. Cloud and Claude usage are fallback layers, not primary.</p>
                         <div class="overflow-x-auto">
                             <table class="w-full text-sm">
@@ -2009,8 +2012,8 @@
                                     </tr>
                                     <tr>
                                         <td class="pt-3 pr-6 font-bold section-title">Total Annual Cost</td>
-                                        <td class="pt-3 pr-6 text-right font-bold text-violet-400">~60,000</td>
-                                        <td class="pt-3 text-right text-lg font-black text-red-400">~720,000</td>
+                                        <td class="pt-3 pr-6 text-right font-bold text-[#1A7A9E]">~60,000</td>
+                                        <td class="pt-3 text-right text-lg font-black text-orange-400">~720,000</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -2069,7 +2072,7 @@
                             <div class="space-y-3">
                                 <div class="flex justify-between items-center py-2" style="border-bottom:1px solid var(--border)">
                                     <span class="text-sm text-c-muted">Total Annual Cost</span>
-                                    <span class="text-sm font-bold text-red-400">720,000 EGP</span>
+                                    <span class="text-sm font-bold text-orange-400">720,000 EGP</span>
                                 </div>
                                 <div class="flex justify-between items-center py-2" style="border-bottom:1px solid var(--border)">
                                     <span class="text-sm text-c-muted">Total Annual Benefit</span>
@@ -2083,13 +2086,13 @@
                         </div>
 
                         <!-- ROI Metrics -->
-                        <div class="grid grid-cols-3 gap-3">
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                             <div class="kpi-card text-center">
                                 <div class="kpi-value neon-emerald">9.7×</div>
                                 <div class="kpi-label">Return on Investment</div>
                             </div>
                             <div class="kpi-card text-center">
-                                <div class="kpi-value" style="background:linear-gradient(135deg,#60a5fa,#34d399);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">1.5</div>
+                                <div class="kpi-value" style="background:linear-gradient(135deg,#2BA8D4,#34d399);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">1.5</div>
                                 <div class="kpi-label">Month Payback</div>
                             </div>
                             <div class="kpi-card text-center">
@@ -2103,22 +2106,22 @@
                     <div class="glass-panel p-6">
                         <h5 class="text-sm font-bold section-title mb-4">Scenario Sensitivity</h5>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div class="rounded-xl p-4 text-center" style="background:rgba(248,113,113,0.07);border:1px solid rgba(248,113,113,0.25)">
-                                <div class="text-xs font-bold uppercase tracking-wider text-red-400 mb-2">Worst Case</div>
+                            <div class="rounded-xl p-4 text-center" style="background:rgba(251,146,60,0.07);border:1px solid rgba(251,146,60,0.25)">
+                                <div class="text-xs font-bold uppercase tracking-wider text-orange-400 mb-2">Worst Case</div>
                                 <div class="text-xl font-bold section-title mb-1">15% Uplift</div>
-                                <div class="text-sm font-semibold text-red-400 mb-1">~5,500,000 EGP</div>
+                                <div class="text-sm font-semibold text-orange-400 mb-1">~5,500,000 EGP</div>
                                 <div class="text-xs text-c-muted">ROI: ~5.7×</div>
                                 <div class="mt-2 h-1.5 rounded-full" style="background:var(--panel)">
-                                    <div class="h-1.5 rounded-full" style="width:52%;background:rgba(248,113,113,0.6)"></div>
+                                    <div class="h-1.5 rounded-full" style="width:52%;background:rgba(251,146,60,0.6)"></div>
                                 </div>
                             </div>
-                            <div class="rounded-xl p-4 text-center" style="background:rgba(96,165,250,0.07);border:1px solid rgba(96,165,250,0.25)">
+                            <div class="rounded-xl p-4 text-center" style="background:rgba(43,168,212,0.07);border:1px solid rgba(43,168,212,0.25)">
                                 <div class="text-xs font-bold uppercase tracking-wider text-blue-400 mb-2">Base Case</div>
                                 <div class="text-xl font-bold section-title mb-1">25% Uplift</div>
                                 <div class="text-sm font-semibold text-blue-400 mb-1">~9,300,000 EGP</div>
                                 <div class="text-xs text-c-muted">ROI: ~9.7×</div>
                                 <div class="mt-2 h-1.5 rounded-full" style="background:var(--panel)">
-                                    <div class="h-1.5 rounded-full" style="width:75%;background:rgba(96,165,250,0.7)"></div>
+                                    <div class="h-1.5 rounded-full" style="width:75%;background:rgba(43,168,212,0.7)"></div>
                                 </div>
                             </div>
                             <div class="rounded-xl p-4 text-center" style="background:rgba(52,211,153,0.07);border:1px solid rgba(52,211,153,0.25)">
@@ -2134,7 +2137,7 @@
                     </div>
 
                     <!-- Board Interpretation Block -->
-                    <div class="rounded-2xl p-6" style="background:linear-gradient(135deg,rgba(52,211,153,0.08),rgba(96,165,250,0.05));border:1px solid rgba(52,211,153,0.25)">
+                    <div class="rounded-2xl p-6" style="background:linear-gradient(135deg,rgba(52,211,153,0.08),rgba(43,168,212,0.05));border:1px solid rgba(52,211,153,0.25)">
                         <p class="text-sm font-bold section-title mb-3">This initiative is not a cost center.</p>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div class="flex items-start gap-3">
@@ -2156,11 +2159,11 @@
                                 </div>
                             </div>
                             <div class="flex items-start gap-3">
-                                <div class="w-8 h-8 rounded-lg bg-violet-500/15 border border-violet-500/30 flex items-center justify-center text-violet-400 flex-shrink-0">
+                                <div class="w-8 h-8 rounded-lg bg-[rgba(10,76,106,0.15)] border border-[rgba(10,76,106,0.30)] flex items-center justify-center text-[#1A7A9E] flex-shrink-0">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
                                 </div>
                                 <div>
-                                    <div class="text-xs font-bold text-violet-400 uppercase tracking-wider mb-1">Revenue Acceleration Layer</div>
+                                    <div class="text-xs font-bold text-[#1A7A9E] uppercase tracking-wider mb-1">Revenue Acceleration Layer</div>
                                     <p class="text-xs text-c-muted leading-relaxed">AI-enabled capacity opens one additional client acquisition channel per month — a compounding revenue flywheel.</p>
                                 </div>
                             </div>
@@ -2183,18 +2186,18 @@
                                 <li class="flex items-start gap-2"><span class="text-emerald-400 mt-0.5">→</span> Competitive differentiation locked in early</li>
                             </ul>
                         </div>
-                        <div class="rounded-xl p-5" style="background:rgba(248,113,113,0.06);border:1px solid rgba(248,113,113,0.3)">
+                        <div class="rounded-xl p-5" style="background:rgba(251,146,60,0.06);border:1px solid rgba(251,146,60,0.3)">
                             <div class="flex items-center gap-2 mb-3">
-                                <span class="w-6 h-6 rounded-full bg-red-500/20 text-red-400 flex items-center justify-center">
+                                <span class="w-6 h-6 rounded-full bg-orange-500/20 text-orange-400 flex items-center justify-center">
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
                                 </span>
-                                <span class="text-sm font-bold text-red-400">If Delayed</span>
+                                <span class="text-sm font-bold text-orange-400">If Delayed</span>
                             </div>
                             <ul class="space-y-1.5 text-xs text-c-muted">
-                                <li class="flex items-start gap-2"><span class="text-red-400 mt-0.5">→</span> Continued linear cost growth vs. capacity demand</li>
-                                <li class="flex items-start gap-2"><span class="text-red-400 mt-0.5">→</span> Each month delayed = ~695,000 EGP foregone</li>
-                                <li class="flex items-start gap-2"><span class="text-red-400 mt-0.5">→</span> Competitors adopting AI gain pricing & speed edge</li>
-                                <li class="flex items-start gap-2"><span class="text-red-400 mt-0.5">→</span> Talent pressure grows without productivity offset</li>
+                                <li class="flex items-start gap-2"><span class="text-orange-400 mt-0.5">→</span> Continued linear cost growth vs. capacity demand</li>
+                                <li class="flex items-start gap-2"><span class="text-orange-400 mt-0.5">→</span> Each month delayed = ~695,000 EGP foregone</li>
+                                <li class="flex items-start gap-2"><span class="text-orange-400 mt-0.5">→</span> Competitors adopting AI gain pricing & speed edge</li>
+                                <li class="flex items-start gap-2"><span class="text-orange-400 mt-0.5">→</span> Talent pressure grows without productivity offset</li>
                             </ul>
                         </div>
                     </div>
@@ -2265,7 +2268,7 @@
                             <div class="kpi-label">Annual Benefit</div>
                         </div>
                         <div class="kpi-card text-center">
-                            <div id="sim-net" class="kpi-value" style="font-size:1.4rem;background:linear-gradient(135deg,#34d399,#60a5fa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">—</div>
+                            <div id="sim-net" class="kpi-value" style="font-size:1.4rem;background:linear-gradient(135deg,#34d399,#2BA8D4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">—</div>
                             <div class="kpi-label">Net Annual Gain</div>
                         </div>
                         <div class="kpi-card text-center">
@@ -2297,7 +2300,7 @@
                                     <span id="sim-bar-hire-val" class="font-semibold section-title">—</span>
                                 </div>
                                 <div class="h-2 rounded-full" style="background:var(--panel)">
-                                    <div id="sim-bar-hire" class="h-2 rounded-full transition-all duration-500" style="width:0%;background:linear-gradient(90deg,#60a5fa,#93c5fd)"></div>
+                                    <div id="sim-bar-hire" class="h-2 rounded-full transition-all duration-500" style="width:0%;background:linear-gradient(90deg,#2BA8D4,#2BA8D4)"></div>
                                 </div>
                             </div>
                             <div>
@@ -2306,7 +2309,7 @@
                                     <span id="sim-bar-err-val" class="font-semibold section-title">—</span>
                                 </div>
                                 <div class="h-2 rounded-full" style="background:var(--panel)">
-                                    <div id="sim-bar-err" class="h-2 rounded-full transition-all duration-500" style="width:0%;background:linear-gradient(90deg,#c084fc,#ddd6fe)"></div>
+                                    <div id="sim-bar-err" class="h-2 rounded-full transition-all duration-500" style="width:0%;background:linear-gradient(90deg,#1A7A9E,#ddd6fe)"></div>
                                 </div>
                             </div>
                             <div>
@@ -2416,10 +2419,6 @@
                     </div>
                 </div>
 
-                <!-- Financial Forecast -->
-                <h4 class="text-xl font-bold section-title mb-2">Financial Forecast — Egypt Operations</h4>
-                <p class="text-xs text-c-muted mb-6">Hardware, implementation, and training costs are treated as internal — assumed available or delivered by the internal team. Only recurring software and cloud costs are accounted for below.</p>
-
                 <!-- Cost Savings -->
                 <div class="glass-panel p-6 border-l-4 border-l-emerald-500">
                     <div class="flex flex-col md:flex-row md:items-center gap-6">
@@ -2482,12 +2481,12 @@
         datasets:[{
             data:[62,12,9,8,5,4],
             backgroundColor:[
-                'rgba(59,130,246,0.85)',
-                'rgba(139,92,246,0.85)',
-                'rgba(16,185,129,0.85)',
-                'rgba(245,158,11,0.85)',
-                'rgba(239,68,68,0.85)',
-                'rgba(236,72,153,0.85)'
+                'rgba(26,122,158,0.92)',
+                'rgba(10,76,106,0.95)',
+                'rgba(43,168,212,0.88)',
+                'rgba(7,54,80,0.92)',
+                'rgba(15,103,135,0.90)',
+                'rgba(63,143,174,0.88)'
             ],
             borderColor:'rgba(17,24,39,1)',
             borderWidth:3,
@@ -2561,10 +2560,10 @@
     ];
 
     const colorMap = {
-        blue:   {bg:'rgba(59,130,246,0.15)',  border:'rgba(59,130,246,0.35)',  text:'text-blue-400',   ring:'rgba(59,130,246,0.25)'},
+        blue:   {bg:'rgba(26,122,158,0.15)',  border:'rgba(26,122,158,0.35)',  text:'text-blue-400',   ring:'rgba(26,122,158,0.25)'},
         emerald:{bg:'rgba(16,185,129,0.15)',  border:'rgba(16,185,129,0.35)',  text:'text-emerald-400',ring:'rgba(16,185,129,0.25)'},
         orange: {bg:'rgba(249,115,22,0.15)',  border:'rgba(249,115,22,0.35)',  text:'text-orange-400', ring:'rgba(249,115,22,0.25)'},
-        purple: {bg:'rgba(139,92,246,0.15)',  border:'rgba(139,92,246,0.35)',  text:'text-purple-400', ring:'rgba(139,92,246,0.25)'},
+        purple: {bg:'rgba(10,76,106,0.18)',  border:'rgba(10,76,106,0.45)',  text:'text-purple-400', ring:'rgba(10,76,106,0.28)'},
         rose:   {bg:'rgba(244,63,94,0.15)',   border:'rgba(244,63,94,0.35)',   text:'text-rose-400',   ring:'rgba(244,63,94,0.25)'}
     };
 
@@ -2707,7 +2706,7 @@
                         backgroundColor: isDark ? 'rgba(15,23,42,0.95)' : 'rgba(255,255,255,0.97)',
                         titleColor:      isDark ? '#fff'                 : '#0f172a',
                         bodyColor:       isDark ? '#cbd5e1'              : '#475569',
-                        borderColor:     isDark ? 'rgba(139,92,246,0.3)' : 'rgba(139,92,246,0.2)',
+                        borderColor:     isDark ? 'rgba(10,76,106,0.3)' : 'rgba(10,76,106,0.2)',
                         borderWidth:1, padding:14, boxPadding:6,
                         titleFont:{size:13,weight:600},
                         callbacks:{ label:(c)=>' '+c.label+': '+c.raw+'% impact' }
@@ -2799,7 +2798,7 @@
         let activeId = null;
 
         const base = "flex items-center gap-2 px-5 py-2.5 rounded-xl border text-sm font-semibold transition-all duration-300 focus:outline-none";
-        const act  = "bg-gradient-to-r from-blue-600 to-purple-600 text-white border-transparent shadow-[0_0_20px_rgba(139,92,246,0.4)] scale-105";
+        const act  = "bg-gradient-to-r from-blue-600 to-purple-600 text-white border-transparent shadow-[0_0_20px_rgba(10,76,106,0.4)] scale-105";
         const inact = "text-[color:var(--tab-i-text)] border-[color:var(--tab-i-border)] bg-[color:var(--tab-i-bg)] hover:scale-102";
 
         funnelPhases.forEach((phase, idx) => {
@@ -2916,7 +2915,7 @@
                 <div class="mb-8 flex flex-col md:flex-row md:items-start md:justify-between gap-6 pb-6 dept-border-b" style="border-bottom:1px solid var(--detail-border)">
                     <div class="flex-1">
                         <div class="flex items-center gap-3 mb-3">
-                            <div class="w-10 h-10 rounded-xl flex items-center justify-center ${txtCls}" style="background:${colorMap[dept.accent]?.bg||'rgba(59,130,246,0.15)'};border:1px solid ${colorMap[dept.accent]?.border||'rgba(59,130,246,0.35)'}">
+                            <div class="w-10 h-10 rounded-xl flex items-center justify-center ${txtCls}" style="background:${colorMap[dept.accent]?.bg||'rgba(26,122,158,0.15)'};border:1px solid ${colorMap[dept.accent]?.border||'rgba(26,122,158,0.35)'}">
                                 ${dept.icon}
                             </div>
                             <div>
@@ -3133,15 +3132,15 @@
         html.light .funnel-content-muted,   html.light .dept-content-muted   { color: #475569; }
         html.light .funnel-content-label                                       { color: #64748b; }
         html.light .funnel-strong,          html.light .dept-bullet-strong    { color: #1e293b; }
-        html.light .custom-bullet::before                                      { color: #7c3aed; }
-        html.light .chat-bubble-user { background: rgba(59,130,246,0.08); border-color: rgba(59,130,246,0.2); }
+        html.light .custom-bullet::before                                      { color: #0A4C6A; }
+        html.light .chat-bubble-user { background: rgba(26,122,158,0.08); border-color: rgba(26,122,158,0.2); }
         html.light .chat-bubble-ai   { background: rgba(0,0,0,0.02); border-color: rgba(0,0,0,0.1); }
         html.light .arch-node        { background: rgba(0,0,0,0.02); border-color: rgba(0,0,0,0.1); }
         html.light .arch-node:hover  { border-color: rgba(6,182,212,0.4); }
         html.light .bento-card       { background: rgba(0,0,0,0.02); border-color: rgba(0,0,0,0.08); }
-        html.light .bento-card:hover { border-color: rgba(139,92,246,0.3); }
+        html.light .bento-card:hover { border-color: rgba(10,76,106,0.3); }
         html.light .glow-line        { background: linear-gradient(90deg, transparent, rgba(6,182,212,0.3), transparent); }
-        html.light .glow-line-v      { background: linear-gradient(180deg, transparent, rgba(139,92,246,0.3), transparent); }
+        html.light .glow-line-v      { background: linear-gradient(180deg, transparent, rgba(10,76,106,0.3), transparent); }
         html.light .radar-ring       { border-color: rgba(239,68,68,0.15); }
         html.light .roadmap-bar::after { background: linear-gradient(90deg, transparent, rgba(0,0,0,0.1), transparent); }
     `;
