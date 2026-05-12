@@ -404,9 +404,90 @@
             display:flex; align-items:center; justify-content:center;
             color: rgba(43,168,212,0.65);
             font-weight: 800;
+            flex: 0 0 auto;
+            width: 18px;
+            font-size: 18px;
         }
-        @media (max-width: 768px) {
-            .pipe-arrow { transform: rotate(90deg); padding: 4px 0; }
+
+        /* Funnel cards — standardized size, no overflow */
+        .funnel-row {
+            display: flex;
+            align-items: stretch;
+            gap: 6px;
+            min-width: max-content;
+            padding: 8px 4px 4px;
+        }
+        .funnel-card {
+            flex: 0 0 150px;
+            width: 150px;
+            min-height: 168px;
+            background: rgba(7,42,62,0.55);
+            border: 1px solid var(--border-s);
+            border-radius: 14px;
+            padding: 24px 12px 12px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            transition: border-color 0.25s, transform 0.25s;
+        }
+        .funnel-card:hover { border-color: rgba(43,168,212,0.45); transform: translateY(-2px); }
+        .funnel-card.leak { border-color: rgba(248,113,113,0.40); }
+        .funnel-card .arch-num {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: linear-gradient(135deg,#1A7A9E,#2BA8D4);
+            color: #fff;
+            font-size: 12px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 14px rgba(10,76,106,0.40);
+        }
+        .funnel-card.leak .arch-num { background: linear-gradient(135deg,#f87171,#f472b6); }
+        .funnel-card .fc-label {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: #2BA8D4;
+            margin-bottom: 6px;
+            line-height: 1.2;
+        }
+        .funnel-card.leak .fc-label { color: #f87171; }
+        .funnel-card.done .fc-label { color: #34d399; }
+        .funnel-card .fc-desc {
+            font-size: 10.5px;
+            line-height: 1.35;
+            color: var(--muted);
+            margin-bottom: auto;
+            padding-bottom: 6px;
+            overflow-wrap: break-word;
+            word-break: break-word;
+            hyphens: auto;
+        }
+        .funnel-card .fc-tag {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 3px 8px;
+            border-radius: 999px;
+            font-size: 9.5px;
+            font-weight: 800;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            background: rgba(244,114,182,0.10);
+            color: #f472b6;
+            border: 1px solid rgba(244,114,182,0.28);
+            margin-top: 4px;
+            white-space: nowrap;
         }
 
         /* Code/CLI snippet */
@@ -504,30 +585,6 @@
                     </div>
                 </div>
 
-                <!-- 4-tile exec strip -->
-                <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
-                    <div class="kpi-tile">
-                        <div class="text-[10px] uppercase tracking-widest text-c-muted font-bold mb-2">Today's pain</div>
-                        <div class="kpi-num">22 d</div>
-                        <p class="text-xs text-c-muted mt-1">Avg time-to-hire on volume agent roles</p>
-                    </div>
-                    <div class="kpi-tile">
-                        <div class="text-[10px] uppercase tracking-widest text-c-muted font-bold mb-2">Target state</div>
-                        <div class="kpi-num">≤ 7 d</div>
-                        <p class="text-xs text-c-muted mt-1">After full Phase-2 rollout</p>
-                    </div>
-                    <div class="kpi-tile">
-                        <div class="text-[10px] uppercase tracking-widest text-c-muted font-bold mb-2">Recruiter capacity</div>
-                        <div class="kpi-num">3.4×</div>
-                        <p class="text-xs text-c-muted mt-1">Reqs per TA without headcount add</p>
-                    </div>
-                    <div class="kpi-tile">
-                        <div class="text-[10px] uppercase tracking-widest text-c-muted font-bold mb-2">Cost / hire</div>
-                        <div class="kpi-num">-38%</div>
-                        <p class="text-xs text-c-muted mt-1">Modeled, volume + specialist mix</p>
-                    </div>
-                </div>
-
                 <!-- Agenda nav -->
                 <div class="mt-10 pt-8" style="border-top:1px solid var(--border)">
                     <div class="flex items-center justify-between mb-5 flex-wrap gap-3">
@@ -543,53 +600,49 @@
                         </div>
                     </div>
                     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5 text-sm">
-                        <a href="#sec-context" class="arch-node">
-                            <div class="flex items-center gap-2"><span class="text-[10px] font-mono font-bold text-blue-400">01</span><span class="font-semibold section-title text-sm">Strategic Context</span></div>
-                            <p class="text-[11px] text-c-muted mt-1 ml-7">Why now · MENA dynamics</p>
-                        </a>
-                        <a href="#sec-funnel" class="arch-node">
-                            <div class="flex items-center gap-2"><span class="text-[10px] font-mono font-bold text-blue-400">02</span><span class="font-semibold section-title text-sm">Funnel Today</span></div>
-                            <p class="text-[11px] text-c-muted mt-1 ml-7">As-is workflow + leak points</p>
-                        </a>
                         <a href="#sec-vendors" class="arch-node">
-                            <div class="flex items-center gap-2"><span class="text-[10px] font-mono font-bold text-blue-400">03</span><span class="font-semibold section-title text-sm">Vendor Landscape</span></div>
+                            <div class="flex items-center gap-2"><span class="text-[10px] font-mono font-bold text-blue-400">01</span><span class="font-semibold section-title text-sm">Vendor Landscape</span></div>
                             <p class="text-[11px] text-c-muted mt-1 ml-7">6 paid platforms · pricing</p>
                         </a>
                         <a href="#sec-compare" class="arch-node">
-                            <div class="flex items-center gap-2"><span class="text-[10px] font-mono font-bold text-blue-400">04</span><span class="font-semibold section-title text-sm">Feature Matrix</span></div>
+                            <div class="flex items-center gap-2"><span class="text-[10px] font-mono font-bold text-blue-400">02</span><span class="font-semibold section-title text-sm">Feature Matrix</span></div>
                             <p class="text-[11px] text-c-muted mt-1 ml-7">Side-by-side comparison</p>
                         </a>
                         <a href="#sec-cloud" class="arch-node">
-                            <div class="flex items-center gap-2"><span class="text-[10px] font-mono font-bold text-amber-400">05</span><span class="font-semibold section-title text-sm">AWS · Azure · Genesys</span></div>
+                            <div class="flex items-center gap-2"><span class="text-[10px] font-mono font-bold text-amber-400">03</span><span class="font-semibold section-title text-sm">AWS · Azure · Genesys</span></div>
                             <p class="text-[11px] text-c-muted mt-1 ml-7">Integration & cost map</p>
                         </a>
                         <a href="#sec-arch" class="arch-node">
-                            <div class="flex items-center gap-2"><span class="text-[10px] font-mono font-bold text-amber-400">06</span><span class="font-semibold section-title text-sm">Reference Architecture</span></div>
+                            <div class="flex items-center gap-2"><span class="text-[10px] font-mono font-bold text-amber-400">04</span><span class="font-semibold section-title text-sm">Reference Architecture</span></div>
                             <p class="text-[11px] text-c-muted mt-1 ml-7">End-to-end flow</p>
                         </a>
                         <a href="#sec-bvb" class="arch-node">
-                            <div class="flex items-center gap-2"><span class="text-[10px] font-mono font-bold text-amber-400">07</span><span class="font-semibold section-title text-sm">Build vs Buy</span></div>
+                            <div class="flex items-center gap-2"><span class="text-[10px] font-mono font-bold text-amber-400">05</span><span class="font-semibold section-title text-sm">Build vs Buy</span></div>
                             <p class="text-[11px] text-c-muted mt-1 ml-7">Decision matrix</p>
                         </a>
                         <a href="#sec-roadmap" class="arch-node">
-                            <div class="flex items-center gap-2"><span class="text-[10px] font-mono font-bold text-amber-400">08</span><span class="font-semibold section-title text-sm">Phased Roadmap</span></div>
+                            <div class="flex items-center gap-2"><span class="text-[10px] font-mono font-bold text-amber-400">06</span><span class="font-semibold section-title text-sm">Phased Roadmap</span></div>
                             <p class="text-[11px] text-c-muted mt-1 ml-7">90 / 180 / 365 days</p>
                         </a>
                         <a href="#sec-impact" class="arch-node">
-                            <div class="flex items-center gap-2"><span class="text-[10px] font-mono font-bold text-emerald-400">09</span><span class="font-semibold section-title text-sm">Business Impact</span></div>
+                            <div class="flex items-center gap-2"><span class="text-[10px] font-mono font-bold text-emerald-400">07</span><span class="font-semibold section-title text-sm">Business Impact</span></div>
                             <p class="text-[11px] text-c-muted mt-1 ml-7">ROI · KPIs · TCO</p>
                         </a>
                         <a href="#sec-risk" class="arch-node">
-                            <div class="flex items-center gap-2"><span class="text-[10px] font-mono font-bold text-pink-400">10</span><span class="font-semibold section-title text-sm">Risk Register</span></div>
+                            <div class="flex items-center gap-2"><span class="text-[10px] font-mono font-bold text-pink-400">08</span><span class="font-semibold section-title text-sm">Risk Register</span></div>
                             <p class="text-[11px] text-c-muted mt-1 ml-7">Bias · privacy · vendor lock-in</p>
                         </a>
                         <a href="#sec-oss" class="arch-node">
-                            <div class="flex items-center gap-2"><span class="text-[10px] font-mono font-bold text-blue-400">11</span><span class="font-semibold section-title text-sm">Open-Source Lab</span></div>
+                            <div class="flex items-center gap-2"><span class="text-[10px] font-mono font-bold text-blue-400">09</span><span class="font-semibold section-title text-sm">Open-Source Lab</span></div>
                             <p class="text-[11px] text-c-muted mt-1 ml-7">For POC, not production</p>
                         </a>
                         <a href="#sec-decision" class="arch-node">
-                            <div class="flex items-center gap-2"><span class="text-[10px] font-mono font-bold text-emerald-400">12</span><span class="font-semibold section-title text-sm">CTO Decision</span></div>
+                            <div class="flex items-center gap-2"><span class="text-[10px] font-mono font-bold text-emerald-400">10</span><span class="font-semibold section-title text-sm">CTO Decision</span></div>
                             <p class="text-[11px] text-c-muted mt-1 ml-7">Go / No-go gates</p>
+                        </a>
+                        <a href="#sec-appendix" class="arch-node">
+                            <div class="flex items-center gap-2"><span class="text-[10px] font-mono font-bold text-c-muted">Appx</span><span class="font-semibold section-title text-sm">Appendix</span></div>
+                            <p class="text-[11px] text-c-muted mt-1 ml-7">Context · funnel · sources</p>
                         </a>
                     </div>
                 </div>
@@ -597,152 +650,12 @@
         </section>
 
         <!-- ─────────────────────────────────────────────────────── -->
-        <!-- 02 · STRATEGIC CONTEXT                                   -->
-        <!-- ─────────────────────────────────────────────────────── -->
-        <section class="glass-card rounded-2xl p-8 lg:p-10 relative overflow-hidden" id="sec-context">
-            <div class="absolute -top-20 -right-20 w-72 h-72 rounded-full blur-[80px] opacity-60 pointer-events-none" style="background:rgba(43,168,212,0.10)"></div>
-            <div class="relative z-10">
-                <div class="flex items-baseline gap-3 mb-2">
-                    <span class="text-blue-400 font-mono font-bold text-sm">01</span>
-                    <h3 class="text-2xl md:text-3xl font-bold section-title">Strategic Context — Why Now</h3>
-                </div>
-                <p class="text-c-muted text-sm mb-8 max-w-4xl">Three forces are converging that make the next 12 months the right window for Centro CDX to industrialise its hiring.</p>
-
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
-                    <div class="glass-panel p-6">
-                        <div class="w-10 h-10 rounded-lg flex items-center justify-center mb-4" style="background:rgba(43,168,212,0.15);">
-                            <svg class="w-5 h-5" style="color:#2BA8D4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
-                        </div>
-                        <h4 class="font-bold section-title mb-2">1 · BPO growth outpaces TA capacity</h4>
-                        <p class="text-sm text-c-muted leading-relaxed">Centro's multinational BPO footprint adds <strong class="section-title">net new agent reqs every quarter</strong>. Linear TA team scaling pushes cost-per-hire up and pushes time-to-hire past competitive thresholds — candidates accept the first offer that reaches them, usually within 5–7 days.</p>
-                    </div>
-                    <div class="glass-panel p-6">
-                        <div class="w-10 h-10 rounded-lg flex items-center justify-center mb-4" style="background:rgba(52,211,153,0.15);">
-                            <svg class="w-5 h-5" style="color:#34d399" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                        </div>
-                        <h4 class="font-bold section-title mb-2">2 · MENA candidate channels are mobile-first</h4>
-                        <p class="text-sm text-c-muted leading-relaxed">In Egypt and the UAE, <strong class="section-title">WhatsApp opens at ≥95%</strong> while recruitment-email opens hover near 18%. Any pipeline that leans on email will keep losing candidates to faster competitors. Arabic-aware NLP is now table-stakes, not a wishlist item.</p>
-                    </div>
-                    <div class="glass-panel p-6">
-                        <div class="w-10 h-10 rounded-lg flex items-center justify-center mb-4" style="background:rgba(167,139,250,0.15);">
-                            <svg class="w-5 h-5" style="color:#a78bfa" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                        </div>
-                        <h4 class="font-bold section-title mb-2">3 · LLM cost curve crossed the threshold</h4>
-                        <p class="text-sm text-c-muted leading-relaxed">Hosted frontier-class models on <strong class="section-title">AWS Bedrock and Azure OpenAI</strong> now make per-candidate AI cost a rounding error. Two years ago a CV-scoring agent would have been a R&D bet; today it is a procurement decision with a 6–9 month payback window.</p>
-                    </div>
-                </div>
-
-                <!-- North-star -->
-                <div class="mt-8 rounded-xl p-5" style="background:rgba(52,211,153,0.05);border:1px solid rgba(52,211,153,0.20)">
-                    <div class="flex items-start gap-3">
-                        <div class="w-8 h-8 rounded-lg flex-shrink-0 flex items-center justify-center" style="background:rgba(52,211,153,0.18)">
-                            <svg class="w-4 h-4" style="color:#34d399" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                        </div>
-                        <div>
-                            <div class="text-xs font-bold uppercase tracking-widest mb-1" style="color:#34d399">North-Star Outcome</div>
-                            <p class="text-sm text-c-main leading-relaxed">A candidate applies on Tuesday at 14:00 → receives a WhatsApp greeting in <strong class="section-title">&lt; 60 seconds</strong> → completes a 12-min skill assessment by 14:30 → is auto-booked for a Wednesday-morning live video panel with the hiring manager → receives a verbal offer by Friday. <strong class="section-title">Zero recruiter touches</strong> for the 80% volume tier; recruiters focus exclusively on the strategic 20%.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ─────────────────────────────────────────────────────── -->
-        <!-- 03 · FUNNEL TODAY                                        -->
-        <!-- ─────────────────────────────────────────────────────── -->
-        <section class="glass-card rounded-2xl p-8 lg:p-10 relative overflow-hidden" id="sec-funnel">
-            <div class="relative z-10">
-                <div class="flex items-baseline gap-3 mb-2">
-                    <span class="text-blue-400 font-mono font-bold text-sm">02</span>
-                    <h3 class="text-2xl md:text-3xl font-bold section-title">The Funnel Today — Leak Points</h3>
-                </div>
-                <p class="text-c-muted text-sm mb-8 max-w-4xl">Eight stages, four documented leaks. The leaks are not "recruiter laziness" — they are <strong class="section-title">structural artefacts of a manual workflow</strong> running at multi-country scale.</p>
-
-                <div class="overflow-x-auto -mx-2 px-2">
-                    <div class="flex items-stretch gap-2 min-w-[820px]">
-                        <!-- Stage 1 -->
-                        <div class="flex-1 arch-node text-center">
-                            <span class="arch-num">1</span>
-                            <div class="text-xs font-bold uppercase tracking-wider mt-3" style="color:#2BA8D4">Source</div>
-                            <p class="text-[11px] text-c-muted mt-1">LinkedIn · Wuzzuf · Bayt · Referrals</p>
-                        </div>
-                        <div class="pipe-arrow">→</div>
-                        <div class="flex-1 arch-node text-center" style="border-color:rgba(248,113,113,0.4)">
-                            <span class="arch-num" style="background:linear-gradient(135deg,#f87171,#f472b6)">2</span>
-                            <div class="text-xs font-bold uppercase tracking-wider mt-3" style="color:#f87171">CV Screen</div>
-                            <p class="text-[11px] text-c-muted mt-1">Manual · 4-8 min/CV · backlog</p>
-                            <span class="tag r mt-2 inline-flex">Leak #1</span>
-                        </div>
-                        <div class="pipe-arrow">→</div>
-                        <div class="flex-1 arch-node text-center" style="border-color:rgba(248,113,113,0.4)">
-                            <span class="arch-num" style="background:linear-gradient(135deg,#f87171,#f472b6)">3</span>
-                            <div class="text-xs font-bold uppercase tracking-wider mt-3" style="color:#f87171">Phone Screen</div>
-                            <p class="text-[11px] text-c-muted mt-1">Manual outreach · phone tag</p>
-                            <span class="tag r mt-2 inline-flex">Leak #2</span>
-                        </div>
-                        <div class="pipe-arrow">→</div>
-                        <div class="flex-1 arch-node text-center">
-                            <span class="arch-num">4</span>
-                            <div class="text-xs font-bold uppercase tracking-wider mt-3" style="color:#2BA8D4">Skill Test</div>
-                            <p class="text-[11px] text-c-muted mt-1">Ad-hoc tools or in-person</p>
-                        </div>
-                        <div class="pipe-arrow">→</div>
-                        <div class="flex-1 arch-node text-center" style="border-color:rgba(248,113,113,0.4)">
-                            <span class="arch-num" style="background:linear-gradient(135deg,#f87171,#f472b6)">5</span>
-                            <div class="text-xs font-bold uppercase tracking-wider mt-3" style="color:#f87171">Scheduling</div>
-                            <p class="text-[11px] text-c-muted mt-1">Email back-and-forth · calendar misses</p>
-                            <span class="tag r mt-2 inline-flex">Leak #3</span>
-                        </div>
-                        <div class="pipe-arrow">→</div>
-                        <div class="flex-1 arch-node text-center">
-                            <span class="arch-num">6</span>
-                            <div class="text-xs font-bold uppercase tracking-wider mt-3" style="color:#2BA8D4">Manager Iv</div>
-                            <p class="text-[11px] text-c-muted mt-1">Live · sometimes recorded</p>
-                        </div>
-                        <div class="pipe-arrow">→</div>
-                        <div class="flex-1 arch-node text-center" style="border-color:rgba(248,113,113,0.4)">
-                            <span class="arch-num" style="background:linear-gradient(135deg,#f87171,#f472b6)">7</span>
-                            <div class="text-xs font-bold uppercase tracking-wider mt-3" style="color:#f87171">Offer + BG</div>
-                            <p class="text-[11px] text-c-muted mt-1">Slow handoff to HR Ops</p>
-                            <span class="tag r mt-2 inline-flex">Leak #4</span>
-                        </div>
-                        <div class="pipe-arrow">→</div>
-                        <div class="flex-1 arch-node text-center">
-                            <span class="arch-num">8</span>
-                            <div class="text-xs font-bold uppercase tracking-wider mt-3" style="color:#34d399">Onboard</div>
-                            <p class="text-[11px] text-c-muted mt-1">Zoho People · HRIS handoff</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mt-8">
-                    <div class="glass-panel p-4">
-                        <div class="text-xs font-bold uppercase tracking-widest mb-1" style="color:#f87171">Leak 1 · CV Screen</div>
-                        <p class="text-[12px] text-c-muted leading-relaxed">~60% of CVs are reviewed > 48h after submission. Top-quartile candidates exit the funnel before being contacted.</p>
-                    </div>
-                    <div class="glass-panel p-4">
-                        <div class="text-xs font-bold uppercase tracking-widest mb-1" style="color:#f87171">Leak 2 · Phone Screen</div>
-                        <p class="text-[12px] text-c-muted leading-relaxed">Phone tag, voicemail rounds, and "I'll call you back" loops add 2–4 days. Candidates in MENA strongly prefer WhatsApp text-first contact.</p>
-                    </div>
-                    <div class="glass-panel p-4">
-                        <div class="text-xs font-bold uppercase tracking-widest mb-1" style="color:#f87171">Leak 3 · Scheduling</div>
-                        <p class="text-[12px] text-c-muted leading-relaxed">Hiring-manager calendars are the single biggest constraint. No-shows on first-round panels run 15–25% without active nudges.</p>
-                    </div>
-                    <div class="glass-panel p-4">
-                        <div class="text-xs font-bold uppercase tracking-widest mb-1" style="color:#f87171">Leak 4 · Offer Handoff</div>
-                        <p class="text-[12px] text-c-muted leading-relaxed">Background check, contract draft, signing, and HRIS provisioning live in different tools. Each handoff loses 12–36 hours.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ─────────────────────────────────────────────────────── -->
-        <!-- 04 · VENDOR LANDSCAPE                                    -->
+        <!-- 01 · VENDOR LANDSCAPE                                    -->
         <!-- ─────────────────────────────────────────────────────── -->
         <section class="glass-card rounded-2xl p-8 lg:p-10 relative overflow-hidden" id="sec-vendors">
             <div class="relative z-10">
                 <div class="flex items-baseline gap-3 mb-2">
-                    <span class="text-blue-400 font-mono font-bold text-sm">03</span>
+                    <span class="text-blue-400 font-mono font-bold text-sm">01</span>
                     <h3 class="text-2xl md:text-3xl font-bold section-title">Vendor Landscape — 6 Paid Platforms</h3>
                 </div>
                 <p class="text-c-muted text-sm mb-8 max-w-4xl">Each card lists the AI capability, public pricing (where disclosed), pricing model, key strengths, blind spots, and the role it would play in the Centro CDX stack. Pricing reflects publicly listed information at the time of writing; enterprise pricing is universally bespoke and should be validated through procurement.</p>
@@ -991,12 +904,12 @@
         </section>
 
         <!-- ─────────────────────────────────────────────────────── -->
-        <!-- 05 · DETAILED COMPARISON                                 -->
+        <!-- 02 · DETAILED COMPARISON                                 -->
         <!-- ─────────────────────────────────────────────────────── -->
         <section class="glass-card rounded-2xl p-8 lg:p-10 relative overflow-hidden" id="sec-compare">
             <div class="relative z-10">
                 <div class="flex items-baseline gap-3 mb-2">
-                    <span class="text-blue-400 font-mono font-bold text-sm">04</span>
+                    <span class="text-blue-400 font-mono font-bold text-sm">02</span>
                     <h3 class="text-2xl md:text-3xl font-bold section-title">Feature Matrix · Side-by-Side</h3>
                 </div>
                 <p class="text-c-muted text-sm mb-6 max-w-4xl">14 capabilities scored 0–5 for Centro CDX context (mobile-first MENA candidate base, BPO volume hiring + targeted specialist roles). <em>"—" means not applicable / not offered.</em></p>
@@ -1149,13 +1062,13 @@
         </section>
 
         <!-- ─────────────────────────────────────────────────────── -->
-        <!-- 06 · CLOUD STACK INTEGRATION                             -->
+        <!-- 03 · CLOUD STACK INTEGRATION                             -->
         <!-- ─────────────────────────────────────────────────────── -->
         <section class="glass-card rounded-2xl p-8 lg:p-10 relative overflow-hidden" id="sec-cloud">
             <div class="absolute -bottom-20 -left-20 w-80 h-80 rounded-full blur-[80px] opacity-50 pointer-events-none" style="background:rgba(43,168,212,0.10)"></div>
             <div class="relative z-10">
                 <div class="flex items-baseline gap-3 mb-2">
-                    <span class="text-amber-400 font-mono font-bold text-sm">05</span>
+                    <span class="text-amber-400 font-mono font-bold text-sm">03</span>
                     <h3 class="text-2xl md:text-3xl font-bold section-title">AWS · Azure · Genesys — Integration Map</h3>
                 </div>
                 <p class="text-c-muted text-sm mb-8 max-w-4xl">Centro already runs production workloads on all three. The recruitment engine should be additive — using existing identity, networking, and data residency — not a parallel stack.</p>
@@ -1254,12 +1167,12 @@
         </section>
 
         <!-- ─────────────────────────────────────────────────────── -->
-        <!-- 07 · REFERENCE ARCHITECTURE                              -->
+        <!-- 04 · REFERENCE ARCHITECTURE                              -->
         <!-- ─────────────────────────────────────────────────────── -->
         <section class="glass-card rounded-2xl p-8 lg:p-10 relative overflow-hidden" id="sec-arch">
             <div class="relative z-10">
                 <div class="flex items-baseline gap-3 mb-2">
-                    <span class="text-amber-400 font-mono font-bold text-sm">06</span>
+                    <span class="text-amber-400 font-mono font-bold text-sm">04</span>
                     <h3 class="text-2xl md:text-3xl font-bold section-title">Reference Architecture · Target State</h3>
                 </div>
                 <p class="text-c-muted text-sm mb-8 max-w-4xl">A four-tier composition: presentation, agentic orchestration, evaluation tooling, and system of record. Each tier is independently swappable — no single vendor lock-in.</p>
@@ -1338,12 +1251,12 @@
         </section>
 
         <!-- ─────────────────────────────────────────────────────── -->
-        <!-- 08 · BUILD vs BUY                                        -->
+        <!-- 05 · BUILD vs BUY                                        -->
         <!-- ─────────────────────────────────────────────────────── -->
         <section class="glass-card rounded-2xl p-8 lg:p-10 relative overflow-hidden" id="sec-bvb">
             <div class="relative z-10">
                 <div class="flex items-baseline gap-3 mb-2">
-                    <span class="text-amber-400 font-mono font-bold text-sm">07</span>
+                    <span class="text-amber-400 font-mono font-bold text-sm">05</span>
                     <h3 class="text-2xl md:text-3xl font-bold section-title">Build vs Buy vs Hybrid</h3>
                 </div>
                 <p class="text-c-muted text-sm mb-8 max-w-4xl">Three valid postures. Each comes with a different cost curve, risk profile, and strategic moat.</p>
@@ -1410,12 +1323,12 @@
         </section>
 
         <!-- ─────────────────────────────────────────────────────── -->
-        <!-- 09 · PHASED ROADMAP                                      -->
+        <!-- 06 · PHASED ROADMAP                                      -->
         <!-- ─────────────────────────────────────────────────────── -->
         <section class="glass-card rounded-2xl p-8 lg:p-10 relative overflow-hidden" id="sec-roadmap">
             <div class="relative z-10">
                 <div class="flex items-baseline gap-3 mb-2">
-                    <span class="text-amber-400 font-mono font-bold text-sm">08</span>
+                    <span class="text-amber-400 font-mono font-bold text-sm">06</span>
                     <h3 class="text-2xl md:text-3xl font-bold section-title">Phased Roadmap — 90 / 180 / 365 days</h3>
                 </div>
                 <p class="text-c-muted text-sm mb-8 max-w-4xl">Each phase ends with a measurable gate. No phase begins until the prior gate passes.</p>
@@ -1507,12 +1420,12 @@
         </section>
 
         <!-- ─────────────────────────────────────────────────────── -->
-        <!-- 10 · BUSINESS IMPACT                                     -->
+        <!-- 07 · BUSINESS IMPACT                                     -->
         <!-- ─────────────────────────────────────────────────────── -->
         <section class="glass-card rounded-2xl p-8 lg:p-10 relative overflow-hidden" id="sec-impact">
             <div class="relative z-10">
                 <div class="flex items-baseline gap-3 mb-2">
-                    <span class="text-emerald-400 font-mono font-bold text-sm">09</span>
+                    <span class="text-emerald-400 font-mono font-bold text-sm">07</span>
                     <h3 class="text-2xl md:text-3xl font-bold section-title">Business Impact · ROI Model</h3>
                 </div>
                 <p class="text-c-muted text-sm mb-8 max-w-4xl">Modelled on Centro CDX's reported MENA hiring volume mix (≈ 70% agent / volume · 30% specialist). Figures are <strong class="section-title">indicative</strong> — refine with Finance before board sign-off.</p>
@@ -1610,12 +1523,12 @@
         </section>
 
         <!-- ─────────────────────────────────────────────────────── -->
-        <!-- 11 · RISKS                                               -->
+        <!-- 08 · RISKS                                               -->
         <!-- ─────────────────────────────────────────────────────── -->
         <section class="glass-card rounded-2xl p-8 lg:p-10 relative overflow-hidden" id="sec-risk">
             <div class="relative z-10">
                 <div class="flex items-baseline gap-3 mb-2">
-                    <span class="text-pink-400 font-mono font-bold text-sm">10</span>
+                    <span class="text-pink-400 font-mono font-bold text-sm">08</span>
                     <h3 class="text-2xl md:text-3xl font-bold section-title">Risk Register + Mitigations</h3>
                 </div>
                 <p class="text-c-muted text-sm mb-6 max-w-4xl">Ten material risks ranked. Severity and likelihood are post-mitigation — i.e. the residual risk Centro carries after applying the controls below.</p>
@@ -1737,12 +1650,12 @@
         </section>
 
         <!-- ─────────────────────────────────────────────────────── -->
-        <!-- 12 · OPEN-SOURCE LAB                                     -->
+        <!-- 09 · OPEN-SOURCE LAB                                     -->
         <!-- ─────────────────────────────────────────────────────── -->
         <section class="glass-card rounded-2xl p-8 lg:p-10 relative overflow-hidden" id="sec-oss">
             <div class="relative z-10">
                 <div class="flex items-baseline gap-3 mb-2">
-                    <span class="text-blue-400 font-mono font-bold text-sm">11</span>
+                    <span class="text-blue-400 font-mono font-bold text-sm">09</span>
                     <h3 class="text-2xl md:text-3xl font-bold section-title">Open-Source Lab — POC, Not Production</h3>
                 </div>
                 <p class="text-c-muted text-sm mb-6 max-w-4xl">For internal experimentation, benchmarking vendor claims, or building a fallback. <strong class="section-title">None of these meet enterprise compliance bars on their own</strong> — they are R&D building blocks.</p>
@@ -1797,13 +1710,13 @@
         </section>
 
         <!-- ─────────────────────────────────────────────────────── -->
-        <!-- 13 · CTO DECISION FRAMEWORK                              -->
+        <!-- 10 · CTO DECISION FRAMEWORK                              -->
         <!-- ─────────────────────────────────────────────────────── -->
         <section class="glass-card rounded-2xl p-8 lg:p-10 relative overflow-hidden" id="sec-decision">
             <div class="absolute -top-10 -right-10 w-72 h-72 rounded-full blur-[80px] opacity-50 pointer-events-none" style="background:rgba(52,211,153,0.10)"></div>
             <div class="relative z-10">
                 <div class="flex items-baseline gap-3 mb-2">
-                    <span class="text-emerald-400 font-mono font-bold text-sm">12</span>
+                    <span class="text-emerald-400 font-mono font-bold text-sm">10</span>
                     <h3 class="text-2xl md:text-3xl font-bold section-title">CTO Decision Framework</h3>
                 </div>
                 <p class="text-c-muted text-sm mb-8 max-w-4xl">Five gating questions. A "no" on any one of them is a halt-and-fix signal — not a kill signal — but the answer must be on record before procurement.</p>
@@ -1877,16 +1790,185 @@
         </section>
 
         <!-- ─────────────────────────────────────────────────────── -->
-        <!-- 14 · APPENDIX                                            -->
+        <!-- APPENDIX                                                 -->
         <!-- ─────────────────────────────────────────────────────── -->
         <section class="glass-card rounded-2xl p-8 lg:p-10 relative overflow-hidden" id="sec-appendix">
+            <div class="absolute -top-20 -right-20 w-72 h-72 rounded-full blur-[80px] opacity-50 pointer-events-none" style="background:rgba(43,168,212,0.10)"></div>
             <div class="relative z-10">
                 <div class="flex items-baseline gap-3 mb-2">
                     <span class="text-c-muted font-mono font-bold text-sm">Appx</span>
-                    <h3 class="text-2xl md:text-3xl font-bold section-title">Appendix · Sources, Glossary, Validation</h3>
+                    <h3 class="text-2xl md:text-3xl font-bold section-title">Appendix — Context, Baseline, Sources</h3>
+                </div>
+                <p class="text-c-muted text-sm mb-8 max-w-4xl">Background material for the briefing. The vendor-and-architecture argument in §01–§10 stands on its own; this appendix is the supporting evidence and "why" the engagement is justified.</p>
+
+                <!-- ── Appx A · Why Now ─────────────────────────────── -->
+                <div class="mb-10 pb-8" style="border-bottom:1px solid var(--border-s)">
+                    <div class="flex items-baseline gap-3 mb-4">
+                        <span class="font-mono font-bold text-sm" style="color:#2BA8D4">A</span>
+                        <h4 class="text-lg md:text-xl font-bold section-title">Strategic Context — Why Now</h4>
+                    </div>
+                    <p class="text-c-muted text-sm mb-6 max-w-4xl">Three forces are converging that make the next 12 months the right window for Centro CDX to industrialise its hiring.</p>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+                        <div class="glass-panel p-6">
+                            <div class="w-10 h-10 rounded-lg flex items-center justify-center mb-4" style="background:rgba(43,168,212,0.15);">
+                                <svg class="w-5 h-5" style="color:#2BA8D4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+                            </div>
+                            <h5 class="font-bold section-title mb-2 text-sm">1 · BPO growth outpaces TA capacity</h5>
+                            <p class="text-[12.5px] text-c-muted leading-relaxed">Centro's multinational BPO footprint adds <strong class="section-title">net new agent reqs every quarter</strong>. Linear TA team scaling pushes cost-per-hire up and pushes time-to-hire past competitive thresholds — candidates accept the first offer that reaches them, usually within 5–7 days.</p>
+                        </div>
+                        <div class="glass-panel p-6">
+                            <div class="w-10 h-10 rounded-lg flex items-center justify-center mb-4" style="background:rgba(52,211,153,0.15);">
+                                <svg class="w-5 h-5" style="color:#34d399" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            </div>
+                            <h5 class="font-bold section-title mb-2 text-sm">2 · MENA candidate channels are mobile-first</h5>
+                            <p class="text-[12.5px] text-c-muted leading-relaxed">In Egypt and the UAE, <strong class="section-title">WhatsApp opens at ≥95%</strong> while recruitment-email opens hover near 18%. Any pipeline that leans on email will keep losing candidates to faster competitors. Arabic-aware NLP is now table-stakes, not a wishlist item.</p>
+                        </div>
+                        <div class="glass-panel p-6">
+                            <div class="w-10 h-10 rounded-lg flex items-center justify-center mb-4" style="background:rgba(167,139,250,0.15);">
+                                <svg class="w-5 h-5" style="color:#a78bfa" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                            </div>
+                            <h5 class="font-bold section-title mb-2 text-sm">3 · LLM cost curve crossed the threshold</h5>
+                            <p class="text-[12.5px] text-c-muted leading-relaxed">Hosted frontier-class models on <strong class="section-title">AWS Bedrock and Azure OpenAI</strong> now make per-candidate AI cost a rounding error. Two years ago a CV-scoring agent would have been a R&D bet; today it is a procurement decision with a 6–9 month payback window.</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 rounded-xl p-5" style="background:rgba(52,211,153,0.05);border:1px solid rgba(52,211,153,0.20)">
+                        <div class="flex items-start gap-3">
+                            <div class="w-8 h-8 rounded-lg flex-shrink-0 flex items-center justify-center" style="background:rgba(52,211,153,0.18)">
+                                <svg class="w-4 h-4" style="color:#34d399" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                            </div>
+                            <div>
+                                <div class="text-xs font-bold uppercase tracking-widest mb-1" style="color:#34d399">North-Star Outcome</div>
+                                <p class="text-sm text-c-main leading-relaxed">A candidate applies on Tuesday at 14:00 → receives a WhatsApp greeting in <strong class="section-title">&lt; 60 seconds</strong> → completes a 12-min skill assessment by 14:30 → is auto-booked for a Wednesday-morning live video panel with the hiring manager → receives a verbal offer by Friday. <strong class="section-title">Zero recruiter touches</strong> for the 80% volume tier; recruiters focus exclusively on the strategic 20%.</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                <!-- ── Appx B · Funnel Today ────────────────────────── -->
+                <div class="mb-10 pb-8" style="border-bottom:1px solid var(--border-s)">
+                    <div class="flex items-baseline gap-3 mb-4">
+                        <span class="font-mono font-bold text-sm" style="color:#2BA8D4">B</span>
+                        <h4 class="text-lg md:text-xl font-bold section-title">The Funnel Today — Leak Points</h4>
+                    </div>
+                    <p class="text-c-muted text-sm mb-6 max-w-4xl">Eight stages, four documented leaks. The leaks are not "recruiter laziness" — they are <strong class="section-title">structural artefacts of a manual workflow</strong> running at multi-country scale.</p>
+
+                    <div class="overflow-x-auto rounded-xl glass-panel p-3">
+                        <div class="funnel-row">
+                            <div class="funnel-card">
+                                <span class="arch-num">1</span>
+                                <div class="fc-label">Source</div>
+                                <p class="fc-desc">LinkedIn · Wuzzuf · Bayt · Referrals</p>
+                            </div>
+                            <div class="pipe-arrow">→</div>
+                            <div class="funnel-card leak">
+                                <span class="arch-num">2</span>
+                                <div class="fc-label">CV Screen</div>
+                                <p class="fc-desc">Manual · 4–8 min/CV · backlog</p>
+                                <span class="fc-tag">Leak #1</span>
+                            </div>
+                            <div class="pipe-arrow">→</div>
+                            <div class="funnel-card leak">
+                                <span class="arch-num">3</span>
+                                <div class="fc-label">Phone Screen</div>
+                                <p class="fc-desc">Manual outreach · phone tag</p>
+                                <span class="fc-tag">Leak #2</span>
+                            </div>
+                            <div class="pipe-arrow">→</div>
+                            <div class="funnel-card">
+                                <span class="arch-num">4</span>
+                                <div class="fc-label">Skill Test</div>
+                                <p class="fc-desc">Ad-hoc tools or in-person</p>
+                            </div>
+                            <div class="pipe-arrow">→</div>
+                            <div class="funnel-card leak">
+                                <span class="arch-num">5</span>
+                                <div class="fc-label">Scheduling</div>
+                                <p class="fc-desc">Email · calendar misses</p>
+                                <span class="fc-tag">Leak #3</span>
+                            </div>
+                            <div class="pipe-arrow">→</div>
+                            <div class="funnel-card">
+                                <span class="arch-num">6</span>
+                                <div class="fc-label">Manager Iv</div>
+                                <p class="fc-desc">Live · sometimes recorded</p>
+                            </div>
+                            <div class="pipe-arrow">→</div>
+                            <div class="funnel-card leak">
+                                <span class="arch-num">7</span>
+                                <div class="fc-label">Offer + BG</div>
+                                <p class="fc-desc">Slow handoff to HR Ops</p>
+                                <span class="fc-tag">Leak #4</span>
+                            </div>
+                            <div class="pipe-arrow">→</div>
+                            <div class="funnel-card done">
+                                <span class="arch-num" style="background:linear-gradient(135deg,#16a34a,#34d399)">8</span>
+                                <div class="fc-label">Onboard</div>
+                                <p class="fc-desc">Zoho People · HRIS handoff</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mt-6">
+                        <div class="glass-panel p-4">
+                            <div class="text-xs font-bold uppercase tracking-widest mb-1" style="color:#f87171">Leak 1 · CV Screen</div>
+                            <p class="text-[12px] text-c-muted leading-relaxed">~60% of CVs are reviewed > 48h after submission. Top-quartile candidates exit the funnel before being contacted.</p>
+                        </div>
+                        <div class="glass-panel p-4">
+                            <div class="text-xs font-bold uppercase tracking-widest mb-1" style="color:#f87171">Leak 2 · Phone Screen</div>
+                            <p class="text-[12px] text-c-muted leading-relaxed">Phone tag, voicemail rounds, and "I'll call you back" loops add 2–4 days. Candidates in MENA strongly prefer WhatsApp text-first contact.</p>
+                        </div>
+                        <div class="glass-panel p-4">
+                            <div class="text-xs font-bold uppercase tracking-widest mb-1" style="color:#f87171">Leak 3 · Scheduling</div>
+                            <p class="text-[12px] text-c-muted leading-relaxed">Hiring-manager calendars are the single biggest constraint. No-shows on first-round panels run 15–25% without active nudges.</p>
+                        </div>
+                        <div class="glass-panel p-4">
+                            <div class="text-xs font-bold uppercase tracking-widest mb-1" style="color:#f87171">Leak 4 · Offer Handoff</div>
+                            <p class="text-[12px] text-c-muted leading-relaxed">Background check, contract draft, signing, and HRIS provisioning live in different tools. Each handoff loses 12–36 hours.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── Appx C · Baseline KPIs ───────────────────────── -->
+                <div class="mb-10 pb-8" style="border-bottom:1px solid var(--border-s)">
+                    <div class="flex items-baseline gap-3 mb-4">
+                        <span class="font-mono font-bold text-sm" style="color:#2BA8D4">C</span>
+                        <h4 class="text-lg md:text-xl font-bold section-title">Baseline Snapshot · Today vs Target</h4>
+                    </div>
+                    <p class="text-c-muted text-sm mb-6 max-w-4xl">These four tiles anchor the business case and set the success bar for the Phase-2 gate review.</p>
+
+                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                        <div class="kpi-tile">
+                            <div class="text-[10px] uppercase tracking-widest text-c-muted font-bold mb-2">Today's pain</div>
+                            <div class="kpi-num">22 d</div>
+                            <p class="text-xs text-c-muted mt-1">Avg time-to-hire on volume agent roles</p>
+                        </div>
+                        <div class="kpi-tile">
+                            <div class="text-[10px] uppercase tracking-widest text-c-muted font-bold mb-2">Target state</div>
+                            <div class="kpi-num">≤ 7 d</div>
+                            <p class="text-xs text-c-muted mt-1">After full Phase-2 rollout</p>
+                        </div>
+                        <div class="kpi-tile">
+                            <div class="text-[10px] uppercase tracking-widest text-c-muted font-bold mb-2">Recruiter capacity</div>
+                            <div class="kpi-num">3.4×</div>
+                            <p class="text-xs text-c-muted mt-1">Reqs per TA without headcount add</p>
+                        </div>
+                        <div class="kpi-tile">
+                            <div class="text-[10px] uppercase tracking-widest text-c-muted font-bold mb-2">Cost / hire</div>
+                            <div class="kpi-num">-38%</div>
+                            <p class="text-xs text-c-muted mt-1">Modeled, volume + specialist mix</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── Appx D · Sources & Glossary ──────────────────── -->
+                <div class="flex items-baseline gap-3 mb-4">
+                    <span class="font-mono font-bold text-sm" style="color:#2BA8D4">D</span>
+                    <h4 class="text-lg md:text-xl font-bold section-title">Sources, Glossary, Validation Notes</h4>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-2">
                     <!-- Sources -->
                     <div>
                         <h4 class="font-bold section-title text-sm mb-3">Primary vendor sources</h4>
