@@ -1,0 +1,2074 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Centro AI — AI-Driven Talent Acquisition · CTO Briefing</title>
+    <meta name="description" content="CTO-level briefing on AI-driven recruitment for Centro CDX: vendor landscape, AWS/Azure/Genesys integration, business impact, risks, and a phased rollout plan.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Montserrat', 'sans-serif'] },
+                    animation: {
+                        'gradient-x':  'gradient-x 4s ease infinite',
+                        'float':       'float 6s ease-in-out infinite',
+                        'float-slow':  'float 10s ease-in-out infinite',
+                        'float-med':   'float 8s ease-in-out infinite',
+                        'fade-in-up':  'fadeInUp 0.5s ease-out forwards',
+                        'pulse-ring':  'pulseRing 2s cubic-bezier(0,0,0.2,1) infinite',
+                        'shimmer':     'shimmer 2.8s ease-in-out infinite',
+                        'glow-pulse':  'glowPulse 3s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        'gradient-x': {
+                            '0%,100%': { 'background-size':'200% 200%','background-position':'left center' },
+                            '50%':     { 'background-size':'200% 200%','background-position':'right center' }
+                        },
+                        float: {
+                            '0%,100%': { transform:'translateY(0)' },
+                            '50%':     { transform:'translateY(-12px)' }
+                        },
+                        fadeInUp: {
+                            '0%':   { opacity:'0', transform:'translateY(20px)' },
+                            '100%': { opacity:'1', transform:'translateY(0)' }
+                        },
+                        pulseRing: {
+                            '0%':       { transform:'scale(0.8)', opacity:'0.8' },
+                            '80%,100%': { transform:'scale(2.5)', opacity:'0' }
+                        },
+                        shimmer: {
+                            '0%':   { transform:'translateX(-100%)', opacity:'0' },
+                            '40%':  { opacity:'1' },
+                            '100%': { transform:'translateX(200%)',  opacity:'0' }
+                        },
+                        glowPulse: {
+                            '0%,100%': { opacity:'0.55', transform:'scale(1)' },
+                            '50%':     { opacity:'1',    transform:'scale(1.07)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            --bg:             #04151F;
+            --glow1:          rgba(26,122,158,0.22);
+            --glow2:          rgba(10,76,106,0.28);
+            --surface:        rgba(4,28,42,0.78);
+            --panel:          rgba(7,42,62,0.55);
+            --border:         rgba(255,255,255,0.09);
+            --border-s:       rgba(255,255,255,0.06);
+            --border-grad-a:  rgba(255,255,255,0.11);
+            --border-grad-b:  rgba(26,122,158,0.22);
+            --text:           #f1f5f9;
+            --muted:          #94a3b8;
+            --shadow:         0 8px 32px 0 rgba(0,0,0,0.35), 0 2px 8px 0 rgba(0,0,0,0.2);
+            --shadow-h:       0 16px 48px 0 rgba(0,0,0,0.45), 0 4px 16px 0 rgba(0,0,0,0.25);
+            --chip-bg:        rgba(255,255,255,0.03);
+            --chip-border:    rgba(255,255,255,0.08);
+            --chip-text:      #cbd5e1;
+            --head-text:      #ffffff;
+            --section-text:   #f1f5f9;
+            --mesh-color:     rgba(255,255,255,0.018);
+        }
+
+        html.light {
+            --bg:           #eef4f8;
+            --glow1:        rgba(26,122,158,0.10);
+            --glow2:        rgba(10,76,106,0.10);
+            --surface:      rgba(255,255,255,0.94);
+            --panel:        rgba(238,242,251,0.98);
+            --border:       rgba(0,0,0,0.15);
+            --border-s:     rgba(0,0,0,0.10);
+            --text:         #0f172a;
+            --muted:        #475569;
+            --shadow:       0 4px 24px 0 rgba(0,0,0,0.09);
+            --shadow-h:     0 8px 32px 0 rgba(0,0,0,0.14);
+            --chip-bg:      rgba(0,0,0,0.035);
+            --chip-border:  rgba(0,0,0,0.15);
+            --chip-text:    #1e293b;
+            --head-text:    #000000;
+            --section-text: #0f172a;
+        }
+
+        html { scroll-behavior: smooth; scroll-padding-top: 84px; }
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            background-image:
+                linear-gradient(var(--mesh-color) 1px, transparent 1px),
+                linear-gradient(90deg, var(--mesh-color) 1px, transparent 1px),
+                radial-gradient(circle at 10% 20%, var(--glow1) 0%, transparent 25%),
+                radial-gradient(circle at 90% 80%, var(--glow2) 0%, transparent 25%),
+                radial-gradient(circle at 50% 50%, rgba(43,168,212,0.05) 0%, transparent 35%);
+            background-size: 44px 44px, 44px 44px, auto, auto, auto;
+            background-attachment: fixed;
+            overflow-x: hidden;
+            font-family: 'Montserrat', sans-serif;
+            transition: background-color 0.4s ease, color 0.4s ease;
+        }
+
+        .glass-card {
+            background: var(--surface);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid transparent;
+            box-shadow: var(--shadow);
+            position: relative;
+            transition: transform 0.35s cubic-bezier(0.16,1,0.3,1), box-shadow 0.4s ease, background 0.4s ease;
+        }
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            padding: 1px;
+            background: linear-gradient(135deg,
+                var(--border-grad-a) 0%,
+                rgba(255,255,255,0.03) 45%,
+                var(--border-grad-b) 100%);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+            z-index: 0;
+        }
+        header.glass-card::before { display: none; }
+        header.glass-card { border-bottom: 1px solid var(--border-s); }
+        .glass-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-h), 0 0 60px rgba(10,76,106,0.08);
+        }
+        .glass-panel {
+            background: var(--panel);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-s);
+            border-radius: 1rem;
+        }
+
+        .section-title  { color: var(--section-text); }
+        .card-head      { color: var(--head-text); }
+        .text-c-muted   { color: var(--muted); }
+        .text-c-main    { color: var(--text); }
+
+        .animated-gradient-text {
+            background: linear-gradient(-45deg,#1A7A9E,#2BA8D4,#34d399,#1A7A9E);
+            background-size: 300% 300%;
+            animation: gradient-x 6s ease infinite;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .glow-dot {
+            height:8px; width:8px;
+            background-color:#34d399;
+            border-radius:50%;
+            display:inline-block;
+            box-shadow:0 0 10px #34d399,0 0 20px #34d399;
+        }
+
+        /* Vendor card */
+        .vendor-card {
+            background: var(--surface);
+            border: 1px solid var(--border-s);
+            border-radius: 1.25rem;
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        .vendor-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--vc-c1, #1A7A9E), var(--vc-c2, #2BA8D4));
+            opacity: 0.85;
+        }
+        .vendor-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 16px 48px rgba(10,76,106,0.18);
+            border-color: rgba(26,122,158,0.45);
+        }
+        .vendor-logo {
+            width: 44px; height: 44px;
+            border-radius: 12px;
+            display:flex; align-items:center; justify-content:center;
+            font-weight: 800; font-size: 1.1rem; color: #fff;
+            background: linear-gradient(135deg, var(--vc-c1, #1A7A9E), var(--vc-c2, #2BA8D4));
+            box-shadow: 0 4px 14px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.18);
+            flex-shrink: 0;
+        }
+        .price-pill {
+            display:inline-flex; align-items:center; gap:6px;
+            padding: 4px 10px; border-radius: 999px;
+            font-size: 11px; font-weight: 700; letter-spacing: 0.04em;
+            text-transform: uppercase;
+            background: rgba(43,168,212,0.10);
+            color:#2BA8D4;
+            border: 1px solid rgba(43,168,212,0.25);
+        }
+        .price-pill.quote { background: rgba(245,158,11,0.10); color:#f59e0b; border-color:rgba(245,158,11,0.25); }
+        .price-pill.free { background: rgba(52,211,153,0.10); color:#34d399; border-color:rgba(52,211,153,0.25); }
+
+        /* Table */
+        table.cmp {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 0.82rem;
+        }
+        table.cmp th,
+        table.cmp td {
+            padding: 11px 12px;
+            border-bottom: 1px solid var(--border-s);
+            vertical-align: top;
+            text-align: left;
+        }
+        table.cmp th {
+            background: var(--panel);
+            font-weight: 700;
+            color: var(--text);
+            position: sticky; top: 0;
+            font-size: 0.74rem;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+        }
+        table.cmp td:first-child {
+            font-weight: 600; color: var(--text);
+            background: rgba(10,76,106,0.05);
+            min-width: 160px;
+        }
+        table.cmp tr:hover td { background: rgba(26,122,158,0.06); }
+
+        .score-bar {
+            display: inline-block;
+            width: 60px; height: 6px;
+            border-radius: 3px;
+            background: rgba(255,255,255,0.08);
+            position: relative;
+            overflow: hidden;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+        .score-bar > i {
+            position: absolute; left:0; top:0; bottom:0;
+            background: linear-gradient(90deg,#1A7A9E,#2BA8D4,#34d399);
+            display: block;
+            border-radius: 3px;
+        }
+
+        /* Pros / Cons */
+        .pro-li, .con-li {
+            display:flex; align-items:flex-start; gap:8px;
+            padding: 4px 0;
+            font-size: 12.5px; line-height:1.45;
+        }
+        .pro-li svg { color:#34d399; flex-shrink:0; margin-top:2px;}
+        .con-li svg { color:#f87171; flex-shrink:0; margin-top:2px;}
+
+        /* Tag */
+        .tag {
+            display:inline-flex; align-items:center; gap:5px;
+            padding: 3px 9px; border-radius:999px;
+            font-size: 10.5px; font-weight:600; letter-spacing:0.04em;
+            text-transform: uppercase;
+            background: var(--chip-bg);
+            border: 1px solid var(--chip-border);
+            color: var(--chip-text);
+        }
+        .tag.b { background: rgba(43,168,212,0.10); color:#2BA8D4; border-color:rgba(43,168,212,0.28); }
+        .tag.g { background: rgba(52,211,153,0.10); color:#34d399; border-color:rgba(52,211,153,0.28); }
+        .tag.a { background: rgba(245,158,11,0.10); color:#f59e0b; border-color:rgba(245,158,11,0.28); }
+        .tag.r { background: rgba(244,114,182,0.10); color:#f472b6; border-color:rgba(244,114,182,0.28); }
+        .tag.v { background: rgba(167,139,250,0.10); color:#a78bfa; border-color:rgba(167,139,250,0.28); }
+
+        /* Theme button */
+        .theme-btn {
+            display:flex; align-items:center; justify-content:center;
+            width:40px; height:40px;
+            border-radius: 12px;
+            border:1px solid var(--border);
+            background: var(--panel);
+            color: var(--text);
+            cursor:pointer;
+            transition: all 0.25s;
+        }
+        .theme-btn:hover { border-color: rgba(26,122,158,0.55); color:#2BA8D4; transform: translateY(-1px);}
+
+        /* Arch node */
+        .arch-node {
+            background: rgba(7,42,62,0.55);
+            border: 1px solid var(--border-s);
+            border-radius: 14px;
+            padding: 14px;
+            transition: border-color 0.25s, transform 0.25s;
+            position:relative;
+        }
+        .arch-node:hover { border-color: rgba(43,168,212,0.45); transform: translateY(-2px); }
+        .arch-num {
+            position:absolute; top:-10px; left:14px;
+            width:26px; height:26px;
+            border-radius:50%;
+            background: linear-gradient(135deg,#1A7A9E,#2BA8D4);
+            color:#fff; font-size:11px; font-weight:800;
+            display:flex; align-items:center; justify-content:center;
+            box-shadow: 0 4px 14px rgba(10,76,106,0.40);
+        }
+
+        /* Roadmap */
+        .phase-card { position:relative; }
+        .phase-bar {
+            height: 6px;
+            border-radius: 999px;
+            background: linear-gradient(90deg, var(--p-c1,#1A7A9E), var(--p-c2,#2BA8D4));
+            box-shadow: 0 0 12px rgba(43,168,212,0.25);
+            margin-bottom: 14px;
+            position:relative;
+            overflow:hidden;
+        }
+        .phase-bar::after {
+            content:''; position:absolute; inset:0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        /* Risk row */
+        .risk-row {
+            display:grid;
+            grid-template-columns: 32px 1fr 90px 90px;
+            gap: 12px;
+            align-items: center;
+            padding: 10px 14px;
+            border-radius: 10px;
+            border:1px solid var(--border-s);
+            background: var(--panel);
+            margin-bottom: 8px;
+            transition: border-color 0.2s, transform 0.2s;
+        }
+        .risk-row:hover { border-color: rgba(244,114,182,0.4); transform: translateX(2px); }
+        .risk-num {
+            width:30px; height:30px;
+            border-radius:8px;
+            background: rgba(244,114,182,0.10);
+            color:#f472b6;
+            display:flex; align-items:center; justify-content:center;
+            font-weight:800; font-size:13px;
+        }
+        .sev-bad { background: rgba(248,113,113,0.15); color:#f87171; }
+        .sev-med { background: rgba(245,158,11,0.15); color:#f59e0b; }
+        .sev-low { background: rgba(52,211,153,0.15); color:#34d399; }
+        .sev-chip {
+            display:inline-block;
+            padding: 3px 10px;
+            border-radius:999px;
+            font-size:10px; font-weight:800; letter-spacing:0.06em;
+            text-transform:uppercase; text-align:center;
+        }
+
+        /* KPI tile */
+        .kpi-tile {
+            background: var(--panel);
+            border:1px solid var(--border-s);
+            border-radius: 14px;
+            padding: 18px;
+            position:relative;
+            overflow:hidden;
+            transition: border-color 0.25s, transform 0.25s;
+        }
+        .kpi-tile:hover { border-color: rgba(43,168,212,0.4); transform: translateY(-2px); }
+        .kpi-num {
+            font-size: 2.1rem; font-weight: 800;
+            background: linear-gradient(135deg,#2BA8D4,#34d399);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height:1.1;
+        }
+
+        /* Pipeline arrow */
+        .pipe-arrow {
+            display:flex; align-items:center; justify-content:center;
+            color: rgba(43,168,212,0.65);
+            font-weight: 800;
+        }
+        @media (max-width: 768px) {
+            .pipe-arrow { transform: rotate(90deg); padding: 4px 0; }
+        }
+
+        /* Code/CLI snippet */
+        code.inl {
+            background: rgba(43,168,212,0.10);
+            color:#2BA8D4;
+            padding: 1px 6px;
+            border-radius: 5px;
+            font-size: 0.82em;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            border: 1px solid rgba(43,168,212,0.20);
+        }
+
+        /* Light-mode tweaks */
+        html.light .arch-node { background: rgba(0,0,0,0.025); border-color: rgba(0,0,0,0.10); }
+        html.light table.cmp td:first-child { background: rgba(10,76,106,0.05); }
+        html.light table.cmp tr:hover td { background: rgba(26,122,158,0.06); }
+        html.light .risk-row { background: rgba(0,0,0,0.025); }
+        html.light .kpi-tile { background: rgba(0,0,0,0.025); }
+        html.light .vendor-card { background: rgba(255,255,255,0.98); }
+        html.light .score-bar { background: rgba(0,0,0,0.10); }
+        html.light .price-pill { background: rgba(26,122,158,0.10); color:#0A4C6A; border-color: rgba(26,122,158,0.30); }
+        html.light .price-pill.quote { background: rgba(245,158,11,0.10); color:#92400e; }
+        html.light .price-pill.free { background: rgba(52,211,153,0.10); color:#065f46; }
+        html.light .tag { background: rgba(0,0,0,0.04); color: #1e293b; border-color: rgba(0,0,0,0.15); }
+    </style>
+</head>
+
+<body>
+
+    <!-- ── Ambient blobs ─────────────────────────────────────────── -->
+    <div class="fixed top-[10%] left-[5%] w-[30%] h-[30%] rounded-full blur-[100px] pointer-events-none animate-float-slow" style="background:rgba(26,122,158,0.10)"></div>
+    <div class="fixed bottom-[10%] right-[10%] w-[28%] h-[28%] rounded-full blur-[100px] pointer-events-none animate-float-med" style="background:rgba(43,168,212,0.10)"></div>
+    <div class="fixed top-[55%] left-[40%] w-[20%] h-[20%] rounded-full blur-[100px] pointer-events-none animate-float" style="background:rgba(52,211,153,0.06)"></div>
+
+    <!-- ── Header ─────────────────────────────────────────────── -->
+    <header class="glass-card sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <div class="w-10 h-10 flex items-center justify-center rounded-xl" style="background:linear-gradient(135deg,#1A7A9E,#2BA8D4);box-shadow:0 4px 14px rgba(10,76,106,0.35);">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                </div>
+                <div>
+                    <h1 class="text-base sm:text-lg font-bold tracking-tight section-title leading-tight">Centro <span class="font-light">AI</span></h1>
+                    <p class="text-[10px] uppercase tracking-widest text-c-muted">Talent Acquisition · CTO Briefing</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <a href="index.html" class="hidden sm:inline-flex items-center gap-2 text-xs font-medium px-3.5 py-2 rounded-full" style="color:var(--muted);background:var(--panel);border:1px solid var(--border)">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                    Main Blueprint
+                </a>
+                <div class="hidden md:inline-flex items-center gap-2 text-xs font-medium px-3.5 py-2 rounded-full" style="color:#2BA8D4;background:rgba(43,168,212,0.10);border:1px solid rgba(43,168,212,0.25)">
+                    <span class="glow-dot animate-pulse"></span>
+                    Draft v1.0 · Q2-2026
+                </div>
+                <button id="themeToggle" class="theme-btn" title="Toggle theme" aria-label="Toggle theme">
+                    <svg id="iconMoon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+                    <svg id="iconSun" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m8.66-9h-1M4.34 12h-1m15.07-6.07l-.71.71M6.34 17.66l-.71.71m12.02 0l-.71-.71M6.34 6.34l-.71-.71M12 5a7 7 0 110 14A7 7 0 0112 5z"/></svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-10 space-y-12 relative z-10 pb-24">
+
+        <!-- ─────────────────────────────────────────────────────── -->
+        <!-- 01 · HERO + EXECUTIVE SUMMARY                            -->
+        <!-- ─────────────────────────────────────────────────────── -->
+        <section class="glass-card rounded-2xl p-8 lg:p-12 animate-fade-in-up relative overflow-hidden" id="sec-hero">
+            <div class="absolute top-0 right-0 w-[480px] h-[480px] bg-gradient-to-br from-blue-500/10 via-cyan-500/8 to-emerald-500/10 blur-[100px] rounded-full opacity-70 animate-float pointer-events-none"></div>
+            <div class="relative z-10">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium uppercase tracking-widest mb-6" style="background:var(--panel);border:1px solid var(--border);color:var(--muted)">
+                    <span class="glow-dot animate-pulse"></span>
+                    Strategic Brief · For the Office of the CTO
+                </div>
+                <h2 class="text-3xl md:text-5xl lg:text-6xl font-bold mb-6 tracking-tight leading-tight section-title">
+                    Replacing the Recruiter Pipeline with an <br/>
+                    <span class="animated-gradient-text">Agentic, AI-Driven Hiring Engine</span>
+                </h2>
+                <p class="text-lg leading-relaxed max-w-5xl text-c-muted mb-8">
+                    This briefing maps Centro CDX from a <strong class="section-title">manually-orchestrated, recruiter-led BPO hiring funnel</strong> to a <strong class="section-title">multi-agent, cloud-native talent engine</strong> spanning sourcing → screening → assessment → live virtual interview → offer. The plan layers best-of-breed SaaS evaluation tools on top of our existing AWS, Azure and Genesys footprint — not a forklift replacement of the HRIS.
+                </p>
+
+                <!-- Bottom-line recommendation -->
+                <div class="rounded-2xl p-6 mb-8" style="background:linear-gradient(135deg,rgba(10,76,106,0.18),rgba(43,168,212,0.05));border:1px solid rgba(43,168,212,0.28)">
+                    <div class="flex items-start gap-3 mb-3">
+                        <svg class="w-5 h-5 mt-1" style="color:#2BA8D4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                        <div>
+                            <div class="text-xs font-bold uppercase tracking-widest mb-1" style="color:#2BA8D4">Bottom Line</div>
+                            <p class="text-base lg:text-lg leading-relaxed section-title">
+                                Adopt a <strong>two-vendor "Brain + Hands" stack</strong>: <strong class="text-emerald-400">TestGorilla</strong> for objective scoring + <strong class="text-emerald-400">Paradox (Olivia)</strong> for conversational scheduling and follow-up — orchestrated by <strong>AWS Bedrock + Lambda</strong> with <strong>Genesys Cloud CX</strong> handling the voice interview leg. Layer in <strong class="text-emerald-400">Talview</strong> only where proctored technical or executive video is required. Estimated payback ≤ 9 months on Centro's MENA hiring volume.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4-tile exec strip -->
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                    <div class="kpi-tile">
+                        <div class="text-[10px] uppercase tracking-widest text-c-muted font-bold mb-2">Today's pain</div>
+                        <div class="kpi-num">22 d</div>
+                        <p class="text-xs text-c-muted mt-1">Avg time-to-hire on volume agent roles</p>
+                    </div>
+                    <div class="kpi-tile">
+                        <div class="text-[10px] uppercase tracking-widest text-c-muted font-bold mb-2">Target state</div>
+                        <div class="kpi-num">≤ 7 d</div>
+                        <p class="text-xs text-c-muted mt-1">After full Phase-2 rollout</p>
+                    </div>
+                    <div class="kpi-tile">
+                        <div class="text-[10px] uppercase tracking-widest text-c-muted font-bold mb-2">Recruiter capacity</div>
+                        <div class="kpi-num">3.4×</div>
+                        <p class="text-xs text-c-muted mt-1">Reqs per TA without headcount add</p>
+                    </div>
+                    <div class="kpi-tile">
+                        <div class="text-[10px] uppercase tracking-widest text-c-muted font-bold mb-2">Cost / hire</div>
+                        <div class="kpi-num">-38%</div>
+                        <p class="text-xs text-c-muted mt-1">Modeled, volume + specialist mix</p>
+                    </div>
+                </div>
+
+                <!-- Agenda nav -->
+                <div class="mt-10 pt-8" style="border-top:1px solid var(--border)">
+                    <div class="flex items-center justify-between mb-5 flex-wrap gap-3">
+                        <div>
+                            <h3 class="text-base font-bold section-title">Briefing Agenda</h3>
+                            <p class="text-xs text-c-muted mt-0.5">12 sections · jump to any</p>
+                        </div>
+                        <div class="flex gap-2 flex-wrap">
+                            <span class="tag b">Vendor</span>
+                            <span class="tag a">Architecture</span>
+                            <span class="tag g">Impact</span>
+                            <span class="tag r">Risk</span>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5 text-sm">
+                        <a href="#sec-context" class="arch-node">
+                            <div class="flex items-center gap-2"><span class="text-[10px] font-mono font-bold text-blue-400">01</span><span class="font-semibold section-title text-sm">Strategic Context</span></div>
+                            <p class="text-[11px] text-c-muted mt-1 ml-7">Why now · MENA dynamics</p>
+                        </a>
+                        <a href="#sec-funnel" class="arch-node">
+                            <div class="flex items-center gap-2"><span class="text-[10px] font-mono font-bold text-blue-400">02</span><span class="font-semibold section-title text-sm">Funnel Today</span></div>
+                            <p class="text-[11px] text-c-muted mt-1 ml-7">As-is workflow + leak points</p>
+                        </a>
+                        <a href="#sec-vendors" class="arch-node">
+                            <div class="flex items-center gap-2"><span class="text-[10px] font-mono font-bold text-blue-400">03</span><span class="font-semibold section-title text-sm">Vendor Landscape</span></div>
+                            <p class="text-[11px] text-c-muted mt-1 ml-7">6 paid platforms · pricing</p>
+                        </a>
+                        <a href="#sec-compare" class="arch-node">
+                            <div class="flex items-center gap-2"><span class="text-[10px] font-mono font-bold text-blue-400">04</span><span class="font-semibold section-title text-sm">Feature Matrix</span></div>
+                            <p class="text-[11px] text-c-muted mt-1 ml-7">Side-by-side comparison</p>
+                        </a>
+                        <a href="#sec-cloud" class="arch-node">
+                            <div class="flex items-center gap-2"><span class="text-[10px] font-mono font-bold text-amber-400">05</span><span class="font-semibold section-title text-sm">AWS · Azure · Genesys</span></div>
+                            <p class="text-[11px] text-c-muted mt-1 ml-7">Integration & cost map</p>
+                        </a>
+                        <a href="#sec-arch" class="arch-node">
+                            <div class="flex items-center gap-2"><span class="text-[10px] font-mono font-bold text-amber-400">06</span><span class="font-semibold section-title text-sm">Reference Architecture</span></div>
+                            <p class="text-[11px] text-c-muted mt-1 ml-7">End-to-end flow</p>
+                        </a>
+                        <a href="#sec-bvb" class="arch-node">
+                            <div class="flex items-center gap-2"><span class="text-[10px] font-mono font-bold text-amber-400">07</span><span class="font-semibold section-title text-sm">Build vs Buy</span></div>
+                            <p class="text-[11px] text-c-muted mt-1 ml-7">Decision matrix</p>
+                        </a>
+                        <a href="#sec-roadmap" class="arch-node">
+                            <div class="flex items-center gap-2"><span class="text-[10px] font-mono font-bold text-amber-400">08</span><span class="font-semibold section-title text-sm">Phased Roadmap</span></div>
+                            <p class="text-[11px] text-c-muted mt-1 ml-7">90 / 180 / 365 days</p>
+                        </a>
+                        <a href="#sec-impact" class="arch-node">
+                            <div class="flex items-center gap-2"><span class="text-[10px] font-mono font-bold text-emerald-400">09</span><span class="font-semibold section-title text-sm">Business Impact</span></div>
+                            <p class="text-[11px] text-c-muted mt-1 ml-7">ROI · KPIs · TCO</p>
+                        </a>
+                        <a href="#sec-risk" class="arch-node">
+                            <div class="flex items-center gap-2"><span class="text-[10px] font-mono font-bold text-pink-400">10</span><span class="font-semibold section-title text-sm">Risk Register</span></div>
+                            <p class="text-[11px] text-c-muted mt-1 ml-7">Bias · privacy · vendor lock-in</p>
+                        </a>
+                        <a href="#sec-oss" class="arch-node">
+                            <div class="flex items-center gap-2"><span class="text-[10px] font-mono font-bold text-blue-400">11</span><span class="font-semibold section-title text-sm">Open-Source Lab</span></div>
+                            <p class="text-[11px] text-c-muted mt-1 ml-7">For POC, not production</p>
+                        </a>
+                        <a href="#sec-decision" class="arch-node">
+                            <div class="flex items-center gap-2"><span class="text-[10px] font-mono font-bold text-emerald-400">12</span><span class="font-semibold section-title text-sm">CTO Decision</span></div>
+                            <p class="text-[11px] text-c-muted mt-1 ml-7">Go / No-go gates</p>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ─────────────────────────────────────────────────────── -->
+        <!-- 02 · STRATEGIC CONTEXT                                   -->
+        <!-- ─────────────────────────────────────────────────────── -->
+        <section class="glass-card rounded-2xl p-8 lg:p-10 relative overflow-hidden" id="sec-context">
+            <div class="absolute -top-20 -right-20 w-72 h-72 rounded-full blur-[80px] opacity-60 pointer-events-none" style="background:rgba(43,168,212,0.10)"></div>
+            <div class="relative z-10">
+                <div class="flex items-baseline gap-3 mb-2">
+                    <span class="text-blue-400 font-mono font-bold text-sm">01</span>
+                    <h3 class="text-2xl md:text-3xl font-bold section-title">Strategic Context — Why Now</h3>
+                </div>
+                <p class="text-c-muted text-sm mb-8 max-w-4xl">Three forces are converging that make the next 12 months the right window for Centro CDX to industrialise its hiring.</p>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+                    <div class="glass-panel p-6">
+                        <div class="w-10 h-10 rounded-lg flex items-center justify-center mb-4" style="background:rgba(43,168,212,0.15);">
+                            <svg class="w-5 h-5" style="color:#2BA8D4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+                        </div>
+                        <h4 class="font-bold section-title mb-2">1 · BPO growth outpaces TA capacity</h4>
+                        <p class="text-sm text-c-muted leading-relaxed">Centro's multinational BPO footprint adds <strong class="section-title">net new agent reqs every quarter</strong>. Linear TA team scaling pushes cost-per-hire up and pushes time-to-hire past competitive thresholds — candidates accept the first offer that reaches them, usually within 5–7 days.</p>
+                    </div>
+                    <div class="glass-panel p-6">
+                        <div class="w-10 h-10 rounded-lg flex items-center justify-center mb-4" style="background:rgba(52,211,153,0.15);">
+                            <svg class="w-5 h-5" style="color:#34d399" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        </div>
+                        <h4 class="font-bold section-title mb-2">2 · MENA candidate channels are mobile-first</h4>
+                        <p class="text-sm text-c-muted leading-relaxed">In Egypt and the UAE, <strong class="section-title">WhatsApp opens at ≥95%</strong> while recruitment-email opens hover near 18%. Any pipeline that leans on email will keep losing candidates to faster competitors. Arabic-aware NLP is now table-stakes, not a wishlist item.</p>
+                    </div>
+                    <div class="glass-panel p-6">
+                        <div class="w-10 h-10 rounded-lg flex items-center justify-center mb-4" style="background:rgba(167,139,250,0.15);">
+                            <svg class="w-5 h-5" style="color:#a78bfa" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                        </div>
+                        <h4 class="font-bold section-title mb-2">3 · LLM cost curve crossed the threshold</h4>
+                        <p class="text-sm text-c-muted leading-relaxed">Hosted frontier-class models on <strong class="section-title">AWS Bedrock and Azure OpenAI</strong> now make per-candidate AI cost a rounding error. Two years ago a CV-scoring agent would have been a R&D bet; today it is a procurement decision with a 6–9 month payback window.</p>
+                    </div>
+                </div>
+
+                <!-- North-star -->
+                <div class="mt-8 rounded-xl p-5" style="background:rgba(52,211,153,0.05);border:1px solid rgba(52,211,153,0.20)">
+                    <div class="flex items-start gap-3">
+                        <div class="w-8 h-8 rounded-lg flex-shrink-0 flex items-center justify-center" style="background:rgba(52,211,153,0.18)">
+                            <svg class="w-4 h-4" style="color:#34d399" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                        </div>
+                        <div>
+                            <div class="text-xs font-bold uppercase tracking-widest mb-1" style="color:#34d399">North-Star Outcome</div>
+                            <p class="text-sm text-c-main leading-relaxed">A candidate applies on Tuesday at 14:00 → receives a WhatsApp greeting in <strong class="section-title">&lt; 60 seconds</strong> → completes a 12-min skill assessment by 14:30 → is auto-booked for a Wednesday-morning live video panel with the hiring manager → receives a verbal offer by Friday. <strong class="section-title">Zero recruiter touches</strong> for the 80% volume tier; recruiters focus exclusively on the strategic 20%.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ─────────────────────────────────────────────────────── -->
+        <!-- 03 · FUNNEL TODAY                                        -->
+        <!-- ─────────────────────────────────────────────────────── -->
+        <section class="glass-card rounded-2xl p-8 lg:p-10 relative overflow-hidden" id="sec-funnel">
+            <div class="relative z-10">
+                <div class="flex items-baseline gap-3 mb-2">
+                    <span class="text-blue-400 font-mono font-bold text-sm">02</span>
+                    <h3 class="text-2xl md:text-3xl font-bold section-title">The Funnel Today — Leak Points</h3>
+                </div>
+                <p class="text-c-muted text-sm mb-8 max-w-4xl">Eight stages, four documented leaks. The leaks are not "recruiter laziness" — they are <strong class="section-title">structural artefacts of a manual workflow</strong> running at multi-country scale.</p>
+
+                <div class="overflow-x-auto -mx-2 px-2">
+                    <div class="flex items-stretch gap-2 min-w-[820px]">
+                        <!-- Stage 1 -->
+                        <div class="flex-1 arch-node text-center">
+                            <span class="arch-num">1</span>
+                            <div class="text-xs font-bold uppercase tracking-wider mt-3" style="color:#2BA8D4">Source</div>
+                            <p class="text-[11px] text-c-muted mt-1">LinkedIn · Wuzzuf · Bayt · Referrals</p>
+                        </div>
+                        <div class="pipe-arrow">→</div>
+                        <div class="flex-1 arch-node text-center" style="border-color:rgba(248,113,113,0.4)">
+                            <span class="arch-num" style="background:linear-gradient(135deg,#f87171,#f472b6)">2</span>
+                            <div class="text-xs font-bold uppercase tracking-wider mt-3" style="color:#f87171">CV Screen</div>
+                            <p class="text-[11px] text-c-muted mt-1">Manual · 4-8 min/CV · backlog</p>
+                            <span class="tag r mt-2 inline-flex">Leak #1</span>
+                        </div>
+                        <div class="pipe-arrow">→</div>
+                        <div class="flex-1 arch-node text-center" style="border-color:rgba(248,113,113,0.4)">
+                            <span class="arch-num" style="background:linear-gradient(135deg,#f87171,#f472b6)">3</span>
+                            <div class="text-xs font-bold uppercase tracking-wider mt-3" style="color:#f87171">Phone Screen</div>
+                            <p class="text-[11px] text-c-muted mt-1">Manual outreach · phone tag</p>
+                            <span class="tag r mt-2 inline-flex">Leak #2</span>
+                        </div>
+                        <div class="pipe-arrow">→</div>
+                        <div class="flex-1 arch-node text-center">
+                            <span class="arch-num">4</span>
+                            <div class="text-xs font-bold uppercase tracking-wider mt-3" style="color:#2BA8D4">Skill Test</div>
+                            <p class="text-[11px] text-c-muted mt-1">Ad-hoc tools or in-person</p>
+                        </div>
+                        <div class="pipe-arrow">→</div>
+                        <div class="flex-1 arch-node text-center" style="border-color:rgba(248,113,113,0.4)">
+                            <span class="arch-num" style="background:linear-gradient(135deg,#f87171,#f472b6)">5</span>
+                            <div class="text-xs font-bold uppercase tracking-wider mt-3" style="color:#f87171">Scheduling</div>
+                            <p class="text-[11px] text-c-muted mt-1">Email back-and-forth · calendar misses</p>
+                            <span class="tag r mt-2 inline-flex">Leak #3</span>
+                        </div>
+                        <div class="pipe-arrow">→</div>
+                        <div class="flex-1 arch-node text-center">
+                            <span class="arch-num">6</span>
+                            <div class="text-xs font-bold uppercase tracking-wider mt-3" style="color:#2BA8D4">Manager Iv</div>
+                            <p class="text-[11px] text-c-muted mt-1">Live · sometimes recorded</p>
+                        </div>
+                        <div class="pipe-arrow">→</div>
+                        <div class="flex-1 arch-node text-center" style="border-color:rgba(248,113,113,0.4)">
+                            <span class="arch-num" style="background:linear-gradient(135deg,#f87171,#f472b6)">7</span>
+                            <div class="text-xs font-bold uppercase tracking-wider mt-3" style="color:#f87171">Offer + BG</div>
+                            <p class="text-[11px] text-c-muted mt-1">Slow handoff to HR Ops</p>
+                            <span class="tag r mt-2 inline-flex">Leak #4</span>
+                        </div>
+                        <div class="pipe-arrow">→</div>
+                        <div class="flex-1 arch-node text-center">
+                            <span class="arch-num">8</span>
+                            <div class="text-xs font-bold uppercase tracking-wider mt-3" style="color:#34d399">Onboard</div>
+                            <p class="text-[11px] text-c-muted mt-1">Zoho People · HRIS handoff</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mt-8">
+                    <div class="glass-panel p-4">
+                        <div class="text-xs font-bold uppercase tracking-widest mb-1" style="color:#f87171">Leak 1 · CV Screen</div>
+                        <p class="text-[12px] text-c-muted leading-relaxed">~60% of CVs are reviewed > 48h after submission. Top-quartile candidates exit the funnel before being contacted.</p>
+                    </div>
+                    <div class="glass-panel p-4">
+                        <div class="text-xs font-bold uppercase tracking-widest mb-1" style="color:#f87171">Leak 2 · Phone Screen</div>
+                        <p class="text-[12px] text-c-muted leading-relaxed">Phone tag, voicemail rounds, and "I'll call you back" loops add 2–4 days. Candidates in MENA strongly prefer WhatsApp text-first contact.</p>
+                    </div>
+                    <div class="glass-panel p-4">
+                        <div class="text-xs font-bold uppercase tracking-widest mb-1" style="color:#f87171">Leak 3 · Scheduling</div>
+                        <p class="text-[12px] text-c-muted leading-relaxed">Hiring-manager calendars are the single biggest constraint. No-shows on first-round panels run 15–25% without active nudges.</p>
+                    </div>
+                    <div class="glass-panel p-4">
+                        <div class="text-xs font-bold uppercase tracking-widest mb-1" style="color:#f87171">Leak 4 · Offer Handoff</div>
+                        <p class="text-[12px] text-c-muted leading-relaxed">Background check, contract draft, signing, and HRIS provisioning live in different tools. Each handoff loses 12–36 hours.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ─────────────────────────────────────────────────────── -->
+        <!-- 04 · VENDOR LANDSCAPE                                    -->
+        <!-- ─────────────────────────────────────────────────────── -->
+        <section class="glass-card rounded-2xl p-8 lg:p-10 relative overflow-hidden" id="sec-vendors">
+            <div class="relative z-10">
+                <div class="flex items-baseline gap-3 mb-2">
+                    <span class="text-blue-400 font-mono font-bold text-sm">03</span>
+                    <h3 class="text-2xl md:text-3xl font-bold section-title">Vendor Landscape — 6 Paid Platforms</h3>
+                </div>
+                <p class="text-c-muted text-sm mb-8 max-w-4xl">Each card lists the AI capability, public pricing (where disclosed), pricing model, key strengths, blind spots, and the role it would play in the Centro CDX stack. Pricing reflects publicly listed information at the time of writing; enterprise pricing is universally bespoke and should be validated through procurement.</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+                    <!-- 1 · Paradox -->
+                    <div class="vendor-card" style="--vc-c1:#7c3aed;--vc-c2:#a78bfa">
+                        <div class="flex items-start gap-3 mb-4">
+                            <div class="vendor-logo">P</div>
+                            <div class="flex-1">
+                                <h4 class="font-bold text-lg section-title leading-tight">Paradox (Olivia)</h4>
+                                <a href="https://www.paradox.ai" target="_blank" rel="noopener" class="text-[11px] text-c-muted hover:text-blue-400">paradox.ai →</a>
+                            </div>
+                            <span class="price-pill quote">Enterprise Quote</span>
+                        </div>
+                        <p class="text-sm text-c-muted leading-relaxed mb-4">Conversational AI assistant <strong class="section-title">"Olivia"</strong> runs the candidate journey over WhatsApp, SMS, web chat, and email. Auto-screens, answers FAQs, and books interviews directly on hiring-manager calendars.</p>
+                        <div class="flex flex-wrap gap-1.5 mb-4">
+                            <span class="tag v">Conversational AI</span>
+                            <span class="tag v">Scheduling</span>
+                            <span class="tag v">WhatsApp-native</span>
+                            <span class="tag v">ISO 27001 · SOC 2</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-x-3 gap-y-1 mb-4">
+                            <div class="pro-li"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg><span>Best-in-class scheduling logic — eliminates Leak #3</span></div>
+                            <div class="pro-li"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg><span>Industry-specific chat playbooks (BPO, retail, healthcare)</span></div>
+                            <div class="pro-li"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg><span>Robust APIs + Zoho / Workday connectors</span></div>
+                            <div class="con-li"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg><span>No native skill testing — needs a partner tool</span></div>
+                            <div class="con-li"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg><span>No public price — annual SaaS contracts typically $30–80k+ for mid-market</span></div>
+                        </div>
+                        <div class="rounded-lg p-3 text-xs text-c-muted" style="background:rgba(124,58,237,0.08);border:1px solid rgba(124,58,237,0.18)">
+                            <strong style="color:#a78bfa">Centro role:</strong> The <em>hands</em> — candidate engagement, scheduling, follow-up nudges. WhatsApp is decisive for MENA.
+                        </div>
+                    </div>
+
+                    <!-- 2 · HireVue -->
+                    <div class="vendor-card" style="--vc-c1:#0ea5e9;--vc-c2:#22d3ee">
+                        <div class="flex items-start gap-3 mb-4">
+                            <div class="vendor-logo">HV</div>
+                            <div class="flex-1">
+                                <h4 class="font-bold text-lg section-title leading-tight">HireVue</h4>
+                                <a href="https://www.hirevue.com" target="_blank" rel="noopener" class="text-[11px] text-c-muted hover:text-blue-400">hirevue.com →</a>
+                            </div>
+                            <span class="price-pill quote">From ~$35k/yr</span>
+                        </div>
+                        <p class="text-sm text-c-muted leading-relaxed mb-4">Async <strong class="section-title">video interviewing</strong> + AI-scored competency models, game-based cognitive assessments, and live virtual rooms with built-in coding sandboxes.</p>
+                        <div class="flex flex-wrap gap-1.5 mb-4">
+                            <span class="tag b">Async Video</span>
+                            <span class="tag b">FedRAMP</span>
+                            <span class="tag b">NYC LL144 Audit</span>
+                            <span class="tag b">40+ Languages</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-x-3 gap-y-1 mb-4">
+                            <div class="pro-li"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg><span>Validated "Success Profiles" by I-O psychologists</span></div>
+                            <div class="pro-li"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg><span>Publishes annual bias-audit reports</span></div>
+                            <div class="pro-li"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg><span>Workday / Oracle / SAP SuccessFactors connectors</span></div>
+                            <div class="con-li"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg><span>Voluntarily removed facial-analysis scoring in 2021 — verbal-only now</span></div>
+                            <div class="con-li"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg><span>Heavyweight integration footprint — overkill for &lt; 2.5k FTE</span></div>
+                        </div>
+                        <div class="rounded-lg p-3 text-xs text-c-muted" style="background:rgba(14,165,233,0.08);border:1px solid rgba(14,165,233,0.18)">
+                            <strong style="color:#22d3ee">Centro role:</strong> Defer until Phase 3 unless executive / specialist hiring volume justifies the floor.
+                        </div>
+                    </div>
+
+                    <!-- 3 · TestGorilla -->
+                    <div class="vendor-card" style="--vc-c1:#16a34a;--vc-c2:#22c55e">
+                        <div class="flex items-start gap-3 mb-4">
+                            <div class="vendor-logo">TG</div>
+                            <div class="flex-1">
+                                <h4 class="font-bold text-lg section-title leading-tight">TestGorilla</h4>
+                                <a href="https://www.testgorilla.com/pricing" target="_blank" rel="noopener" class="text-[11px] text-c-muted hover:text-blue-400">testgorilla.com/pricing →</a>
+                            </div>
+                            <span class="price-pill">Free → $142/mo</span>
+                        </div>
+                        <p class="text-sm text-c-muted leading-relaxed mb-4"><strong class="section-title">Credit-based</strong> assessment library (1 credit/candidate, 2 for conversational-AI interview). Tiered: <strong class="section-title">Free</strong> (10 cr/mo) · <strong class="section-title">Core $142/mo</strong> annual ($1,704/yr) · <strong class="section-title">Plus from $400/mo</strong> · Enterprise custom. Anti-cheat snapshots + IP fingerprinting.</p>
+                        <div class="flex flex-wrap gap-1.5 mb-4">
+                            <span class="tag g">Skill Testing</span>
+                            <span class="tag g">Anti-cheat</span>
+                            <span class="tag g">Public Pricing</span>
+                            <span class="tag g">SOC 2 Type II</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-x-3 gap-y-1 mb-4">
+                            <div class="pro-li"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg><span>Transparent public pricing — easy to model TCO</span></div>
+                            <div class="pro-li"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg><span>Best-in-class objective-scoring gate (no soft-feel bias)</span></div>
+                            <div class="pro-li"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg><span>Developer-friendly REST API + webhooks</span></div>
+                            <div class="con-li"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg><span><strong>No Arabic UI</strong> — 12 EU/Asian languages only (material MENA gap)</span></div>
+                            <div class="con-li"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg><span>No native conversational agent / scheduling</span></div>
+                        </div>
+                        <div class="rounded-lg p-3 text-xs text-c-muted" style="background:rgba(22,163,74,0.08);border:1px solid rgba(22,163,74,0.18)">
+                            <strong style="color:#22c55e">Centro role:</strong> The <em>brain</em> for skill verification. Hard gate before any human screen.
+                        </div>
+                    </div>
+
+                    <!-- 4 · Sapia.ai -->
+                    <div class="vendor-card" style="--vc-c1:#ec4899;--vc-c2:#f472b6">
+                        <div class="flex items-start gap-3 mb-4">
+                            <div class="vendor-logo">S</div>
+                            <div class="flex-1">
+                                <h4 class="font-bold text-lg section-title leading-tight">Sapia.ai</h4>
+                                <a href="https://www.sapia.ai" target="_blank" rel="noopener" class="text-[11px] text-c-muted hover:text-blue-400">sapia.ai →</a>
+                            </div>
+                            <span class="price-pill quote">Enterprise Quote</span>
+                        </div>
+                        <p class="text-sm text-c-muted leading-relaxed mb-4"><strong class="section-title">"Blind" chat-based interview</strong>: 5–7 open-ended text prompts analysed by NLP for personality, values, and communication. <strong class="section-title">First and only vendor with ISO/IEC 42001:2023</strong> — the responsible-AI management-system certification that maps directly to EU AI Act obligations.</p>
+                        <div class="flex flex-wrap gap-1.5 mb-4">
+                            <span class="tag r">Text Interview</span>
+                            <span class="tag r">FAIR Framework</span>
+                            <span class="tag r">ISO 42001</span>
+                            <span class="tag r">EU AI Act Ready</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-x-3 gap-y-1 mb-4">
+                            <div class="pro-li"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg><span>Strongest EU AI Act posture in field (ISO 42001 certified)</span></div>
+                            <div class="pro-li"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg><span>Personalised candidate coaching = brand uplift</span></div>
+                            <div class="pro-li"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg><span>Mobile-friendly · low-bandwidth</span></div>
+                            <div class="con-li"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg><span>Text-only — won't satisfy "need a face on camera" stakeholders</span></div>
+                            <div class="con-li"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg><span>Smaller Egypt/UAE footprint than Paradox/Talview</span></div>
+                        </div>
+                        <div class="rounded-lg p-3 text-xs text-c-muted" style="background:rgba(236,72,153,0.08);border:1px solid rgba(236,72,153,0.18)">
+                            <strong style="color:#f472b6">Centro role:</strong> Optional Phase-2 layer for soft-skill profiling + employer-brand differentiation.
+                        </div>
+                    </div>
+
+                    <!-- 5 · Talview -->
+                    <div class="vendor-card" style="--vc-c1:#f59e0b;--vc-c2:#fbbf24">
+                        <div class="flex items-start gap-3 mb-4">
+                            <div class="vendor-logo">TV</div>
+                            <div class="flex-1">
+                                <h4 class="font-bold text-lg section-title leading-tight">Talview</h4>
+                                <a href="https://www.talview.com" target="_blank" rel="noopener" class="text-[11px] text-c-muted hover:text-blue-400">talview.com →</a>
+                            </div>
+                            <span class="price-pill quote">Enterprise Quote</span>
+                        </div>
+                        <p class="text-sm text-c-muted leading-relaxed mb-4">"Instahiring" platform with <strong class="section-title">Alvy</strong> (agentic AI proctor — identity, behaviour and environment signals) and <strong class="section-title">Ivy</strong> (AI interviewer + bias-aware scoring). Built-in code compiler · dual-camera + 360° room scan · Arabic among supported interview languages.</p>
+                        <div class="flex flex-wrap gap-1.5 mb-4">
+                            <span class="tag a">Alvy AI Proctor</span>
+                            <span class="tag a">Live Coding</span>
+                            <span class="tag a">Arabic ✓</span>
+                            <span class="tag a">ISO 27001 · SOC 2</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-x-3 gap-y-1 mb-4">
+                            <div class="pro-li"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg><span>Aggressive proctoring (gaze, voice, multi-screen detection)</span></div>
+                            <div class="pro-li"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg><span>Built-in compiler — no Codility/HackerRank tax</span></div>
+                            <div class="pro-li"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg><span>Works on 3G/4G in Egypt — adaptive bitrate</span></div>
+                            <div class="con-li"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg><span>Proctoring intensity may feel invasive — DEI concerns</span></div>
+                            <div class="con-li"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg><span>UX feels older than Paradox — branding work required</span></div>
+                        </div>
+                        <div class="rounded-lg p-3 text-xs text-c-muted" style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.18)">
+                            <strong style="color:#fbbf24">Centro role:</strong> High-stakes technical / proctored leg only. Pull in for IT, finance, and dev hiring.
+                        </div>
+                    </div>
+
+                    <!-- 6 · Eightfold AI -->
+                    <div class="vendor-card" style="--vc-c1:#0891b2;--vc-c2:#06b6d4">
+                        <div class="flex items-start gap-3 mb-4">
+                            <div class="vendor-logo">8</div>
+                            <div class="flex-1">
+                                <h4 class="font-bold text-lg section-title leading-tight">Eightfold AI</h4>
+                                <a href="https://eightfold.ai" target="_blank" rel="noopener" class="text-[11px] text-c-muted hover:text-blue-400">eightfold.ai →</a>
+                            </div>
+                            <span class="price-pill quote">Enterprise Quote</span>
+                        </div>
+                        <p class="text-sm text-c-muted leading-relaxed mb-4">"Talent Intelligence Platform" — a deep-learning <strong class="section-title">talent graph</strong> trained on 1B+ profiles. Goes beyond hiring into internal mobility, succession, and workforce planning.</p>
+                        <div class="flex flex-wrap gap-1.5 mb-4">
+                            <span class="tag b">Talent Graph</span>
+                            <span class="tag b">Internal Mobility</span>
+                            <span class="tag b">Workforce Planning</span>
+                            <span class="tag b">Sourcing</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-x-3 gap-y-1 mb-4">
+                            <div class="pro-li"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg><span>Best for "skill adjacency" — find internal candidates first</span></div>
+                            <div class="pro-li"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg><span>Used by global F500 — strong references</span></div>
+                            <div class="pro-li"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg><span>Anonymous-screening mode for bias control</span></div>
+                            <div class="con-li"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg><span>Overkill at Centro's current scale — 18-mo implementation</span></div>
+                            <div class="con-li"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg><span>"Buy-the-whole-platform" model — not point integration</span></div>
+                        </div>
+                        <div class="rounded-lg p-3 text-xs text-c-muted" style="background:rgba(8,145,178,0.08);border:1px solid rgba(8,145,178,0.18)">
+                            <strong style="color:#06b6d4">Centro role:</strong> Reference architecture for Phase 4 (year 2+) when internal-mobility becomes a board KPI.
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Pricing-model reference table -->
+                <div class="mt-8">
+                    <h4 class="font-bold section-title mb-3 text-base">Pricing Models at a Glance</h4>
+                    <div class="overflow-x-auto rounded-xl glass-panel">
+                        <table class="cmp">
+                            <thead>
+                                <tr>
+                                    <th>Vendor</th>
+                                    <th>Pricing Model</th>
+                                    <th>Public Floor (verify)</th>
+                                    <th>Public Pricing Page</th>
+                                    <th>Best Fit</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Paradox</td>
+                                    <td>Annual SaaS · per recruiter seat + volume tier</td>
+                                    <td><em>Not published</em> · ~$30–80k+ ARR</td>
+                                    <td><a href="https://www.paradox.ai" target="_blank" rel="noopener" class="text-blue-400">paradox.ai</a></td>
+                                    <td>High-volume conversational + scheduling</td>
+                                </tr>
+                                <tr>
+                                    <td>HireVue</td>
+                                    <td>Tiered SaaS · banded by FTE size · per-interview overage</td>
+                                    <td><em>Not published</em> · ~$35k+ ARR floor reported</td>
+                                    <td><a href="https://www.hirevue.com/pricing" target="_blank" rel="noopener" class="text-blue-400">hirevue.com/pricing</a></td>
+                                    <td>Enterprise async video at scale</td>
+                                </tr>
+                                <tr>
+                                    <td>TestGorilla</td>
+                                    <td><strong>Credit-based</strong> subscription · 1 credit per candidate (2 for conversational AI)</td>
+                                    <td><strong>Free</strong> 10 cr/mo · <strong>Core $142/mo</strong> annual commit ($1,704/yr) · <strong>Plus from $400/mo</strong> · Enterprise custom</td>
+                                    <td><a href="https://www.testgorilla.com/pricing/" target="_blank" rel="noopener" class="text-blue-400">testgorilla.com/pricing</a></td>
+                                    <td>Skill-gate at the front of the funnel</td>
+                                </tr>
+                                <tr>
+                                    <td>Sapia.ai</td>
+                                    <td>Enterprise SaaS · per-candidate or volume band</td>
+                                    <td><em>Not published</em></td>
+                                    <td><a href="https://www.sapia.ai" target="_blank" rel="noopener" class="text-blue-400">sapia.ai</a></td>
+                                    <td>Bias-controlled volume hiring</td>
+                                </tr>
+                                <tr>
+                                    <td>Talview</td>
+                                    <td>Per-assessment or annual + overage</td>
+                                    <td><em>Not published</em> · per-interview pricing reported $5–20</td>
+                                    <td><a href="https://www.talview.com" target="_blank" rel="noopener" class="text-blue-400">talview.com</a></td>
+                                    <td>Proctored technical + MENA reach</td>
+                                </tr>
+                                <tr>
+                                    <td>Eightfold AI</td>
+                                    <td>Per-employee per-year (PEPY) · whole-platform</td>
+                                    <td><em>Not published</em> · F500 deployments &gt; $250k ARR</td>
+                                    <td><a href="https://eightfold.ai" target="_blank" rel="noopener" class="text-blue-400">eightfold.ai</a></td>
+                                    <td>Strategic workforce planning (Year 2+)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p class="text-[11px] text-c-muted mt-3 italic">Note: Of the six vendors, only TestGorilla publishes self-serve pricing. All others require an enterprise quote — figures above are sourced from public analyst reports (G2, TrustRadius, Aragon Research) and prior procurement intelligence and must be validated in RFP.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ─────────────────────────────────────────────────────── -->
+        <!-- 05 · DETAILED COMPARISON                                 -->
+        <!-- ─────────────────────────────────────────────────────── -->
+        <section class="glass-card rounded-2xl p-8 lg:p-10 relative overflow-hidden" id="sec-compare">
+            <div class="relative z-10">
+                <div class="flex items-baseline gap-3 mb-2">
+                    <span class="text-blue-400 font-mono font-bold text-sm">04</span>
+                    <h3 class="text-2xl md:text-3xl font-bold section-title">Feature Matrix · Side-by-Side</h3>
+                </div>
+                <p class="text-c-muted text-sm mb-6 max-w-4xl">14 capabilities scored 0–5 for Centro CDX context (mobile-first MENA candidate base, BPO volume hiring + targeted specialist roles). <em>"—" means not applicable / not offered.</em></p>
+
+                <div class="overflow-x-auto rounded-xl glass-panel">
+                    <table class="cmp">
+                        <thead>
+                            <tr>
+                                <th>Capability</th>
+                                <th>Paradox</th>
+                                <th>HireVue</th>
+                                <th>TestGorilla</th>
+                                <th>Sapia.ai</th>
+                                <th>Talview</th>
+                                <th>Eightfold</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Conversational AI (chat)</td>
+                                <td><span class="score-bar"><i style="width:100%"></i></span>5</td>
+                                <td><span class="score-bar"><i style="width:40%"></i></span>2</td>
+                                <td>—</td>
+                                <td><span class="score-bar"><i style="width:80%"></i></span>4</td>
+                                <td><span class="score-bar"><i style="width:40%"></i></span>2</td>
+                                <td><span class="score-bar"><i style="width:60%"></i></span>3</td>
+                            </tr>
+                            <tr>
+                                <td>WhatsApp / SMS native</td>
+                                <td><span class="score-bar"><i style="width:100%"></i></span>5</td>
+                                <td><span class="score-bar"><i style="width:40%"></i></span>2</td>
+                                <td>—</td>
+                                <td><span class="score-bar"><i style="width:60%"></i></span>3</td>
+                                <td><span class="score-bar"><i style="width:60%"></i></span>3</td>
+                                <td><span class="score-bar"><i style="width:40%"></i></span>2</td>
+                            </tr>
+                            <tr>
+                                <td>Auto-scheduling on hiring-mgr calendar</td>
+                                <td><span class="score-bar"><i style="width:100%"></i></span>5</td>
+                                <td><span class="score-bar"><i style="width:80%"></i></span>4</td>
+                                <td><span class="score-bar"><i style="width:30%"></i></span>1.5</td>
+                                <td><span class="score-bar"><i style="width:60%"></i></span>3</td>
+                                <td><span class="score-bar"><i style="width:80%"></i></span>4</td>
+                                <td><span class="score-bar"><i style="width:60%"></i></span>3</td>
+                            </tr>
+                            <tr>
+                                <td>Async video interview + AI scoring</td>
+                                <td>—</td>
+                                <td><span class="score-bar"><i style="width:100%"></i></span>5</td>
+                                <td><span class="score-bar"><i style="width:40%"></i></span>2</td>
+                                <td>—</td>
+                                <td><span class="score-bar"><i style="width:90%"></i></span>4.5</td>
+                                <td><span class="score-bar"><i style="width:60%"></i></span>3</td>
+                            </tr>
+                            <tr>
+                                <td>Live virtual meeting room</td>
+                                <td><span class="score-bar"><i style="width:60%"></i></span>3</td>
+                                <td><span class="score-bar"><i style="width:90%"></i></span>4.5</td>
+                                <td>—</td>
+                                <td>—</td>
+                                <td><span class="score-bar"><i style="width:80%"></i></span>4</td>
+                                <td><span class="score-bar"><i style="width:40%"></i></span>2</td>
+                            </tr>
+                            <tr>
+                                <td>Skill testing — pre-built library</td>
+                                <td>—</td>
+                                <td><span class="score-bar"><i style="width:70%"></i></span>3.5</td>
+                                <td><span class="score-bar"><i style="width:100%"></i></span>5</td>
+                                <td><span class="score-bar"><i style="width:40%"></i></span>2</td>
+                                <td><span class="score-bar"><i style="width:80%"></i></span>4</td>
+                                <td><span class="score-bar"><i style="width:60%"></i></span>3</td>
+                            </tr>
+                            <tr>
+                                <td>Live coding sandbox</td>
+                                <td>—</td>
+                                <td><span class="score-bar"><i style="width:80%"></i></span>4</td>
+                                <td><span class="score-bar"><i style="width:70%"></i></span>3.5</td>
+                                <td>—</td>
+                                <td><span class="score-bar"><i style="width:100%"></i></span>5</td>
+                                <td>—</td>
+                            </tr>
+                            <tr>
+                                <td>AI proctoring / anti-cheat</td>
+                                <td>—</td>
+                                <td><span class="score-bar"><i style="width:60%"></i></span>3</td>
+                                <td><span class="score-bar"><i style="width:70%"></i></span>3.5</td>
+                                <td><span class="score-bar"><i style="width:40%"></i></span>2</td>
+                                <td><span class="score-bar"><i style="width:100%"></i></span>5</td>
+                                <td><span class="score-bar"><i style="width:50%"></i></span>2.5</td>
+                            </tr>
+                            <tr>
+                                <td>EU AI Act readiness / bias audit</td>
+                                <td><span class="score-bar"><i style="width:60%"></i></span>3</td>
+                                <td><span class="score-bar"><i style="width:80%"></i></span>4 (LL144 audit)</td>
+                                <td><span class="score-bar"><i style="width:60%"></i></span>3</td>
+                                <td><span class="score-bar"><i style="width:100%"></i></span>5 (ISO 42001)</td>
+                                <td><span class="score-bar"><i style="width:60%"></i></span>3</td>
+                                <td><span class="score-bar"><i style="width:80%"></i></span>4 (FedRAMP)</td>
+                            </tr>
+                            <tr>
+                                <td>Arabic language NLU <span class="text-[10px] text-c-muted">(verified)</span></td>
+                                <td><span class="score-bar"><i style="width:80%"></i></span>4 ✓</td>
+                                <td><span class="score-bar"><i style="width:50%"></i></span>2.5 ?</td>
+                                <td><span class="score-bar"><i style="width:0%"></i></span>0 ✗</td>
+                                <td><span class="score-bar"><i style="width:30%"></i></span>1.5 ?</td>
+                                <td><span class="score-bar"><i style="width:90%"></i></span>4.5 ✓</td>
+                                <td><span class="score-bar"><i style="width:30%"></i></span>1.5 ?</td>
+                            </tr>
+                            <tr>
+                                <td>Public REST API / webhooks</td>
+                                <td><span class="score-bar"><i style="width:90%"></i></span>4.5</td>
+                                <td><span class="score-bar"><i style="width:80%"></i></span>4</td>
+                                <td><span class="score-bar"><i style="width:100%"></i></span>5</td>
+                                <td><span class="score-bar"><i style="width:60%"></i></span>3</td>
+                                <td><span class="score-bar"><i style="width:80%"></i></span>4</td>
+                                <td><span class="score-bar"><i style="width:70%"></i></span>3.5</td>
+                            </tr>
+                            <tr>
+                                <td>Zoho People / Odoo connector</td>
+                                <td><span class="score-bar"><i style="width:70%"></i></span>3.5</td>
+                                <td><span class="score-bar"><i style="width:40%"></i></span>2</td>
+                                <td><span class="score-bar"><i style="width:60%"></i></span>3</td>
+                                <td><span class="score-bar"><i style="width:50%"></i></span>2.5</td>
+                                <td><span class="score-bar"><i style="width:60%"></i></span>3</td>
+                                <td><span class="score-bar"><i style="width:50%"></i></span>2.5</td>
+                            </tr>
+                            <tr>
+                                <td>GDPR / SOC 2 / ISO 27001</td>
+                                <td><span class="score-bar"><i style="width:100%"></i></span>5</td>
+                                <td><span class="score-bar"><i style="width:100%"></i></span>5</td>
+                                <td><span class="score-bar"><i style="width:90%"></i></span>4.5</td>
+                                <td><span class="score-bar"><i style="width:90%"></i></span>4.5</td>
+                                <td><span class="score-bar"><i style="width:90%"></i></span>4.5</td>
+                                <td><span class="score-bar"><i style="width:100%"></i></span>5</td>
+                            </tr>
+                            <tr>
+                                <td>Total Cost of Ownership (lower=better)</td>
+                                <td><span class="score-bar"><i style="width:60%"></i></span>3</td>
+                                <td><span class="score-bar"><i style="width:40%"></i></span>2</td>
+                                <td><span class="score-bar"><i style="width:100%"></i></span>5</td>
+                                <td><span class="score-bar"><i style="width:60%"></i></span>3</td>
+                                <td><span class="score-bar"><i style="width:80%"></i></span>4</td>
+                                <td><span class="score-bar"><i style="width:30%"></i></span>1.5</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p class="text-[11px] text-c-muted mt-3 italic">Scoring methodology: weighted on Centro CDX context — MENA mobile-first, BPO volume mix, existing Zoho/AWS/Azure/Genesys stack. Re-weight before final RFP.</p>
+            </div>
+        </section>
+
+        <!-- ─────────────────────────────────────────────────────── -->
+        <!-- 06 · CLOUD STACK INTEGRATION                             -->
+        <!-- ─────────────────────────────────────────────────────── -->
+        <section class="glass-card rounded-2xl p-8 lg:p-10 relative overflow-hidden" id="sec-cloud">
+            <div class="absolute -bottom-20 -left-20 w-80 h-80 rounded-full blur-[80px] opacity-50 pointer-events-none" style="background:rgba(43,168,212,0.10)"></div>
+            <div class="relative z-10">
+                <div class="flex items-baseline gap-3 mb-2">
+                    <span class="text-amber-400 font-mono font-bold text-sm">05</span>
+                    <h3 class="text-2xl md:text-3xl font-bold section-title">AWS · Azure · Genesys — Integration Map</h3>
+                </div>
+                <p class="text-c-muted text-sm mb-8 max-w-4xl">Centro already runs production workloads on all three. The recruitment engine should be additive — using existing identity, networking, and data residency — not a parallel stack.</p>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+                    <!-- AWS -->
+                    <div class="glass-panel p-6">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold" style="background:linear-gradient(135deg,#ff9900,#fbbf24)">aws</div>
+                            <h4 class="font-bold section-title">Amazon Web Services</h4>
+                        </div>
+                        <p class="text-sm text-c-muted mb-4 leading-relaxed">Best for the <strong class="section-title">orchestration plane</strong> and contact-center voice leg.</p>
+                        <ul class="space-y-2.5 text-sm">
+                            <li class="flex items-start gap-2"><code class="inl">Bedrock</code><span class="text-c-muted text-[12.5px]">Claude / Llama models for CV ranking, structured-output JSON. <strong class="section-title">Pay-per-token</strong>.</span></li>
+                            <li class="flex items-start gap-2"><code class="inl">Lambda</code><span class="text-c-muted text-[12.5px]">Glue between Paradox, TestGorilla, Zoho People. Free tier covers most TA workloads.</span></li>
+                            <li class="flex items-start gap-2"><code class="inl">Connect</code><span class="text-c-muted text-[12.5px]">Voice screening + IVR. Genesys-equivalent for AWS-native shops.</span></li>
+                            <li class="flex items-start gap-2"><code class="inl">Textract</code><span class="text-c-muted text-[12.5px]">CV / certificate OCR — Arabic + English. ~$0.0015/page.</span></li>
+                            <li class="flex items-start gap-2"><code class="inl">EventBridge</code><span class="text-c-muted text-[12.5px]">Webhook fan-out between TA tools and HRIS.</span></li>
+                            <li class="flex items-start gap-2"><code class="inl">S3 + KMS</code><span class="text-c-muted text-[12.5px]">Encrypted CV storage with EU/UAE data-residency locks.</span></li>
+                        </ul>
+                        <div class="mt-4 pt-4 border-t" style="border-color:var(--border-s)">
+                            <a href="https://aws.amazon.com/bedrock/pricing/" target="_blank" rel="noopener" class="text-[11px] text-blue-400 hover:underline">Bedrock pricing →</a>
+                            <a href="https://aws.amazon.com/connect/pricing/" target="_blank" rel="noopener" class="text-[11px] text-blue-400 hover:underline ml-3">Connect pricing →</a>
+                        </div>
+                    </div>
+
+                    <!-- Azure -->
+                    <div class="glass-panel p-6">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold" style="background:linear-gradient(135deg,#0078d4,#50e6ff)">Az</div>
+                            <h4 class="font-bold section-title">Microsoft Azure</h4>
+                        </div>
+                        <p class="text-sm text-c-muted mb-4 leading-relaxed">Best for the <strong class="section-title">intelligence plane</strong> and Microsoft-365 integration.</p>
+                        <ul class="space-y-2.5 text-sm">
+                            <li class="flex items-start gap-2"><code class="inl">Azure OpenAI</code><span class="text-c-muted text-[12.5px]">GPT-4 / 4o for structured candidate Q&A, RAG over JDs. PTU or pay-per-token.</span></li>
+                            <li class="flex items-start gap-2"><code class="inl">AI Search</code><span class="text-c-muted text-[12.5px]">Vector + hybrid search over JD library + past hires.</span></li>
+                            <li class="flex items-start gap-2"><code class="inl">Bot Service</code><span class="text-c-muted text-[12.5px]">Teams-native interviewing bot for internal mobility.</span></li>
+                            <li class="flex items-start gap-2"><code class="inl">Comms Services</code><span class="text-c-muted text-[12.5px]">Voice/video/SMS/email/<strong>WhatsApp Advanced Messaging</strong> — branded rooms inside Centro domains.</span></li>
+                            <li class="flex items-start gap-2"><code class="inl">Functions</code><span class="text-c-muted text-[12.5px]">Serverless equivalent of Lambda where Azure is the prime cloud.</span></li>
+                            <li class="flex items-start gap-2"><code class="inl">Entra ID</code><span class="text-c-muted text-[12.5px]">SSO + conditional access for recruiter portal.</span></li>
+                        </ul>
+                        <div class="mt-4 pt-4 border-t" style="border-color:var(--border-s)">
+                            <a href="https://azure.microsoft.com/en-us/pricing/details/cognitive-services/openai-service/" target="_blank" rel="noopener" class="text-[11px] text-blue-400 hover:underline">Azure OpenAI pricing →</a>
+                            <a href="https://azure.microsoft.com/en-us/products/communication-services" target="_blank" rel="noopener" class="text-[11px] text-blue-400 hover:underline ml-3">ACS →</a>
+                        </div>
+                    </div>
+
+                    <!-- Genesys -->
+                    <div class="glass-panel p-6">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold" style="background:linear-gradient(135deg,#ff451a,#fb923c)">Gx</div>
+                            <h4 class="font-bold section-title">Genesys Cloud CX</h4>
+                        </div>
+                        <p class="text-sm text-c-muted mb-4 leading-relaxed">Best for the <strong class="section-title">candidate-as-customer</strong> voice flows — re-uses BPO infra. Per-named-user list price: <strong class="section-title">CX 1 $75 · CX 2 $115 · CX 3 $155 · CX 4 $240</strong>/mo.</p>
+                        <ul class="space-y-2.5 text-sm">
+                            <li class="flex items-start gap-2"><code class="inl">Architect Flows</code><span class="text-c-muted text-[12.5px]">Inbound 'careers' queue → AI screen → callback booking.</span></li>
+                            <li class="flex items-start gap-2"><code class="inl">Agent Copilot</code><span class="text-c-muted text-[12.5px]">Real-time guidance for live recruiter calls — consumes 40-60 AI-tokens/user/mo.</span></li>
+                            <li class="flex items-start gap-2"><code class="inl">Predictive Routing</code><span class="text-c-muted text-[12.5px]">Send candidate to the recruiter most likely to convert them.</span></li>
+                            <li class="flex items-start gap-2"><code class="inl">AI Experience tokens</code><span class="text-c-muted text-[12.5px]"><strong>Included in all CX tiers</strong>: 250 tokens/mo named, 350/mo concurrent · ~$1.00/token overage · no carry-over.</span></li>
+                            <li class="flex items-start gap-2"><code class="inl">Voicebots</code><span class="text-c-muted text-[12.5px]">1 token / 17 min · outbound nudges for stalled candidates.</span></li>
+                            <li class="flex items-start gap-2"><code class="inl">Workforce Mgmt</code><span class="text-c-muted text-[12.5px]">Forecast recruiter capacity vs req inflow.</span></li>
+                        </ul>
+                        <div class="mt-4 pt-4 border-t" style="border-color:var(--border-s)">
+                            <a href="https://www.genesys.com/pricing" target="_blank" rel="noopener" class="text-[11px] text-blue-400 hover:underline">Genesys pricing →</a>
+                            <a href="https://help.genesys.cloud/articles/genesys-cloud-tokens-based-pricing-model/" target="_blank" rel="noopener" class="text-[11px] text-blue-400 hover:underline ml-3">AI tokens →</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stack vs Vendor matrix -->
+                <div class="mt-10">
+                    <h4 class="font-bold section-title mb-4 text-base">Vendor × Cloud Compatibility</h4>
+                    <div class="overflow-x-auto rounded-xl glass-panel">
+                        <table class="cmp">
+                            <thead>
+                                <tr>
+                                    <th>Cloud Capability</th>
+                                    <th>Paradox</th>
+                                    <th>TestGorilla</th>
+                                    <th>Talview</th>
+                                    <th>HireVue</th>
+                                    <th>Sapia.ai</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>AWS Bedrock / S3 sync</td><td>Webhook</td><td>REST</td><td>REST</td><td>Native (AWS partner)</td><td>REST</td></tr>
+                                <tr><td>Azure OpenAI RAG over results</td><td>Webhook</td><td>REST</td><td>REST</td><td>REST</td><td>REST</td></tr>
+                                <tr><td>Genesys Architect handoff</td><td>HTTP action</td><td>HTTP action</td><td>HTTP action</td><td>SCIM connector</td><td>HTTP action</td></tr>
+                                <tr><td>Zoho People sync</td><td>Native</td><td>Zapier / Make</td><td>REST</td><td>Workday-first</td><td>REST</td></tr>
+                                <tr><td>WhatsApp Business API</td><td>Native</td><td>—</td><td>Add-on</td><td>—</td><td>Native</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ─────────────────────────────────────────────────────── -->
+        <!-- 07 · REFERENCE ARCHITECTURE                              -->
+        <!-- ─────────────────────────────────────────────────────── -->
+        <section class="glass-card rounded-2xl p-8 lg:p-10 relative overflow-hidden" id="sec-arch">
+            <div class="relative z-10">
+                <div class="flex items-baseline gap-3 mb-2">
+                    <span class="text-amber-400 font-mono font-bold text-sm">06</span>
+                    <h3 class="text-2xl md:text-3xl font-bold section-title">Reference Architecture · Target State</h3>
+                </div>
+                <p class="text-c-muted text-sm mb-8 max-w-4xl">A four-tier composition: presentation, agentic orchestration, evaluation tooling, and system of record. Each tier is independently swappable — no single vendor lock-in.</p>
+
+                <!-- Diagram -->
+                <div class="rounded-2xl p-6 mb-8" style="background:var(--panel);border:1px solid var(--border-s)">
+                    <!-- Tier 1 -->
+                    <div class="text-[10px] font-bold uppercase tracking-widest mb-3" style="color:#2BA8D4">Tier 1 · Engagement</div>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+                        <div class="arch-node"><span class="arch-num">1</span><div class="text-xs font-bold mt-2 section-title">WhatsApp Business API</div><div class="text-[11px] text-c-muted">via 360dialog / Twilio</div></div>
+                        <div class="arch-node"><span class="arch-num">2</span><div class="text-xs font-bold mt-2 section-title">Careers Microsite</div><div class="text-[11px] text-c-muted">Centro brand · Next.js</div></div>
+                        <div class="arch-node"><span class="arch-num">3</span><div class="text-xs font-bold mt-2 section-title">Inbound Voice</div><div class="text-[11px] text-c-muted">Genesys Cloud CX</div></div>
+                        <div class="arch-node"><span class="arch-num">4</span><div class="text-xs font-bold mt-2 section-title">Job Boards</div><div class="text-[11px] text-c-muted">LinkedIn · Wuzzuf · Bayt</div></div>
+                    </div>
+
+                    <div class="pipe-arrow text-center text-2xl mb-4">↓</div>
+
+                    <!-- Tier 2 -->
+                    <div class="text-[10px] font-bold uppercase tracking-widest mb-3" style="color:#a78bfa">Tier 2 · Agentic Orchestration</div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
+                        <div class="arch-node" style="border-color:rgba(167,139,250,0.40)"><span class="arch-num" style="background:linear-gradient(135deg,#7c3aed,#a78bfa)">A</span><div class="text-xs font-bold mt-2 section-title">Paradox (Olivia)</div><div class="text-[11px] text-c-muted">Convo · screening · scheduling</div></div>
+                        <div class="arch-node" style="border-color:rgba(43,168,212,0.40)"><span class="arch-num" style="background:linear-gradient(135deg,#1A7A9E,#2BA8D4)">B</span><div class="text-xs font-bold mt-2 section-title">AWS Lambda / EventBridge</div><div class="text-[11px] text-c-muted">Glue · webhooks · workflows</div></div>
+                        <div class="arch-node" style="border-color:rgba(43,168,212,0.40)"><span class="arch-num" style="background:linear-gradient(135deg,#1A7A9E,#2BA8D4)">C</span><div class="text-xs font-bold mt-2 section-title">Bedrock + Azure OpenAI</div><div class="text-[11px] text-c-muted">CV ranking · JD-fit reasoning</div></div>
+                    </div>
+
+                    <div class="pipe-arrow text-center text-2xl mb-4">↓</div>
+
+                    <!-- Tier 3 -->
+                    <div class="text-[10px] font-bold uppercase tracking-widest mb-3" style="color:#34d399">Tier 3 · Evaluation</div>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+                        <div class="arch-node" style="border-color:rgba(34,197,94,0.40)"><span class="arch-num" style="background:linear-gradient(135deg,#16a34a,#22c55e)">α</span><div class="text-xs font-bold mt-2 section-title">TestGorilla</div><div class="text-[11px] text-c-muted">Hard skill gate</div></div>
+                        <div class="arch-node" style="border-color:rgba(245,158,11,0.40)"><span class="arch-num" style="background:linear-gradient(135deg,#f59e0b,#fbbf24)">β</span><div class="text-xs font-bold mt-2 section-title">Talview (selective)</div><div class="text-[11px] text-c-muted">Proctored video / coding</div></div>
+                        <div class="arch-node"><span class="arch-num">γ</span><div class="text-xs font-bold mt-2 section-title">Live Panels</div><div class="text-[11px] text-c-muted">Teams / Meet · ACS rooms</div></div>
+                        <div class="arch-node"><span class="arch-num">δ</span><div class="text-xs font-bold mt-2 section-title">BG / References</div><div class="text-[11px] text-c-muted">Checkr · Sterling</div></div>
+                    </div>
+
+                    <div class="pipe-arrow text-center text-2xl mb-4">↓</div>
+
+                    <!-- Tier 4 -->
+                    <div class="text-[10px] font-bold uppercase tracking-widest mb-3" style="color:#f59e0b">Tier 4 · System of Record</div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <div class="arch-node"><span class="arch-num">i</span><div class="text-xs font-bold mt-2 section-title">Zoho People</div><div class="text-[11px] text-c-muted">HRIS · onboarding</div></div>
+                        <div class="arch-node"><span class="arch-num">ii</span><div class="text-xs font-bold mt-2 section-title">S3 + KMS</div><div class="text-[11px] text-c-muted">Document archive (EU/UAE)</div></div>
+                        <div class="arch-node"><span class="arch-num">iii</span><div class="text-xs font-bold mt-2 section-title">Audit Lake</div><div class="text-[11px] text-c-muted">Every AI decision · immutable</div></div>
+                    </div>
+                </div>
+
+                <!-- Sample flow -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div class="glass-panel p-5">
+                        <div class="text-xs font-bold uppercase tracking-widest mb-3" style="color:#2BA8D4">Sample candidate trace · BPO agent role</div>
+                        <ol class="space-y-2 text-sm text-c-muted list-decimal list-inside">
+                            <li>Candidate clicks WhatsApp link on LinkedIn ad.</li>
+                            <li>Paradox greets in Arabic + English, qualifies basics (shifts, language, location).</li>
+                            <li>Bedrock-hosted Claude reads CV from S3 → returns structured fit score in &lt; 2 s.</li>
+                            <li>If fit ≥ 70, Paradox sends TestGorilla link via WhatsApp.</li>
+                            <li>Candidate finishes 12-min assessment on mobile → webhook fires.</li>
+                            <li>If score ≥ 75, Paradox books Wednesday 10:00 panel on hiring-mgr Outlook.</li>
+                            <li>Genesys Architect dials the panel 5 min before — Agent Copilot opens.</li>
+                            <li>Decision → Zoho People auto-creates candidate record + sends offer letter template.</li>
+                            <li>All eight steps logged to immutable audit lake.</li>
+                        </ol>
+                    </div>
+                    <div class="glass-panel p-5">
+                        <div class="text-xs font-bold uppercase tracking-widest mb-3" style="color:#f59e0b">Why this composition wins</div>
+                        <ul class="space-y-2.5 text-sm text-c-muted">
+                            <li class="flex items-start gap-2"><span class="text-emerald-400 font-bold mt-0.5">✓</span><span><strong class="section-title">No vendor lock</strong> — each tier swappable. If Paradox raises prices, swap with Phenom or Mya.</span></li>
+                            <li class="flex items-start gap-2"><span class="text-emerald-400 font-bold mt-0.5">✓</span><span><strong class="section-title">Reuses Centro infra</strong> — Zoho, AWS, Azure, Genesys already in production.</span></li>
+                            <li class="flex items-start gap-2"><span class="text-emerald-400 font-bold mt-0.5">✓</span><span><strong class="section-title">Data residency by design</strong> — sensitive PII never leaves Centro VPCs.</span></li>
+                            <li class="flex items-start gap-2"><span class="text-emerald-400 font-bold mt-0.5">✓</span><span><strong class="section-title">Audit-first</strong> — every AI score is explainable and reproducible.</span></li>
+                            <li class="flex items-start gap-2"><span class="text-emerald-400 font-bold mt-0.5">✓</span><span><strong class="section-title">Recruiter-augmenting</strong> — TAs supervise the 20% exception flow, not the 80% routine flow.</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ─────────────────────────────────────────────────────── -->
+        <!-- 08 · BUILD vs BUY                                        -->
+        <!-- ─────────────────────────────────────────────────────── -->
+        <section class="glass-card rounded-2xl p-8 lg:p-10 relative overflow-hidden" id="sec-bvb">
+            <div class="relative z-10">
+                <div class="flex items-baseline gap-3 mb-2">
+                    <span class="text-amber-400 font-mono font-bold text-sm">07</span>
+                    <h3 class="text-2xl md:text-3xl font-bold section-title">Build vs Buy vs Hybrid</h3>
+                </div>
+                <p class="text-c-muted text-sm mb-8 max-w-4xl">Three valid postures. Each comes with a different cost curve, risk profile, and strategic moat.</p>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+                    <!-- Build -->
+                    <div class="glass-panel p-6">
+                        <div class="flex items-center gap-3 mb-3">
+                            <span class="tag b">Option A</span>
+                            <h4 class="font-bold section-title text-lg">Build In-House</h4>
+                        </div>
+                        <div class="text-xs text-c-muted mb-4">Stack: Bedrock + Lambda + Python + WhatsApp API + custom React UI</div>
+                        <div class="space-y-2 text-sm">
+                            <div class="pro-li"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg><span>Full IP ownership · strategic moat</span></div>
+                            <div class="pro-li"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg><span>Marginal cost per candidate ≈ $0.02</span></div>
+                            <div class="con-li"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg><span>9–14 month time-to-value</span></div>
+                            <div class="con-li"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg><span>Bias-audit, security and EEO/AI Act burden is yours</span></div>
+                            <div class="con-li"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg><span>Needs 3-5 dedicated engineers + I-O psych contractor</span></div>
+                        </div>
+                        <div class="mt-4 pt-4 border-t text-xs text-c-muted" style="border-color:var(--border-s)">
+                            <strong style="color:#2BA8D4">When to choose:</strong> Centro becomes an HR-tech product company. Not the case today.
+                        </div>
+                    </div>
+
+                    <!-- Buy -->
+                    <div class="glass-panel p-6">
+                        <div class="flex items-center gap-3 mb-3">
+                            <span class="tag a">Option B</span>
+                            <h4 class="font-bold section-title text-lg">Buy Whole Suite</h4>
+                        </div>
+                        <div class="text-xs text-c-muted mb-4">Stack: Eightfold or HireVue end-to-end + connectors</div>
+                        <div class="space-y-2 text-sm">
+                            <div class="pro-li"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg><span>Fastest go-live · 3-6 months</span></div>
+                            <div class="pro-li"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg><span>Vendor owns bias audits, compliance, uptime</span></div>
+                            <div class="con-li"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg><span>$250k+ ARR floor · escalating renewals</span></div>
+                            <div class="con-li"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg><span>Hard vendor lock — data export complexity</span></div>
+                            <div class="con-li"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg><span>"One-size" UX rarely matches MENA chat culture</span></div>
+                        </div>
+                        <div class="mt-4 pt-4 border-t text-xs text-c-muted" style="border-color:var(--border-s)">
+                            <strong style="color:#f59e0b">When to choose:</strong> &gt; 50k hires/yr and bandwidth-rich markets. Centro: not yet.
+                        </div>
+                    </div>
+
+                    <!-- Hybrid -->
+                    <div class="glass-panel p-6" style="border-color:rgba(52,211,153,0.40);box-shadow:0 0 32px rgba(52,211,153,0.10)">
+                        <div class="flex items-center gap-3 mb-3">
+                            <span class="tag g">Option C · Recommended</span>
+                            <h4 class="font-bold section-title text-lg">Hybrid Compose</h4>
+                        </div>
+                        <div class="text-xs text-c-muted mb-4">Stack: TestGorilla + Paradox + AWS/Azure orchestration + Genesys voice</div>
+                        <div class="space-y-2 text-sm">
+                            <div class="pro-li"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg><span>Best vendor for each capability · no compromises</span></div>
+                            <div class="pro-li"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg><span>Each tier swappable · zero lock-in</span></div>
+                            <div class="pro-li"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg><span>4–5 month go-live · payback in &lt; 9 months</span></div>
+                            <div class="pro-li"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg><span>Re-uses existing Centro AWS/Azure/Genesys spend</span></div>
+                            <div class="con-li"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg><span>Centro owns integration + monitoring layer</span></div>
+                        </div>
+                        <div class="mt-4 pt-4 border-t text-xs text-c-muted" style="border-color:var(--border-s)">
+                            <strong style="color:#34d399">Why recommend:</strong> Maximum capability, minimum risk, leverages existing engineering team strengths.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ─────────────────────────────────────────────────────── -->
+        <!-- 09 · PHASED ROADMAP                                      -->
+        <!-- ─────────────────────────────────────────────────────── -->
+        <section class="glass-card rounded-2xl p-8 lg:p-10 relative overflow-hidden" id="sec-roadmap">
+            <div class="relative z-10">
+                <div class="flex items-baseline gap-3 mb-2">
+                    <span class="text-amber-400 font-mono font-bold text-sm">08</span>
+                    <h3 class="text-2xl md:text-3xl font-bold section-title">Phased Roadmap — 90 / 180 / 365 days</h3>
+                </div>
+                <p class="text-c-muted text-sm mb-8 max-w-4xl">Each phase ends with a measurable gate. No phase begins until the prior gate passes.</p>
+
+                <div class="grid grid-cols-1 lg:grid-cols-4 gap-5">
+                    <!-- Phase 0 -->
+                    <div class="phase-card glass-panel p-6" style="--p-c1:#1A7A9E;--p-c2:#2BA8D4">
+                        <div class="phase-bar"></div>
+                        <div class="text-[10px] font-bold uppercase tracking-widest mb-1" style="color:#2BA8D4">Phase 0 · Days 1-30</div>
+                        <h4 class="text-base font-bold section-title mb-2">Foundation</h4>
+                        <ul class="space-y-1.5 text-[12.5px] text-c-muted">
+                            <li>• RFP — Paradox, TestGorilla, Talview</li>
+                            <li>• Legal: GDPR DPA, NYC Local Law 144 review</li>
+                            <li>• Data-residency map (EU / UAE / Egypt)</li>
+                            <li>• Baseline metrics: TTH, CPH, no-show %</li>
+                            <li>• Tag Zoho People recruitment fields</li>
+                        </ul>
+                        <div class="mt-4 pt-3 border-t" style="border-color:var(--border-s)">
+                            <div class="text-[10px] font-bold uppercase tracking-widest" style="color:#34d399">Gate</div>
+                            <div class="text-[11.5px] text-c-muted mt-1">Vendor short-list, signed SoWs, baseline locked</div>
+                        </div>
+                    </div>
+
+                    <!-- Phase 1 -->
+                    <div class="phase-card glass-panel p-6" style="--p-c1:#0ea5e9;--p-c2:#22d3ee">
+                        <div class="phase-bar"></div>
+                        <div class="text-[10px] font-bold uppercase tracking-widest mb-1" style="color:#22d3ee">Phase 1 · Days 31-90</div>
+                        <h4 class="text-base font-bold section-title mb-2">Skill Gate Live</h4>
+                        <ul class="space-y-1.5 text-[12.5px] text-c-muted">
+                            <li>• TestGorilla pilot · 2 BPO accounts</li>
+                            <li>• AWS Lambda webhook → Zoho People</li>
+                            <li>• Bedrock CV-ranking API · shadow mode</li>
+                            <li>• Recruiter training (4 h workshop)</li>
+                            <li>• Candidate-experience NPS survey</li>
+                        </ul>
+                        <div class="mt-4 pt-3 border-t" style="border-color:var(--border-s)">
+                            <div class="text-[10px] font-bold uppercase tracking-widest" style="color:#34d399">Gate</div>
+                            <div class="text-[11.5px] text-c-muted mt-1">≥ 90% screen accuracy · NPS ≥ 60</div>
+                        </div>
+                    </div>
+
+                    <!-- Phase 2 -->
+                    <div class="phase-card glass-panel p-6" style="--p-c1:#7c3aed;--p-c2:#a78bfa">
+                        <div class="phase-bar"></div>
+                        <div class="text-[10px] font-bold uppercase tracking-widest mb-1" style="color:#a78bfa">Phase 2 · Days 91-180</div>
+                        <h4 class="text-base font-bold section-title mb-2">Conversational Layer</h4>
+                        <ul class="space-y-1.5 text-[12.5px] text-c-muted">
+                            <li>• Paradox + WhatsApp Business API live</li>
+                            <li>• Auto-scheduling on hiring-mgr calendars</li>
+                            <li>• Genesys voice fallback for stalled candidates</li>
+                            <li>• Bedrock JD-fit moves to production</li>
+                            <li>• Recruiter dashboard: exception queue only</li>
+                        </ul>
+                        <div class="mt-4 pt-3 border-t" style="border-color:var(--border-s)">
+                            <div class="text-[10px] font-bold uppercase tracking-widest" style="color:#34d399">Gate</div>
+                            <div class="text-[11.5px] text-c-muted mt-1">TTH ≤ 10d · recruiter capacity 2.5×</div>
+                        </div>
+                    </div>
+
+                    <!-- Phase 3 -->
+                    <div class="phase-card glass-panel p-6" style="--p-c1:#16a34a;--p-c2:#34d399">
+                        <div class="phase-bar"></div>
+                        <div class="text-[10px] font-bold uppercase tracking-widest mb-1" style="color:#34d399">Phase 3 · Days 181-365</div>
+                        <h4 class="text-base font-bold section-title mb-2">Specialist + Scale</h4>
+                        <ul class="space-y-1.5 text-[12.5px] text-c-muted">
+                            <li>• Talview for proctored technical roles</li>
+                            <li>• Genesys Agent Copilot for live panels</li>
+                            <li>• Internal-mobility flow (Sapia or Eightfold POC)</li>
+                            <li>• Bias-audit cadence quarterly</li>
+                            <li>• Predictive attrition model on hire data</li>
+                        </ul>
+                        <div class="mt-4 pt-3 border-t" style="border-color:var(--border-s)">
+                            <div class="text-[10px] font-bold uppercase tracking-widest" style="color:#34d399">Gate</div>
+                            <div class="text-[11.5px] text-c-muted mt-1">TTH ≤ 7d · CPH -38% · 6-mo attrition -15%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Timeline strip -->
+                <div class="mt-8 rounded-xl p-5" style="background:var(--panel);border:1px solid var(--border-s)">
+                    <div class="text-xs font-bold uppercase tracking-widest mb-3 section-title">Critical-Path Dependencies</div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-[12.5px] text-c-muted">
+                        <div><strong class="section-title">Legal blocker:</strong> GDPR + EU AI Act candidate disclosure language must be signed by Legal before Phase 1 candidates see any AI surface.</div>
+                        <div><strong class="section-title">Data blocker:</strong> Zoho People schema must include AI-decision fields before TestGorilla integration ships.</div>
+                        <div><strong class="section-title">Change blocker:</strong> Recruiter incentive plan should shift from "fills" to "fills × NPS" to align with the new model.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ─────────────────────────────────────────────────────── -->
+        <!-- 10 · BUSINESS IMPACT                                     -->
+        <!-- ─────────────────────────────────────────────────────── -->
+        <section class="glass-card rounded-2xl p-8 lg:p-10 relative overflow-hidden" id="sec-impact">
+            <div class="relative z-10">
+                <div class="flex items-baseline gap-3 mb-2">
+                    <span class="text-emerald-400 font-mono font-bold text-sm">09</span>
+                    <h3 class="text-2xl md:text-3xl font-bold section-title">Business Impact · ROI Model</h3>
+                </div>
+                <p class="text-c-muted text-sm mb-8 max-w-4xl">Modelled on Centro CDX's reported MENA hiring volume mix (≈ 70% agent / volume · 30% specialist). Figures are <strong class="section-title">indicative</strong> — refine with Finance before board sign-off.</p>
+
+                <!-- KPI grid -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
+                    <div class="kpi-tile">
+                        <div class="text-[10px] uppercase tracking-widest text-c-muted font-bold mb-1">Time-to-hire</div>
+                        <div class="kpi-num">-68%</div>
+                        <p class="text-[11px] text-c-muted mt-1">22d → 7d</p>
+                    </div>
+                    <div class="kpi-tile">
+                        <div class="text-[10px] uppercase tracking-widest text-c-muted font-bold mb-1">Cost / hire</div>
+                        <div class="kpi-num">-38%</div>
+                        <p class="text-[11px] text-c-muted mt-1">Recruiter hr saved + tool licence offset</p>
+                    </div>
+                    <div class="kpi-tile">
+                        <div class="text-[10px] uppercase tracking-widest text-c-muted font-bold mb-1">Recruiter capacity</div>
+                        <div class="kpi-num">3.4×</div>
+                        <p class="text-[11px] text-c-muted mt-1">Reqs per TA per quarter</p>
+                    </div>
+                    <div class="kpi-tile">
+                        <div class="text-[10px] uppercase tracking-widest text-c-muted font-bold mb-1">No-show rate</div>
+                        <div class="kpi-num">-58%</div>
+                        <p class="text-[11px] text-c-muted mt-1">Paradox nudges · 22% → 9%</p>
+                    </div>
+                    <div class="kpi-tile">
+                        <div class="text-[10px] uppercase tracking-widest text-c-muted font-bold mb-1">Candidate NPS</div>
+                        <div class="kpi-num">+24</div>
+                        <p class="text-[11px] text-c-muted mt-1">Fast feedback · WhatsApp UX</p>
+                    </div>
+                    <div class="kpi-tile">
+                        <div class="text-[10px] uppercase tracking-widest text-c-muted font-bold mb-1">Quality of hire</div>
+                        <div class="kpi-num">+12%</div>
+                        <p class="text-[11px] text-c-muted mt-1">6-mo manager rating</p>
+                    </div>
+                    <div class="kpi-tile">
+                        <div class="text-[10px] uppercase tracking-widest text-c-muted font-bold mb-1">6-mo attrition</div>
+                        <div class="kpi-num">-15%</div>
+                        <p class="text-[11px] text-c-muted mt-1">Better fit · realistic preview</p>
+                    </div>
+                    <div class="kpi-tile">
+                        <div class="text-[10px] uppercase tracking-widest text-c-muted font-bold mb-1">Payback</div>
+                        <div class="kpi-num">≤ 9 mo</div>
+                        <p class="text-[11px] text-c-muted mt-1">Hybrid stack · MENA mix</p>
+                    </div>
+                </div>
+
+                <!-- Charts -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-8">
+                    <div class="glass-panel p-5">
+                        <h4 class="font-bold section-title mb-1 text-sm">TCO · 3-year cumulative (illustrative)</h4>
+                        <p class="text-[11px] text-c-muted mb-4">Hybrid recommended vs. status-quo and full-suite. Lower is better.</p>
+                        <div class="relative" style="height:240px"><canvas id="chartTCO"></canvas></div>
+                    </div>
+                    <div class="glass-panel p-5">
+                        <h4 class="font-bold section-title mb-1 text-sm">Funnel — before / after</h4>
+                        <p class="text-[11px] text-c-muted mb-4">Days at each stage. Massive collapse in screen + schedule.</p>
+                        <div class="relative" style="height:240px"><canvas id="chartFunnel"></canvas></div>
+                    </div>
+                </div>
+
+                <!-- Money table -->
+                <div class="glass-panel p-5">
+                    <h4 class="font-bold section-title mb-3 text-sm">Indicative 12-month financial model</h4>
+                    <div class="overflow-x-auto">
+                        <table class="cmp">
+                            <thead>
+                                <tr>
+                                    <th>Line</th>
+                                    <th>Year 1</th>
+                                    <th>Year 2</th>
+                                    <th>Year 3</th>
+                                    <th>Notes</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>TestGorilla — Plus tier (volume hiring)</td><td>$48k</td><td>$52k</td><td>$56k</td><td>Credit-based · ~5k assessments/yr</td></tr>
+                                <tr><td>Paradox enterprise</td><td>$60k</td><td>$66k</td><td>$72k</td><td>10% YoY uplift assumed</td></tr>
+                                <tr><td>Talview (selective)</td><td>$25k</td><td>$30k</td><td>$32k</td><td>Per-assessment, technical only</td></tr>
+                                <tr><td>AWS Bedrock + Lambda + S3</td><td>$18k</td><td>$22k</td><td>$28k</td><td>Scales with volume</td></tr>
+                                <tr><td>Azure OpenAI (RAG / fallback)</td><td>$12k</td><td>$15k</td><td>$18k</td><td>PTU + overflow tokens</td></tr>
+                                <tr><td>Genesys AI tokens (incremental)</td><td>$10k</td><td>$15k</td><td>$18k</td><td>Existing Cloud CX baseline</td></tr>
+                                <tr><td>Implementation + I-O psych (one-time)</td><td>$40k</td><td>—</td><td>—</td><td>Phase 0 + 1 spike</td></tr>
+                                <tr style="font-weight:700;background:rgba(43,168,212,0.06)"><td>Total stack cost</td><td>$210k</td><td>$196k</td><td>$218k</td><td>—</td></tr>
+                                <tr style="color:#34d399"><td>Recruiter hour savings (3.4× capacity)</td><td>-$320k</td><td>-$360k</td><td>-$400k</td><td>Avoided TA headcount + overtime</td></tr>
+                                <tr style="color:#34d399"><td>Attrition cost avoided (-15%)</td><td>-$180k</td><td>-$210k</td><td>-$240k</td><td>Replacement cost @ 1.2× annual salary</td></tr>
+                                <tr style="font-weight:700;background:rgba(52,211,153,0.08);color:#34d399"><td>Net annual benefit</td><td>$290k</td><td>$374k</td><td>$422k</td><td>≥ 1.4× ROI in Y1, 1.9× Y2, 1.9× Y3</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p class="text-[11px] text-c-muted mt-3 italic">All figures USD, indicative — Finance to overlay actual Centro CDX salary bands, FX, and volume.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ─────────────────────────────────────────────────────── -->
+        <!-- 11 · RISKS                                               -->
+        <!-- ─────────────────────────────────────────────────────── -->
+        <section class="glass-card rounded-2xl p-8 lg:p-10 relative overflow-hidden" id="sec-risk">
+            <div class="relative z-10">
+                <div class="flex items-baseline gap-3 mb-2">
+                    <span class="text-pink-400 font-mono font-bold text-sm">10</span>
+                    <h3 class="text-2xl md:text-3xl font-bold section-title">Risk Register + Mitigations</h3>
+                </div>
+                <p class="text-c-muted text-sm mb-6 max-w-4xl">Ten material risks ranked. Severity and likelihood are post-mitigation — i.e. the residual risk Centro carries after applying the controls below.</p>
+
+                <div class="space-y-2.5">
+                    <!-- R1 -->
+                    <div class="risk-row">
+                        <div class="risk-num">1</div>
+                        <div>
+                            <div class="font-bold section-title text-sm">AI bias against protected classes</div>
+                            <div class="text-[12px] text-c-muted">Mitigation: quarterly bias audit (4/5 ratio rule) · adverse-impact dashboard · I-O psych contractor signs off Phase 1.</div>
+                        </div>
+                        <div><span class="sev-chip sev-bad">High Impact</span></div>
+                        <div><span class="sev-chip sev-low">Low Likelihood</span></div>
+                    </div>
+                    <!-- R2 -->
+                    <div class="risk-row">
+                        <div class="risk-num">2</div>
+                        <div>
+                            <div class="font-bold section-title text-sm">EU AI Act non-compliance (Hi-Risk category)</div>
+                            <div class="text-[12px] text-c-muted">Recruitment AI is "high-risk" under EU AI Act. Mitigation: human-in-the-loop on every reject decision · candidate right-to-explanation in UI · documented model cards per vendor.</div>
+                        </div>
+                        <div><span class="sev-chip sev-bad">High Impact</span></div>
+                        <div><span class="sev-chip sev-med">Med Likelihood</span></div>
+                    </div>
+                    <!-- R3 -->
+                    <div class="risk-row">
+                        <div class="risk-num">3</div>
+                        <div>
+                            <div class="font-bold section-title text-sm">GDPR data-residency violation</div>
+                            <div class="text-[12px] text-c-muted">Mitigation: pin S3 + Bedrock to EU region for EU candidates · Azure UAE North for Gulf · DPA signed with every vendor.</div>
+                        </div>
+                        <div><span class="sev-chip sev-bad">High Impact</span></div>
+                        <div><span class="sev-chip sev-low">Low Likelihood</span></div>
+                    </div>
+                    <!-- R4 -->
+                    <div class="risk-row">
+                        <div class="risk-num">4</div>
+                        <div>
+                            <div class="font-bold section-title text-sm">Vendor lock-in / price escalation</div>
+                            <div class="text-[12px] text-c-muted">Mitigation: hybrid composition · contractual data-export clause · annual market re-test · keep Bedrock + Lambda glue layer Centro-owned.</div>
+                        </div>
+                        <div><span class="sev-chip sev-med">Med Impact</span></div>
+                        <div><span class="sev-chip sev-med">Med Likelihood</span></div>
+                    </div>
+                    <!-- R5 -->
+                    <div class="risk-row">
+                        <div class="risk-num">5</div>
+                        <div>
+                            <div class="font-bold section-title text-sm">Candidate-experience backlash ("dehumanised hiring")</div>
+                            <div class="text-[12px] text-c-muted">Mitigation: human-style copy in chat · personalised feedback for every candidate (Sapia model) · NPS gate at Phase 1.</div>
+                        </div>
+                        <div><span class="sev-chip sev-med">Med Impact</span></div>
+                        <div><span class="sev-chip sev-med">Med Likelihood</span></div>
+                    </div>
+                    <!-- R6 -->
+                    <div class="risk-row">
+                        <div class="risk-num">6</div>
+                        <div>
+                            <div class="font-bold section-title text-sm">Recruiter resistance / shadow workflows</div>
+                            <div class="text-[12px] text-c-muted">Mitigation: shift incentives from "fills" to "fills × NPS" · pair recruiters with AI from day 1 · publish exception-handling rate league table.</div>
+                        </div>
+                        <div><span class="sev-chip sev-med">Med Impact</span></div>
+                        <div><span class="sev-chip sev-bad">High Likelihood</span></div>
+                    </div>
+                    <!-- R7 -->
+                    <div class="risk-row">
+                        <div class="risk-num">7</div>
+                        <div>
+                            <div class="font-bold section-title text-sm">Assessment cheating / GPT-assisted answers</div>
+                            <div class="text-[12px] text-c-muted">Mitigation: Talview proctoring on technical roles · question-bank rotation · live coding for senior dev · psychometric consistency checks.</div>
+                        </div>
+                        <div><span class="sev-chip sev-med">Med Impact</span></div>
+                        <div><span class="sev-chip sev-bad">High Likelihood</span></div>
+                    </div>
+                    <!-- R8 -->
+                    <div class="risk-row">
+                        <div class="risk-num">8</div>
+                        <div>
+                            <div class="font-bold section-title text-sm">LLM hallucination in CV fit summaries</div>
+                            <div class="text-[12px] text-c-muted">Mitigation: structured-output prompting · confidence threshold gating · 5% manual audit sample · all AI summaries flagged in UI.</div>
+                        </div>
+                        <div><span class="sev-chip sev-med">Med Impact</span></div>
+                        <div><span class="sev-chip sev-med">Med Likelihood</span></div>
+                    </div>
+                    <!-- R9 -->
+                    <div class="risk-row">
+                        <div class="risk-num">9</div>
+                        <div>
+                            <div class="font-bold section-title text-sm">Genesys / Paradox availability incident</div>
+                            <div class="text-[12px] text-c-muted">Mitigation: multi-vendor fallback (Azure ACS as voice backup) · 99.5% SLA penalty clauses · weekly DR drill.</div>
+                        </div>
+                        <div><span class="sev-chip sev-med">Med Impact</span></div>
+                        <div><span class="sev-chip sev-low">Low Likelihood</span></div>
+                    </div>
+                    <!-- R10 -->
+                    <div class="risk-row">
+                        <div class="risk-num">10</div>
+                        <div>
+                            <div class="font-bold section-title text-sm">Hidden TCO escalation (AI tokens, voice minutes)</div>
+                            <div class="text-[12px] text-c-muted">Mitigation: budget guardrails on Bedrock + Azure · monthly FinOps review · contractual price-lock with Paradox / Talview.</div>
+                        </div>
+                        <div><span class="sev-chip sev-med">Med Impact</span></div>
+                        <div><span class="sev-chip sev-med">Med Likelihood</span></div>
+                    </div>
+                </div>
+
+                <!-- Regulatory note -->
+                <div class="mt-8 rounded-xl p-5" style="background:rgba(244,114,182,0.05);border:1px solid rgba(244,114,182,0.18)">
+                    <div class="flex items-start gap-3">
+                        <svg class="w-5 h-5 mt-0.5" style="color:#f472b6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M4.93 19h14.14c1.54 0 2.5-1.67 1.73-3L13.73 4a2 2 0 00-3.46 0L3.2 16c-.77 1.33.19 3 1.73 3z"/></svg>
+                        <div>
+                            <div class="text-xs font-bold uppercase tracking-widest mb-1" style="color:#f472b6">Regulatory Watch-List</div>
+                            <p class="text-sm text-c-muted leading-relaxed"><strong class="section-title">EU AI Act</strong> (Aug 2026 enforcement, recruitment is high-risk) · <strong class="section-title">NYC Local Law 144</strong> (annual bias audit if hiring in NYC) · <strong class="section-title">GDPR Article 22</strong> (right to human review of automated decisions) · <strong class="section-title">UAE PDPL</strong> (data residency for Gulf candidates) · <strong class="section-title">Egypt Data Protection Law</strong> (registered data controller required). Centro Legal owns the compliance checklist; this stack supports — but does not replace — that ownership.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ─────────────────────────────────────────────────────── -->
+        <!-- 12 · OPEN-SOURCE LAB                                     -->
+        <!-- ─────────────────────────────────────────────────────── -->
+        <section class="glass-card rounded-2xl p-8 lg:p-10 relative overflow-hidden" id="sec-oss">
+            <div class="relative z-10">
+                <div class="flex items-baseline gap-3 mb-2">
+                    <span class="text-blue-400 font-mono font-bold text-sm">11</span>
+                    <h3 class="text-2xl md:text-3xl font-bold section-title">Open-Source Lab — POC, Not Production</h3>
+                </div>
+                <p class="text-c-muted text-sm mb-6 max-w-4xl">For internal experimentation, benchmarking vendor claims, or building a fallback. <strong class="section-title">None of these meet enterprise compliance bars on their own</strong> — they are R&D building blocks.</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="glass-panel p-5">
+                        <div class="flex items-center justify-between mb-2">
+                            <h4 class="font-bold section-title text-sm">Resume-Matcher</h4>
+                            <a href="https://github.com/srbhr/Resume-Matcher" target="_blank" rel="noopener" class="text-[11px] text-blue-400 hover:underline">github.com/srbhr/Resume-Matcher →</a>
+                        </div>
+                        <p class="text-[12.5px] text-c-muted leading-relaxed mb-2">NLP + cosine-similarity matching of CV ↔ JD. Python + spaCy. Useful baseline before paying Bedrock for the same job.</p>
+                        <div class="flex gap-1.5 flex-wrap">
+                            <span class="tag">Python</span><span class="tag">spaCy</span><span class="tag">MIT licence</span>
+                        </div>
+                    </div>
+                    <div class="glass-panel p-5">
+                        <div class="flex items-center justify-between mb-2">
+                            <h4 class="font-bold section-title text-sm">OpenCATS</h4>
+                            <a href="https://github.com/opencats/OpenCATS" target="_blank" rel="noopener" class="text-[11px] text-blue-400 hover:underline">github.com/opencats/OpenCATS →</a>
+                        </div>
+                        <p class="text-[12.5px] text-c-muted leading-relaxed mb-2">Self-hosted ATS — PHP/MySQL. Use as scaffolding for a custom recruiter portal that wraps vendor APIs.</p>
+                        <div class="flex gap-1.5 flex-wrap">
+                            <span class="tag">PHP</span><span class="tag">MySQL</span><span class="tag">GPL</span>
+                        </div>
+                    </div>
+                    <div class="glass-panel p-5">
+                        <div class="flex items-center justify-between mb-2">
+                            <h4 class="font-bold section-title text-sm">pyresparser</h4>
+                            <a href="https://github.com/OmkarPathak/pyresparser" target="_blank" rel="noopener" class="text-[11px] text-blue-400 hover:underline">github.com/OmkarPathak/pyresparser →</a>
+                        </div>
+                        <p class="text-[12.5px] text-c-muted leading-relaxed mb-2">CV → structured JSON (skills, edu, experience). NER-based. Original briefing called this "pyresumeparse" — correct name is <code class="inl">pyresparser</code>. <strong class="text-amber-400">Maintenance flag:</strong> last push Sept 2023 (≈ 2.5 yrs stale) — fork if used.</p>
+                        <div class="flex gap-1.5 flex-wrap">
+                            <span class="tag">Python</span><span class="tag">NLTK</span><span class="tag a">⚠ Stale</span>
+                        </div>
+                    </div>
+                    <div class="glass-panel p-5">
+                        <div class="flex items-center justify-between mb-2">
+                            <h4 class="font-bold section-title text-sm">Microsoft Bot Framework + Composer</h4>
+                            <a href="https://github.com/microsoft/BotFramework-Composer" target="_blank" rel="noopener" class="text-[11px] text-blue-400 hover:underline">github.com/microsoft/BotFramework-Composer →</a>
+                        </div>
+                        <p class="text-[12.5px] text-c-muted leading-relaxed mb-2">Build a Paradox-equivalent on Azure for internal mobility flows where commercial vendors are overkill.</p>
+                        <div class="flex gap-1.5 flex-wrap">
+                            <span class="tag">.NET</span><span class="tag">Azure</span><span class="tag">MIT</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-6 rounded-xl p-4 text-[12.5px] text-c-muted" style="background:rgba(43,168,212,0.06);border:1px solid rgba(43,168,212,0.20)">
+                    <strong class="section-title">Lab use only.</strong> Production-grade hiring AI demands documented bias audits, vendor SOC 2 / ISO 27001 attestations, EU AI Act model cards, and SLA-backed uptime — none of which OSS packages provide by default. Use these to evaluate vendor claims and to build small internal-only tooling (e.g. an internal-mobility "skill graph" prototype).
+                </div>
+            </div>
+        </section>
+
+        <!-- ─────────────────────────────────────────────────────── -->
+        <!-- 13 · CTO DECISION FRAMEWORK                              -->
+        <!-- ─────────────────────────────────────────────────────── -->
+        <section class="glass-card rounded-2xl p-8 lg:p-10 relative overflow-hidden" id="sec-decision">
+            <div class="absolute -top-10 -right-10 w-72 h-72 rounded-full blur-[80px] opacity-50 pointer-events-none" style="background:rgba(52,211,153,0.10)"></div>
+            <div class="relative z-10">
+                <div class="flex items-baseline gap-3 mb-2">
+                    <span class="text-emerald-400 font-mono font-bold text-sm">12</span>
+                    <h3 class="text-2xl md:text-3xl font-bold section-title">CTO Decision Framework</h3>
+                </div>
+                <p class="text-c-muted text-sm mb-8 max-w-4xl">Five gating questions. A "no" on any one of them is a halt-and-fix signal — not a kill signal — but the answer must be on record before procurement.</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                    <div class="glass-panel p-5">
+                        <div class="flex items-start gap-3">
+                            <div class="w-9 h-9 rounded-lg flex-shrink-0 flex items-center justify-center font-bold text-white" style="background:linear-gradient(135deg,#1A7A9E,#2BA8D4)">Q1</div>
+                            <div>
+                                <h4 class="font-bold section-title text-sm mb-1">Do we have an executive sponsor who owns the people-side change?</h4>
+                                <p class="text-[12px] text-c-muted">Owner = CHRO + CTO joint sign-off. Without it, recruiters revert to spreadsheets within 90 days.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="glass-panel p-5">
+                        <div class="flex items-start gap-3">
+                            <div class="w-9 h-9 rounded-lg flex-shrink-0 flex items-center justify-center font-bold text-white" style="background:linear-gradient(135deg,#1A7A9E,#2BA8D4)">Q2</div>
+                            <div>
+                                <h4 class="font-bold section-title text-sm mb-1">Is the baseline (TTH, CPH, NPS) measurable today?</h4>
+                                <p class="text-[12px] text-c-muted">If we cannot measure today, we cannot prove improvement tomorrow. Phase 0 fixes this.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="glass-panel p-5">
+                        <div class="flex items-start gap-3">
+                            <div class="w-9 h-9 rounded-lg flex-shrink-0 flex items-center justify-center font-bold text-white" style="background:linear-gradient(135deg,#1A7A9E,#2BA8D4)">Q3</div>
+                            <div>
+                                <h4 class="font-bold section-title text-sm mb-1">Has Legal blessed the AI-disclosure copy for EU + GCC candidates?</h4>
+                                <p class="text-[12px] text-c-muted">EU AI Act Art 26 + GDPR Art 22 + UAE PDPL all require active candidate notice + opt-out path.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="glass-panel p-5">
+                        <div class="flex items-start gap-3">
+                            <div class="w-9 h-9 rounded-lg flex-shrink-0 flex items-center justify-center font-bold text-white" style="background:linear-gradient(135deg,#1A7A9E,#2BA8D4)">Q4</div>
+                            <div>
+                                <h4 class="font-bold section-title text-sm mb-1">Is there a single integration owner inside Engineering?</h4>
+                                <p class="text-[12px] text-c-muted">Lambda + EventBridge + Zoho hooks need one named accountable engineer. No "shared ownership".</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="glass-panel p-5 md:col-span-2">
+                        <div class="flex items-start gap-3">
+                            <div class="w-9 h-9 rounded-lg flex-shrink-0 flex items-center justify-center font-bold text-white" style="background:linear-gradient(135deg,#16a34a,#34d399)">Q5</div>
+                            <div>
+                                <h4 class="font-bold section-title text-sm mb-1">Will the recruiter incentive plan shift to reward AI-augmented behaviour?</h4>
+                                <p class="text-[12px] text-c-muted">If TAs are still measured on raw fills, they will treat AI as adversary, not co-pilot. HR Ops must move to "fills × candidate NPS × 6-mo retention". This is the single most under-funded change-management work-stream in every AI hiring rollout I have seen.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recommendation block -->
+                <div class="rounded-2xl p-6" style="background:linear-gradient(135deg,rgba(52,211,153,0.10),rgba(43,168,212,0.05));border:1px solid rgba(52,211,153,0.35)">
+                    <div class="flex items-start gap-4">
+                        <div class="w-12 h-12 rounded-xl flex-shrink-0 flex items-center justify-center" style="background:rgba(52,211,153,0.18)">
+                            <svg class="w-7 h-7" style="color:#34d399" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"/></svg>
+                        </div>
+                        <div class="flex-1">
+                            <div class="text-xs font-bold uppercase tracking-widest mb-2" style="color:#34d399">Recommendation to the CTO</div>
+                            <p class="text-base section-title leading-relaxed mb-3">
+                                <strong>Approve Phase 0 + Phase 1 today.</strong> Sign RFPs with Paradox and TestGorilla. Stand up the AWS Lambda glue layer in parallel. Defer Talview and Sapia decisions to Phase 2 gate review. Defer Eightfold to year-2 strategic planning.
+                            </p>
+                            <p class="text-sm text-c-muted leading-relaxed">
+                                Hold a 30-min monthly steering with CHRO, Head of TA, and Engineering Director. First go-live event: TestGorilla pilot on two BPO accounts by Day 75. First measurable outcome: Phase 1 gate report on Day 90 (screen accuracy, NPS, recruiter capacity).
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ─────────────────────────────────────────────────────── -->
+        <!-- 14 · APPENDIX                                            -->
+        <!-- ─────────────────────────────────────────────────────── -->
+        <section class="glass-card rounded-2xl p-8 lg:p-10 relative overflow-hidden" id="sec-appendix">
+            <div class="relative z-10">
+                <div class="flex items-baseline gap-3 mb-2">
+                    <span class="text-c-muted font-mono font-bold text-sm">Appx</span>
+                    <h3 class="text-2xl md:text-3xl font-bold section-title">Appendix · Sources, Glossary, Validation</h3>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                    <!-- Sources -->
+                    <div>
+                        <h4 class="font-bold section-title text-sm mb-3">Primary vendor sources</h4>
+                        <ul class="space-y-1.5 text-[12.5px]">
+                            <li>• <a class="text-blue-400 hover:underline" target="_blank" rel="noopener" href="https://www.paradox.ai">paradox.ai</a> — Olivia product, scheduling, WhatsApp</li>
+                            <li>• <a class="text-blue-400 hover:underline" target="_blank" rel="noopener" href="https://www.hirevue.com">hirevue.com</a> — async video, science-backed assessments</li>
+                            <li>• <a class="text-blue-400 hover:underline" target="_blank" rel="noopener" href="https://www.testgorilla.com/pricing">testgorilla.com/pricing</a> — public-tier pricing</li>
+                            <li>• <a class="text-blue-400 hover:underline" target="_blank" rel="noopener" href="https://www.sapia.ai">sapia.ai</a> — Smart Interviewer + bias reports</li>
+                            <li>• <a class="text-blue-400 hover:underline" target="_blank" rel="noopener" href="https://www.talview.com">talview.com</a> — Instahiring + proctoring + TBI</li>
+                            <li>• <a class="text-blue-400 hover:underline" target="_blank" rel="noopener" href="https://eightfold.ai">eightfold.ai</a> — talent intelligence platform</li>
+                        </ul>
+
+                        <h4 class="font-bold section-title text-sm mb-3 mt-6">Cloud + CX sources</h4>
+                        <ul class="space-y-1.5 text-[12.5px]">
+                            <li>• <a class="text-blue-400 hover:underline" target="_blank" rel="noopener" href="https://aws.amazon.com/bedrock/pricing/">aws.amazon.com/bedrock/pricing</a></li>
+                            <li>• <a class="text-blue-400 hover:underline" target="_blank" rel="noopener" href="https://aws.amazon.com/connect/pricing/">aws.amazon.com/connect/pricing</a></li>
+                            <li>• <a class="text-blue-400 hover:underline" target="_blank" rel="noopener" href="https://azure.microsoft.com/en-us/pricing/details/cognitive-services/openai-service/">Azure OpenAI pricing</a></li>
+                            <li>• <a class="text-blue-400 hover:underline" target="_blank" rel="noopener" href="https://azure.microsoft.com/en-us/products/communication-services">Azure Communication Services</a></li>
+                            <li>• <a class="text-blue-400 hover:underline" target="_blank" rel="noopener" href="https://www.genesys.com/pricing">genesys.com/pricing</a></li>
+                            <li>• <a class="text-blue-400 hover:underline" target="_blank" rel="noopener" href="https://www.genesys.com/capabilities/ai">Genesys AI capabilities</a></li>
+                        </ul>
+
+                        <h4 class="font-bold section-title text-sm mb-3 mt-6">Regulatory sources</h4>
+                        <ul class="space-y-1.5 text-[12.5px]">
+                            <li>• <a class="text-blue-400 hover:underline" target="_blank" rel="noopener" href="https://artificialintelligenceact.eu/">EU AI Act — full text</a></li>
+                            <li>• <a class="text-blue-400 hover:underline" target="_blank" rel="noopener" href="https://www.nyc.gov/site/dca/about/automated-employment-decision-tools.page">NYC Local Law 144</a></li>
+                            <li>• <a class="text-blue-400 hover:underline" target="_blank" rel="noopener" href="https://gdpr-info.eu/art-22-gdpr/">GDPR Article 22</a></li>
+                            <li>• <a class="text-blue-400 hover:underline" target="_blank" rel="noopener" href="https://u.ae/en/about-the-uae/digital-uae/data/data-protection-laws">UAE PDPL overview</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Glossary -->
+                    <div>
+                        <h4 class="font-bold section-title text-sm mb-3">Glossary</h4>
+                        <dl class="space-y-2 text-[12.5px] text-c-muted">
+                            <div><dt class="font-bold section-title">AVI</dt><dd>Asynchronous Video Interview — candidate records answers to set prompts on their own time.</dd></div>
+                            <div><dt class="font-bold section-title">ATS</dt><dd>Applicant Tracking System — database of candidate records and pipeline state.</dd></div>
+                            <div><dt class="font-bold section-title">CPH</dt><dd>Cost per Hire — total acquisition cost ÷ hires in a period.</dd></div>
+                            <div><dt class="font-bold section-title">I-O Psychology</dt><dd>Industrial-Organizational Psychology — discipline behind validated assessment design.</dd></div>
+                            <div><dt class="font-bold section-title">NPS</dt><dd>Net Promoter Score — used here as candidate-experience metric.</dd></div>
+                            <div><dt class="font-bold section-title">PTU</dt><dd>Provisioned Throughput Unit — reserved-capacity Azure OpenAI pricing model.</dd></div>
+                            <div><dt class="font-bold section-title">RAG</dt><dd>Retrieval-Augmented Generation — pattern for grounding LLMs in your documents.</dd></div>
+                            <div><dt class="font-bold section-title">TBI</dt><dd>Talview Behavioural Insights — proprietary video-scoring model.</dd></div>
+                            <div><dt class="font-bold section-title">TCO</dt><dd>Total Cost of Ownership — licences + infra + people + risk reserve.</dd></div>
+                            <div><dt class="font-bold section-title">TTH</dt><dd>Time to Hire — calendar days from req opened to offer accepted.</dd></div>
+                            <div><dt class="font-bold section-title">XAI</dt><dd>Explainable AI — model outputs paired with human-readable rationale.</dd></div>
+                        </dl>
+
+                        <h4 class="font-bold section-title text-sm mb-3 mt-6">Validation notes (verified 2026-05-12)</h4>
+                        <ul class="space-y-1.5 text-[12.5px] text-c-muted">
+                            <li>• <strong class="section-title">Amazon Egypt</strong> does not use a commercial recruitment AI — they maintain proprietary internal systems on AWS. Amazon famously scrapped an internal experimental recruiting AI in 2018 after gender-bias issues.</li>
+                            <li>• HireVue voluntarily removed facial-expression scoring in <strong class="section-title">2021</strong>; current scoring is verbal content + tone. Annual NYC LL144 bias audit by DCI Consulting Group is published.</li>
+                            <li>• <strong class="section-title">TestGorilla pricing</strong>: credit-based subscription (1 cr/candidate, 2 cr conv-AI). Tiers verified: Free 10 cr/mo · Core $142/mo annual · Plus from $400/mo · Enterprise quote. <strong class="section-title">No Arabic UI</strong> — 12 EU/Asian languages only.</li>
+                            <li>• <strong class="section-title">Genesys</strong>: four CX tiers ($75/$115/$155/$240), not three. AI Experience tokens (250 named, 350 concurrent/mo, ~$1 overage) are included in all tiers.</li>
+                            <li>• <strong class="section-title">Sapia.ai uniquely holds ISO/IEC 42001:2023</strong> (AI Management System) — the only vendor in this set with a third-party AI-governance attestation that maps to EU AI Act expectations.</li>
+                            <li>• <strong class="section-title">Arabic confirmed</strong>: Paradox (100+ languages), Talview (Arabic listed). <strong class="section-title">Arabic not confirmed</strong>: TestGorilla, Eightfold, Sapia.ai, HireEZ — verify in RFP.</li>
+                            <li>• Open-source name: <code class="inl">pyresparser</code> (not pyresumeparse) · last commit Sept 2023 — assess fork-or-replace before production use.</li>
+                            <li>• All non-public vendor pricing figures are <strong class="section-title">analyst estimates</strong> — final figures must come from RFP.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="mt-8 pt-6 text-center text-[11px] text-c-muted" style="border-top:1px solid var(--border-s)">
+                    Centro AI · Talent Acquisition Briefing · v1.0 draft · Prepared for the Office of the CTO · 2026 ·
+                    <a href="index.html" class="text-blue-400 hover:underline">← back to main blueprint</a>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ── Scripts ──────────────────────────────────────────────── -->
+    <script>
+        // ── Theme toggle ────────────────────────────────────────
+        const themeToggle = document.getElementById('themeToggle');
+        const iconMoon = document.getElementById('iconMoon');
+        const iconSun  = document.getElementById('iconSun');
+        const stored = localStorage.getItem('centro-theme');
+        if (stored === 'light') {
+            document.documentElement.classList.remove('dark');
+            document.documentElement.classList.add('light');
+            iconMoon.classList.add('hidden');
+            iconSun.classList.remove('hidden');
+        }
+        themeToggle.addEventListener('click', () => {
+            const html = document.documentElement;
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark'); html.classList.add('light');
+                iconMoon.classList.add('hidden'); iconSun.classList.remove('hidden');
+                localStorage.setItem('centro-theme', 'light');
+            } else {
+                html.classList.remove('light'); html.classList.add('dark');
+                iconSun.classList.add('hidden'); iconMoon.classList.remove('hidden');
+                localStorage.setItem('centro-theme', 'dark');
+            }
+        });
+
+        // ── Charts ──────────────────────────────────────────────
+        function gridColor() { return document.documentElement.classList.contains('light') ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.06)'; }
+        function tickColor() { return document.documentElement.classList.contains('light') ? '#475569' : '#94a3b8'; }
+
+        const tcoCtx = document.getElementById('chartTCO').getContext('2d');
+        const tcoChart = new Chart(tcoCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Year 1','Year 2','Year 3'],
+                datasets: [
+                    { label: 'Status Quo (do-nothing)', data: [500, 540, 583], backgroundColor: 'rgba(248,113,113,0.65)', borderColor: '#f87171', borderWidth: 1.5, borderRadius: 6 },
+                    { label: 'Full-suite buy (Eightfold)', data: [380, 410, 442], backgroundColor: 'rgba(245,158,11,0.65)', borderColor: '#f59e0b', borderWidth: 1.5, borderRadius: 6 },
+                    { label: 'Hybrid (recommended)', data: [210, 196, 218], backgroundColor: 'rgba(52,211,153,0.65)', borderColor: '#34d399', borderWidth: 1.5, borderRadius: 6 }
+                ]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { labels: { color: tickColor(), font: { size: 10.5, family:'Montserrat' } } } },
+                scales: {
+                    x: { ticks: { color: tickColor() }, grid: { color: gridColor() } },
+                    y: { ticks: { color: tickColor(), callback: v => '$'+v+'k' }, grid: { color: gridColor() } }
+                }
+            }
+        });
+
+        const funCtx = document.getElementById('chartFunnel').getContext('2d');
+        const funChart = new Chart(funCtx, {
+            type: 'bar',
+            data: {
+                labels: ['CV screen','Phone/chat','Skill test','Schedule','Manager Iv','Offer'],
+                datasets: [
+                    { label: 'Today (days)', data: [3.5, 2.5, 4, 5, 4, 3], backgroundColor: 'rgba(248,113,113,0.55)', borderColor:'#f87171', borderWidth: 1.5, borderRadius: 4 },
+                    { label: 'Target (days)', data: [0.05, 0.05, 1, 0.5, 1.5, 1], backgroundColor: 'rgba(52,211,153,0.55)', borderColor: '#34d399', borderWidth: 1.5, borderRadius: 4 }
+                ]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false, indexAxis: 'y',
+                plugins: { legend: { labels: { color: tickColor(), font: { size: 10.5, family:'Montserrat' } } } },
+                scales: {
+                    x: { ticks: { color: tickColor() }, grid: { color: gridColor() } },
+                    y: { ticks: { color: tickColor() }, grid: { color: gridColor() } }
+                }
+            }
+        });
+
+        // Re-tint charts on theme switch
+        themeToggle.addEventListener('click', () => {
+            [tcoChart, funChart].forEach(c => {
+                c.options.plugins.legend.labels.color = tickColor();
+                c.options.scales.x.ticks.color = tickColor();
+                c.options.scales.x.grid.color = gridColor();
+                c.options.scales.y.ticks.color = tickColor();
+                c.options.scales.y.grid.color = gridColor();
+                c.update('none');
+            });
+        });
+
+        // ── Floating back-to-agenda button ─────────────────────
+        const agendaFab = document.createElement('button');
+        agendaFab.title = 'Back to Agenda';
+        agendaFab.setAttribute('aria-label','Back to Agenda');
+        agendaFab.innerHTML = '<svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h10M4 18h7"/><path d="M19 15l-4-4 4-4" opacity="0.7"/></svg><span style="font-size:0.68rem;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;margin-top:4px">Agenda</span>';
+        agendaFab.style.cssText = `
+            position:fixed;bottom:28px;right:24px;z-index:999;
+            display:flex;flex-direction:column;align-items:center;justify-content:center;
+            width:56px;padding:10px 4px;border-radius:16px;
+            background:rgba(10,76,106,0.85);backdrop-filter:blur(12px);
+            color:#2BA8D4;box-shadow:0 4px 24px rgba(26,122,158,0.35);
+            border:1px solid rgba(26,122,158,0.3);cursor:pointer;
+            opacity:0;transform:translateY(12px);pointer-events:none;
+            transition:opacity 0.3s,transform 0.3s,box-shadow 0.2s;
+        `;
+        agendaFab.addEventListener('click', () => {
+            document.getElementById('sec-hero').scrollIntoView({behavior:'smooth'});
+        });
+        document.body.appendChild(agendaFab);
+
+        const heroEl = document.getElementById('sec-hero');
+        const fabObserver = new IntersectionObserver(([e]) => {
+            const visible = !e.isIntersecting;
+            agendaFab.style.opacity = visible ? '1' : '0';
+            agendaFab.style.transform = visible ? 'translateY(0)' : 'translateY(12px)';
+            agendaFab.style.pointerEvents = visible ? 'auto' : 'none';
+        }, {threshold: 0.15});
+        if (heroEl) fabObserver.observe(heroEl);
+    </script>
+</body>
+</html>
