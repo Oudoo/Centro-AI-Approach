@@ -30,6 +30,10 @@ from core.sockets import manager
 from core.vector_db import get_vector_sandbox
 from integrations.schema_registry import get_schema_registry
 from models import ClientActionResponse, ClientMessageType, ClientQuery
+from pydantic import BaseModel
+
+class TitleRequest(BaseModel):
+    message: str
 
 structlog.configure(
     wrapper_class=structlog.make_filtering_bound_logger(logging.INFO),
@@ -93,6 +97,25 @@ async def healthz() -> dict:
     return {"status": "ok"}
 
 
+@app.post("/title")
+async def generate_title(req: TitleRequest) -> dict:
+    from core.llm import get_llm
+    messages = [
+        {"role": "system", "content": "You are a title generator. Generate a 3-5 word title for a conversation based on the user's first message. Return only the title, without quotes or extra text."},
+        {"role": "user", "content": req.message}
+    ]
+    try:
+        title = await get_llm().generate(messages)
+        # Strip any accidental quotes
+        title = title.strip('\'"').strip()
+        if not title:
+            title = "New Conversation"
+    except Exception as exc:
+        log.error("title_generation_failed", error=str(exc))
+        title = "New Conversation"
+    return {"title": title}
+
+
 # -----------------------------------------------------------------------------
 # WebSocket backbone
 # -----------------------------------------------------------------------------
@@ -122,7 +145,8 @@ async def chat_socket(websocket: WebSocket) -> None:
                     session_id, resp.action_id, resp.signature
                 )
                 confirmed = resp.action_confirmed and signature_ok
-                if not conn.resolve_action(resp.action_id, confirmed):
+                form_data = resp.form_data if confirmed else None
+                if not conn.resolve_action(resp.action_id, form_data):
                     log.warning("stale_action_response", action_id=resp.action_id)
                 continue
 

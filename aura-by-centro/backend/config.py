@@ -60,13 +60,10 @@ def scopes_visible_to(account_scope: str) -> list[str]:
 # Action Card before execution (see FEATURE 3).
 MUTATION_INTENTS: frozenset[str] = frozenset(
     {
-        "odoo_payroll_sync",
-        "odoo_payroll_run",
-        "trueblue_shift_update",
-        "trueblue_schedule_override",
-        "zoho_people_record_update",
-        "zoho_leave_approval",
-        "genesys_routing_override",
+        "swap_shift",
+        "annual_leave_request",
+        "casual_leave_request",
+        "update_break_timing",
     }
 )
 
@@ -89,7 +86,7 @@ class Settings(BaseSettings):
     # LLM
     llm_base_url: str = Field(default="http://localhost:1234/v1", alias="LLM_BASE_URL")
     llm_api_key: str = Field(default="local-no-key-required", alias="LLM_API_KEY")
-    llm_model: str = Field(default="gemma-4", alias="LLM_MODEL")
+    llm_model: str = Field(default="gemma-3", alias="LLM_MODEL")
     llm_context_window: int = Field(default=262144, alias="LLM_CONTEXT_WINDOW")
     llm_max_output_tokens: int = Field(default=2048, alias="LLM_MAX_OUTPUT_TOKENS")
     llm_temperature: float = Field(default=0.2, alias="LLM_TEMPERATURE")

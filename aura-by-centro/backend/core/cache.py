@@ -13,7 +13,7 @@ import asyncio
 
 import numpy as np
 
-from config import get_settings
+from config import get_settings, scopes_visible_to
 from core.embeddings import get_embedding_client
 
 # Seed FAQ knowledge — global, role-agnostic answers safe for every tenant.
@@ -31,8 +31,13 @@ SEED_FAQS: list[dict[str, str]] = [
         "question": "What is the holiday calendar / list of public holidays?",
         "answer": (
             "The official Centro holiday calendar lives in Zoho People > "
-            "Leave Tracker > Holidays. Holidays are localized per account and "
-            "region; check the filter at the top of the page for your location."
+            "Leave Tracker > Holidays. Here is the Global Holiday Calendar:\n\n"
+            "| Date | Holiday | Region |\n"
+            "|---|---|---|\n"
+            "| Jan 1 | New Year's Day | Global |\n"
+            "| May 1 | Labor Day | Global |\n"
+            "| Dec 25 | Christmas Day | Global |\n\n"
+            "Holidays are localized per account and region; check the filter at the top of the page for your location."
         ),
     },
     {
@@ -55,12 +60,13 @@ SEED_FAQS: list[dict[str, str]] = [
 
 
 class _Entry:
-    __slots__ = ("vector", "answer", "question")
+    __slots__ = ("vector", "answer", "question", "account_scope")
 
-    def __init__(self, vector: np.ndarray, answer: str, question: str) -> None:
+    def __init__(self, vector: np.ndarray, answer: str, question: str, account_scope: str = "global") -> None:
         self.vector = vector
         self.answer = answer
         self.question = question
+        self.account_scope = account_scope
 
 
 class SemanticCache:
@@ -100,19 +106,19 @@ class SemanticCache:
             np.vstack([e.vector for e in self._entries]) if self._entries else None
         )
 
-    async def add(self, question: str, answer: str) -> None:
+    async def add(self, question: str, answer: str, account_scope: str = "global") -> None:
         """Promote a fresh LLM answer into the cache for future fast-paths."""
         embedder = await get_embedding_client()
         vec = self._normalize(
             np.asarray(await embedder.embed(question), dtype=np.float32)
         )
         async with self._lock:
-            self._entries.append(_Entry(vec, answer, question))
+            self._entries.append(_Entry(vec, answer, question, account_scope))
             if len(self._entries) > self._max:
                 self._entries.pop(0)  # simple FIFO eviction
             self._rebuild_matrix()
 
-    async def lookup(self, query: str) -> tuple[str, float] | None:
+    async def lookup(self, query: str, user_account_scope: str = "global") -> tuple[str, float] | None:
         """
         Return (answer, score) when the best cosine match clears the threshold,
         else None so the caller proceeds to the RAG/LLM pipeline.
@@ -121,8 +127,15 @@ class SemanticCache:
             return None
         embedder = await get_embedding_client()
         q = self._normalize(np.asarray(await embedder.embed(query), dtype=np.float32))
+        
         # Vectors are normalized -> dot product == cosine similarity.
         scores = self._matrix @ q
+        
+        # FEATURE 2 + FEATURE 1: Filter CAG hits by user's RBAC scope!
+        visible = scopes_visible_to(user_account_scope)
+        mask = np.array([e.account_scope in visible for e in self._entries])
+        scores = np.where(mask, scores, -1.0)
+        
         best_idx = int(np.argmax(scores))
         best_score = float(scores[best_idx])
         if best_score >= self._threshold:

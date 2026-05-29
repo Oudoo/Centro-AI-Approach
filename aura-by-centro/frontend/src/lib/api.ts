@@ -14,6 +14,12 @@ export function setToken(token: string): void {
   window.localStorage.setItem(TOKEN_KEY, token);
 }
 
+export function removeToken(): void {
+  if (typeof window !== "undefined") {
+    window.localStorage.removeItem(TOKEN_KEY);
+  }
+}
+
 function authHeaders(): HeadersInit {
   const t = getToken();
   return t ? { Authorization: `Bearer ${t}` } : {};

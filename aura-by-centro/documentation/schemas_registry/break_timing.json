@@ -1,0 +1,35 @@
+{
+  "name": "Update Break Timing",
+  "version": "v1",
+  "target_system": "Trueblue Scheduling",
+  "mcp_system": "trueblue",
+  "mcp_tool": "shift.break_update",
+  "intents": ["update_break_timing"],
+  "summary": "Request a change to your scheduled break time.",
+  "risk_level": "low",
+  "risk_assessment": "This sends a notification to your team leader to adjust the WFM schedule.",
+  "endpoint": "/schedule/api/break",
+  "auth": "trueblue_oauth",
+  "example_payload": {
+    "action": "break_update"
+  },
+  "form_fields": [
+    {
+      "name": "shift_date",
+      "type": "date",
+      "label": "Shift Date"
+    },
+    {
+      "name": "new_break_time",
+      "type": "time",
+      "label": "Requested Break Time"
+    },
+    {
+      "name": "reason",
+      "type": "textarea",
+      "label": "Reason",
+      "required": false
+    }
+  ],
+  "min_role_required": "agent"
+}

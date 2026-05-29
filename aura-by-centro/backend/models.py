@@ -39,6 +39,13 @@ class RiskLevel(str, Enum):
     HIGH = "high"
 
 
+class FormField(BaseModel):
+    name: str
+    type: str
+    label: str
+    required: bool = True
+
+
 class ActionCardData(BaseModel):
     """Payload rendered by the frontend `action-card.tsx` for dual confirmation."""
 
@@ -47,6 +54,7 @@ class ActionCardData(BaseModel):
     target_system: str                      # e.g. "Odoo Payroll", "Trueblue Scheduling"
     summary: str
     api_payload: dict[str, Any] = Field(default_factory=dict)
+    form_fields: Optional[list[FormField]] = None
     risk_level: RiskLevel = RiskLevel.MEDIUM
     risk_assessment: str = ""
 
@@ -85,6 +93,7 @@ class ClientActionResponse(BaseModel):
     session_id: str
     action_id: str
     action_confirmed: bool = False
+    form_data: dict[str, Any] = Field(default_factory=dict)
     signature: Optional[str] = None         # HMAC over (session_id|action_id)
 
 

@@ -1,5 +1,5 @@
 """
-Aura (by Centro) — Async Gemma-4 client over an OpenAI-compatible endpoint.
+Aura (by Centro) — Async Gemma-3 client over an OpenAI-compatible endpoint.
 
 Exposes a streaming token generator. Raises `LLMUnavailable` on OOM / latency /
 connection failures so the orchestrator can trigger graceful fallback
@@ -43,7 +43,7 @@ class GemmaClient:
             ) as resp:
                 if resp.status_code >= 500:
                     # 500/503 from local inference servers usually == OOM/overload.
-                    raise LLMUnavailable(f"Gemma-4 cluster error {resp.status_code}")
+                    raise LLMUnavailable(f"Gemma-3 cluster error {resp.status_code}")
                 resp.raise_for_status()
                 async for line in resp.aiter_lines():
                     if not line or not line.startswith("data:"):
@@ -55,9 +55,27 @@ class GemmaClient:
                     if token:
                         yield token
         except httpx.TimeoutException as exc:
-            raise LLMUnavailable(f"Gemma-4 latency/timeout: {exc}") from exc
+            raise LLMUnavailable(f"Gemma-3 latency/timeout: {exc}") from exc
         except httpx.HTTPError as exc:
-            raise LLMUnavailable(f"Gemma-4 transport failure: {exc}") from exc
+            raise LLMUnavailable(f"Gemma-3 transport failure: {exc}") from exc
+
+    async def generate(self, messages: list[dict[str, str]]) -> str:
+        payload = {
+            "model": self._model,
+            "messages": messages,
+            "temperature": self._temperature,
+            "max_tokens": 15,
+            "stream": False,
+        }
+        try:
+            resp = await self._client.post(self._url, headers=self._headers, json=payload)
+            if resp.status_code >= 500:
+                raise LLMUnavailable(f"Gemma-3 cluster error {resp.status_code}")
+            resp.raise_for_status()
+            data = resp.json()
+            return data["choices"][0]["message"].get("content", "").strip()
+        except Exception as exc:
+            raise LLMUnavailable(f"Gemma-3 generation failure: {exc}") from exc
 
     async def aclose(self) -> None:
         await self._client.aclose()

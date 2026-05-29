@@ -4,12 +4,20 @@ export type SocketStatus = "streaming" | "completed" | "action_card" | "error";
 
 export type RiskLevel = "low" | "medium" | "high";
 
+export type FormField = {
+  name: string;
+  type: string;
+  label: string;
+  required?: boolean;
+};
+
 export interface ActionCardData {
   action_id: string;
   intent: string;
   target_system: string;
   summary: string;
-  api_payload: Record<string, unknown>;
+  api_payload: Record<string, any>;
+  form_fields?: FormField[];
   risk_level: RiskLevel;
   risk_assessment: string;
 }
@@ -32,6 +40,7 @@ export interface ChatMessage {
   role: ChatRole;
   text: string;
   streaming?: boolean;
+  isTyping?: boolean;
   card?: ActionCardData;
   cardResolved?: "confirmed" | "cancelled";
 }

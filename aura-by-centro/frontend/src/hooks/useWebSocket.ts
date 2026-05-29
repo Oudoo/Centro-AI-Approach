@@ -26,6 +26,38 @@ export function useWebSocket(sessionId: string, token?: string) {
   const [connState, setConnState] = useState<ConnState>("connecting");
   const wsRef = useRef<WebSocket | null>(null);
   const activeAssistantId = useRef<string | null>(null);
+  const isInitializing = useRef(true);
+  const prevSessionId = useRef(sessionId);
+
+  useEffect(() => {
+    isInitializing.current = true;
+    if (typeof window !== "undefined") {
+      try {
+        const stored = window.localStorage.getItem(`aura.chat.${sessionId}`);
+        if (stored) {
+          setMessages(JSON.parse(stored));
+        } else {
+          setMessages([]);
+        }
+      } catch (e) {
+        setMessages([]);
+      }
+    }
+  }, [sessionId]);
+
+  useEffect(() => {
+    if (isInitializing.current) {
+      isInitializing.current = false;
+      return;
+    }
+    if (prevSessionId.current !== sessionId) {
+      prevSessionId.current = sessionId;
+      return;
+    }
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(`aura.chat.${sessionId}`, JSON.stringify(messages));
+    }
+  }, [messages, sessionId]);
 
   const connect = useCallback(() => {
     const params = new URLSearchParams({ session_id: sessionId });
@@ -52,74 +84,80 @@ export function useWebSocket(sessionId: string, token?: string) {
   }, [sessionId, token]);
 
   const handleMessage = useCallback((msg: SocketMessage) => {
-    setMessages((prev) => {
-      const next = [...prev];
-
-      if (msg.status === "streaming") {
-        const text = msg.payload.text ?? "";
-        if (activeAssistantId.current) {
-          const idx = next.findIndex((m) => m.id === activeAssistantId.current);
-          if (idx >= 0) next[idx] = { ...next[idx], text: next[idx].text + text };
+    if (msg.status === "streaming") {
+      if (!activeAssistantId.current) {
+        activeAssistantId.current = uid();
+      }
+      const currentId = activeAssistantId.current;
+      
+      setMessages((prev) => {
+        const next = [...prev];
+        const idx = next.findIndex((m) => m.id === currentId);
+        if (idx >= 0) {
+          next[idx] = { ...next[idx], text: next[idx].text + (msg.payload.text ?? ""), isTyping: false, streaming: true };
         } else {
-          const id = uid();
-          activeAssistantId.current = id;
-          next.push({ id, role: "assistant", text, streaming: true });
+          next.push({ id: currentId, role: "assistant", text: msg.payload.text ?? "", streaming: true, isTyping: false });
         }
         return next;
-      }
-
-      if (msg.status === "completed") {
-        if (activeAssistantId.current) {
-          const idx = next.findIndex((m) => m.id === activeAssistantId.current);
-          if (idx >= 0) next[idx] = { ...next[idx], streaming: false };
-        }
-        activeAssistantId.current = null;
-        return next;
-      }
-
-      if (msg.status === "action_card" && msg.payload.card_data) {
-        activeAssistantId.current = null;
-        next.push({
-          id: uid(),
-          role: "assistant",
-          text: "",
-          card: msg.payload.card_data,
+      });
+    } else if (msg.status === "completed") {
+      const currentId = activeAssistantId.current;
+      if (currentId) {
+        setMessages((prev) => {
+          const next = [...prev];
+          const idx = next.findIndex((m) => m.id === currentId);
+          if (idx >= 0) next[idx] = { ...next[idx], streaming: false, isTyping: false };
+          return next;
         });
-        return next;
-      }
-
-      if (msg.status === "error") {
         activeAssistantId.current = null;
-        next.push({
-          id: uid(),
-          role: "system",
-          text: msg.payload.text ?? "An error occurred.",
-        });
-        return next;
       }
-
-      return next;
-    });
+    } else if (msg.status === "action_card" && msg.payload.card_data) {
+      const currentId = activeAssistantId.current;
+      activeAssistantId.current = null;
+      const cardData = msg.payload.card_data;
+      setMessages((prev) => {
+        const next = currentId ? prev.filter((m) => m.id !== currentId) : [...prev];
+        next.push({ id: uid(), role: "assistant", text: "", card: cardData });
+        return next;
+      });
+    } else if (msg.status === "error") {
+      const currentId = activeAssistantId.current;
+      activeAssistantId.current = null;
+      const errorText = msg.payload.text ?? "An error occurred.";
+      setMessages((prev) => {
+        const next = currentId ? prev.filter((m) => m.id !== currentId) : [...prev];
+        next.push({ id: uid(), role: "system", text: errorText });
+        return next;
+      });
+    }
   }, []);
 
   useEffect(() => {
     connect();
     return () => wsRef.current?.close();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [connect]);
 
   const sendQuery = useCallback(
     (text: string) => {
       const ws = wsRef.current;
       if (!ws || ws.readyState !== WebSocket.OPEN) return;
-      setMessages((prev) => [...prev, { id: uid(), role: "user", text }]);
+      
+      const newAssistantId = uid();
+      activeAssistantId.current = newAssistantId;
+      
+      setMessages((prev) => [
+        ...prev, 
+        { id: uid(), role: "user", text },
+        { id: newAssistantId, role: "assistant", text: "", isTyping: true }
+      ]);
+      
       ws.send(JSON.stringify({ type: "query", session_id: sessionId, text }));
     },
     [sessionId]
   );
 
   const respondToAction = useCallback(
-    (actionId: string, confirmed: boolean, signature?: string) => {
+    (actionId: string, confirmed: boolean, formData?: Record<string, any>, signature?: string) => {
       const ws = wsRef.current;
       if (!ws || ws.readyState !== WebSocket.OPEN) return;
       ws.send(
@@ -128,6 +166,7 @@ export function useWebSocket(sessionId: string, token?: string) {
           session_id: sessionId,
           action_id: actionId,
           action_confirmed: confirmed,
+          form_data: formData ?? {},
           signature: signature ?? null,
         })
       );

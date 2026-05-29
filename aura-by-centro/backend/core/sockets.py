@@ -8,6 +8,7 @@ write can only fire after a matching, confirmed `action_response`.
 from __future__ import annotations
 
 import asyncio
+from typing import Any
 
 from fastapi import WebSocket
 
@@ -26,8 +27,8 @@ class Connection:
         self.session_id = session_id
         self.ws = websocket
         self._send_lock = asyncio.Lock()
-        # action_id -> future resolved by the client's signed confirmation
-        self.pending_actions: dict[str, asyncio.Future[bool]] = {}
+        # action_id -> future resolved by the client's signed confirmation (None if cancelled)
+        self.pending_actions: dict[str, asyncio.Future[dict[str, Any] | None]] = {}
 
     async def send(self, message: SocketMessage) -> None:
         # Serialize sends so interleaved stream tokens never corrupt a frame.
@@ -61,9 +62,9 @@ class Connection:
             )
         )
 
-    async def request_action(self, card: ActionCardData) -> asyncio.Future[bool]:
+    async def request_action(self, card: ActionCardData) -> asyncio.Future[dict[str, Any] | None]:
         """Emit an Action Card and return a future awaiting the signed reply."""
-        future: asyncio.Future[bool] = asyncio.get_running_loop().create_future()
+        future: asyncio.Future[dict[str, Any] | None] = asyncio.get_running_loop().create_future()
         self.pending_actions[card.action_id] = future
         await self.send(
             SocketMessage(
@@ -74,10 +75,10 @@ class Connection:
         )
         return future
 
-    def resolve_action(self, action_id: str, confirmed: bool) -> bool:
+    def resolve_action(self, action_id: str, form_data: dict[str, Any] | None) -> bool:
         future = self.pending_actions.pop(action_id, None)
         if future and not future.done():
-            future.set_result(confirmed)
+            future.set_result(form_data)
             return True
         return False
 

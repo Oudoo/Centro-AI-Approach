@@ -23,6 +23,7 @@ import {
   fetchStats,
   getToken,
   listDocuments,
+  removeToken,
   uploadDocument,
 } from "@/lib/api";
 
@@ -48,7 +49,12 @@ export default function AdminPage() {
       setStats(await fetchStats());
       setError("");
     } catch (e) {
-      setError((e as Error).message);
+      const msg = (e as Error).message;
+      if (msg.includes("403")) {
+        setError("Logged in as Agent. You do not have permissions to manage documents. Go to the Chat interface to test your role!");
+      } else {
+        setError(msg);
+      }
     }
   }, []);
 
@@ -61,6 +67,7 @@ export default function AdminPage() {
 
   const login = async (role: string, account_scope: string) => {
     setBusy(true);
+    setError("");
     try {
       await devLogin(role, account_scope);
       setAuthed(true);
@@ -132,6 +139,13 @@ export default function AdminPage() {
             >
               Sign in as Coastline Manager
             </button>
+            <button
+              disabled={busy}
+              onClick={() => login("agent", "trueblue")}
+              className="w-full rounded-lg border border-centro-mist px-4 py-3 text-sm font-medium text-centro-onyx hover:bg-centro-mist"
+            >
+              Sign in as Trueblue Agent
+            </button>
           </div>
           {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
         </div>
@@ -154,12 +168,24 @@ export default function AdminPage() {
             {stats.documents} documents · {stats.total_chunks} chunks indexed
           </p>
         </div>
-        <button
-          onClick={refresh}
-          className="ml-auto flex items-center gap-1.5 rounded-lg border border-centro-mist px-3 py-2 text-sm text-centro-onyx hover:bg-centro-mist"
-        >
-          <RefreshCw size={14} /> Refresh
-        </button>
+        <div className="ml-auto flex items-center gap-2">
+          <button
+            onClick={refresh}
+            className="flex items-center gap-1.5 rounded-lg border border-centro-mist px-3 py-2 text-sm text-centro-onyx hover:bg-centro-mist"
+          >
+            <RefreshCw size={14} /> Refresh
+          </button>
+          <button
+            onClick={() => {
+              removeToken();
+              setAuthed(false);
+              setError("");
+            }}
+            className="flex items-center gap-1.5 rounded-lg border border-centro-mist px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50"
+          >
+            <LogIn size={14} className="rotate-180" /> Logout
+          </button>
+        </div>
       </div>
 
       {error && (

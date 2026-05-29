@@ -9,6 +9,7 @@
  * back over the socket by the parent).
  */
 import { AlertTriangle, CheckCircle2, ShieldAlert, XCircle } from "lucide-react";
+import { useState } from "react";
 import type { ActionCardData } from "@/lib/types";
 
 const RISK_STYLES: Record<string, string> = {
@@ -25,9 +26,10 @@ export function ActionCard({
 }: {
   card: ActionCardData;
   resolved?: "confirmed" | "cancelled";
-  onConfirm: () => void;
+  onConfirm: (formData?: Record<string, any>) => void;
   onCancel: () => void;
 }) {
+  const [formData, setFormData] = useState<Record<string, any>>({});
   const riskClass = RISK_STYLES[card.risk_level] ?? RISK_STYLES.medium;
 
   return (
@@ -55,14 +57,34 @@ export function ActionCard({
 
         <p className="text-sm text-centro-onyx/80">{card.summary}</p>
 
-        <div>
-          <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-centro-accent">
-            API Payload
-          </p>
-          <pre className="max-h-48 overflow-auto rounded-lg bg-centro-onyx-900 p-3 text-xs leading-relaxed text-emerald-200">
-            {JSON.stringify(card.api_payload, null, 2)}
-          </pre>
-        </div>
+        {card.form_fields && card.form_fields.length > 0 ? (
+          <div className="space-y-3 rounded-xl border border-centro-mist bg-gray-50/50 p-4">
+            {card.form_fields.map((field) => (
+              <div key={field.name}>
+                <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-centro-accent">
+                  {field.label} {field.required && <span className="text-red-500">*</span>}
+                </label>
+                {field.type === "textarea" ? (
+                  <textarea
+                    required={field.required}
+                    value={formData[field.name] || ""}
+                    onChange={(e) => setFormData({ ...formData, [field.name]: e.target.value })}
+                    className="w-full rounded-lg border border-centro-mist bg-white px-3 py-2 text-sm text-centro-onyx outline-none focus:border-centro-prussian"
+                    rows={3}
+                  />
+                ) : (
+                  <input
+                    type={field.type}
+                    required={field.required}
+                    value={formData[field.name] || ""}
+                    onChange={(e) => setFormData({ ...formData, [field.name]: e.target.value })}
+                    className="w-full rounded-lg border border-centro-mist bg-white px-3 py-2 text-sm text-centro-onyx outline-none focus:border-centro-prussian"
+                  />
+                )}
+              </div>
+            ))}
+          </div>
+        ) : null}
 
         <div className={`flex items-start gap-2 rounded-lg border px-3 py-2 text-sm ${riskClass}`}>
           <AlertTriangle size={16} className="mt-0.5 shrink-0" />
@@ -91,7 +113,7 @@ export function ActionCard({
         ) : (
           <div className="flex gap-3">
             <button
-              onClick={onConfirm}
+              onClick={() => onConfirm(formData)}
               className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-centro-prussian px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-centro-prussian-700"
             >
               <CheckCircle2 size={16} /> Confirm Action

@@ -8,7 +8,7 @@ Pipeline for every inbound query (see main.py wiring):
        block on dual confirmation before any write executes.
     3. Dynamic schema retrieval (FEATURE 4) — integration contracts are pulled
        from the technical vector space, never hard-coded into prompts.
-    4. RAG answer    (FEATURE 1) — sandboxed retrieval + streamed Gemma-4 answer
+    4. RAG answer    (FEATURE 1) — sandboxed retrieval + streamed Gemma-3 answer
        with graceful fallback (PATTERN #4) on OOM/latency.
 """
 from __future__ import annotations
@@ -29,10 +29,9 @@ from models import ActionCardData, RiskLevel, UserContext
 log = structlog.get_logger("aura.agent")
 
 SYSTEM_PROMPT = (
-    "You are Aura, the enterprise AI co-pilot by Centro — a global BPO leader. "
-    "Your voice is professional, strategic, innovative and authoritative, and you "
-    "embody Centro's values: Innovation, Efficiency, Operational Excellence, "
-    "Accountability and Precision. Answer concisely and ground every statement in "
+    "You are Aura, the enterprise AI co-pilot by Centro. "
+    "Your voice is friendly, helpful, and professional. You act as a supportive "
+    "buddy who makes the workday easier. Answer concisely and ground every statement in "
     "the provided CONTEXT. If the context is insufficient, say so plainly rather "
     "than inventing details."
 )
@@ -57,21 +56,22 @@ class ManagerAgent:
         and auditability; swap for an LLM classifier later if needed.
         """
         t = text.lower()
-        if "payroll" in t and any(k in t for k in ("run", "sync", "process")):
-            return "odoo_payroll_sync"
-        if "shift" in t and any(k in t for k in ("change", "update", "override", "swap")):
-            return "trueblue_shift_update"
-        if "leave" in t and any(k in t for k in ("approve", "approval")):
-            return "zoho_leave_approval"
-        if "routing" in t and "override" in t:
-            return "genesys_routing_override"
+        if "swap" in t and "shift" in t:
+            return "swap_shift"
+        if "leave" in t:
+            if "annual" in t:
+                return "annual_leave_request"
+            if "casual" in t:
+                return "casual_leave_request"
+        if "break" in t and ("timing" in t or "update" in t):
+            return "update_break_timing"
         return None
 
     # ---- Main entrypoint ---------------------------------------------------
     async def handle_query(self, conn: Connection, user: UserContext, text: str) -> None:
         # 1) CAG fast-path -------------------------------------------------
         cache = await get_semantic_cache()
-        hit = await cache.lookup(text)
+        hit = await cache.lookup(text, user.account_scope)
         if hit is not None:
             answer, score = hit
             log.info("cag_hit", session=conn.session_id, score=round(score, 4))
@@ -101,6 +101,7 @@ class ManagerAgent:
             target_system=contract.get("target_system", intent),
             summary=contract.get("summary", f"Execute '{intent}' as requested."),
             api_payload=contract.get("example_payload", {"request": text}),
+            form_fields=contract.get("form_fields"),
             risk_level=RiskLevel(contract.get("risk_level", "high")),
             risk_assessment=contract.get(
                 "risk_assessment",
@@ -111,16 +112,18 @@ class ManagerAgent:
         future = await conn.request_action(card)
 
         try:
-            confirmed = await future
+            form_data = await future
         except Exception:  # cancelled on disconnect
             return
 
-        if not confirmed:
+        if form_data is None:
             await conn.stream_token("Action cancelled. No changes were made.")
             await conn.complete()
             return
 
         # Write only fires here, after a signed action_confirmed=true reply.
+        # Overlay user input on top of the base payload
+        card.api_payload.update(form_data)
         await self._execute_mutation(conn, contract, card)
 
     async def _execute_mutation(
@@ -135,8 +138,8 @@ class ManagerAgent:
             )
             log.info("mutation_executed", intent=card.intent, action_id=card.action_id)
             await conn.stream_token(
-                f"✅ Done. **{card.target_system}** executed `{card.intent}` "
-                f"successfully.\n\nResult: {result}"
+                f"✅ Done. Your request for `{card.intent}` was processed successfully. "
+                f"An email notification has been sent to mahmoud.hassan@centrocdx.com for demo purposes.\n\nResult: {result}"
             )
             await conn.complete()
         except MCPError as exc:
@@ -159,13 +162,13 @@ class ManagerAgent:
         ) or "No internal documents matched within your access scope."
 
         messages = [
-            {"role": "system", "content": SYSTEM_PROMPT},
             {
                 "role": "system",
                 "content": (
-                    f"User scope: account={user.account_scope}, role={user.role}, "
-                    f"department={user.department}.\n\nCONTEXT:\n{context_block}"
-                ),
+                    SYSTEM_PROMPT
+                    + f"\n\nUser scope: account={user.account_scope}, role={user.role}, "
+                    + f"department={user.department}.\n\nCONTEXT:\n{context_block}"
+                )
             },
             {"role": "user", "content": text},
         ]
@@ -176,16 +179,20 @@ class ManagerAgent:
             async for token in llm.stream(messages):
                 full.append(token)
                 await conn.stream_token(token)
+            
+            if not full:
+                raise LLMUnavailable("LLM returned 0 tokens")
+                
             await conn.complete()
             # Promote successful answers into the CAG cache for next time.
             if full:
                 cache = await get_semantic_cache()
-                await cache.add(text, "".join(full))
+                await cache.add(text, "".join(full), user.account_scope)
         except LLMUnavailable as exc:
             # PATTERN #4: never drop the socket. Try cache, else enterprise message.
             log.error("llm_unavailable", error=str(exc), session=conn.session_id)
             cache = await get_semantic_cache()
-            fallback = await cache.lookup(text)
+            fallback = await cache.lookup(text, user.account_scope)
             if fallback is not None:
                 await conn.stream_token(fallback[0])
                 await conn.complete()

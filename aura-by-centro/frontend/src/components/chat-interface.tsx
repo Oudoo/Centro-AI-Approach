@@ -5,7 +5,7 @@
  * Wires the WebSocket hook to the message list, action cards, and composer.
  */
 import { useEffect, useRef, useState } from "react";
-import { Send, Sparkles, Wifi, WifiOff } from "lucide-react";
+import { Send, Sparkles, Wifi, WifiOff, Menu } from "lucide-react";
 import { useWebSocket } from "@/hooks/useWebSocket";
 import { BRAND } from "@/lib/brand";
 import { ActionCard } from "@/components/action-card";
@@ -14,16 +14,21 @@ import { MessageBubble } from "@/components/message-bubble";
 const SUGGESTIONS = [
   "How do I submit my resignation?",
   "Show me the holiday calendar",
-  "Run the Odoo payroll sync for Trueblue",
-  "Update a Trueblue shift schedule",
+  "Request a casual leave for tomorrow",
+  "I want to request an annual leave",
+  "Can I update my break timing?",
 ];
 
 export function ChatInterface({
   sessionId,
   token,
+  onMenuClick,
+  onFirstMessage,
 }: {
   sessionId: string;
   token?: string;
+  onMenuClick?: () => void;
+  onFirstMessage?: (text: string) => void;
 }) {
   const { messages, connState, sendQuery, respondToAction } = useWebSocket(
     sessionId,
@@ -39,6 +44,9 @@ export function ChatInterface({
   const submit = (text: string) => {
     const value = text.trim();
     if (!value) return;
+    if (messages.length === 0 && onFirstMessage) {
+      onFirstMessage(value);
+    }
     sendQuery(value);
     setInput("");
   };
@@ -47,7 +55,15 @@ export function ChatInterface({
     <div className="flex h-full flex-col">
       {/* Header */}
       <header className="flex items-center gap-3 border-b border-centro-mist bg-white px-6 py-4">
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-centro-prussian text-white shadow-card">
+        {onMenuClick && (
+          <button 
+            onClick={onMenuClick}
+            className="mr-1 flex items-center justify-center rounded-lg p-1.5 text-centro-onyx/70 transition hover:bg-centro-mist"
+          >
+            <Menu size={20} />
+          </button>
+        )}
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-centro-prussian text-white shadow-card">
           <Sparkles size={20} />
         </div>
         <div>
@@ -75,7 +91,7 @@ export function ChatInterface({
             <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-centro-prussian text-white shadow-card">
               <Sparkles size={26} />
             </div>
-            <h2 className="text-xl font-bold text-centro-onyx">{BRAND.buddyLine}</h2>
+            <h2 className="text-xl font-bold text-centro-onyx">Hi, I'm Aura — your Co-Pilot by Centro. Let's make your day easier.</h2>
             <p className="mt-2 text-sm text-centro-onyx/60">
               Ask about HR, payroll, scheduling, or your connected systems.
             </p>
@@ -99,7 +115,7 @@ export function ChatInterface({
               key={m.id}
               card={m.card}
               resolved={m.cardResolved}
-              onConfirm={() => respondToAction(m.card!.action_id, true)}
+              onConfirm={(formData) => respondToAction(m.card!.action_id, true, formData)}
               onCancel={() => respondToAction(m.card!.action_id, false)}
             />
           ) : (

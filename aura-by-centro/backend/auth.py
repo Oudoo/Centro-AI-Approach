@@ -20,7 +20,7 @@ def resolve_user(token: str | None) -> UserContext:
     """Decode a JWT into a UserContext. Falls back to a global dev user."""
     settings = get_settings()
     if not token:
-        return UserContext(user_id="dev-user")
+        return UserContext(user_id="dev-user", account_scope="anonymous")
     try:
         claims = jwt.decode(
             token, settings.jwt_secret, algorithms=[settings.jwt_algorithm]
@@ -34,7 +34,7 @@ def resolve_user(token: str | None) -> UserContext:
         )
     except JWTError:
         # Invalid token -> least-privileged context, never elevated.
-        return UserContext(user_id="anonymous", account_scope="global", role="agent")
+        return UserContext(user_id="anonymous", account_scope="anonymous", role="agent")
 
 
 def mint_token(
