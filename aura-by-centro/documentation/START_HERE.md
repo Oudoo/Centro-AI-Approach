@@ -51,6 +51,11 @@ ollama pull nomic-embed-text    # embedding model — powers CAG + RAG (required
 
 ## STEP 3 — Configure environment
 
+> ⚠️ Run this **from inside the `aura-by-centro/` folder** (that's where the file
+> lives). If you see `cp: .env.local.example: No such file or directory`, you're
+> in the wrong directory — `cd` into `aura-by-centro` first. Find it with:
+> `find ~ -name ".env.local.example" 2>/dev/null`. Use `ls -a` to see dotfiles.
+
 ```bash
 cp .env.local.example .env
 ```
@@ -68,9 +73,19 @@ EMBEDDING_MODEL=nomic-embed-text
 make setup        # creates backend venv + installs frontend deps
 ```
 
-## STEP 5 — Bring up the stack (4 terminals)
+## STEP 5 — Bring up the stack
 
-Run each in its own terminal, from `aura-by-centro/`:
+### Easiest: one command
+From inside `aura-by-centro/` (with `ollama serve` already running):
+```bash
+make demo
+```
+This starts Qdrant, launches the backend, seeds the RAG documents, runs the
+smoke test, and opens the frontend — all in one terminal. **Ctrl-C stops
+everything.** Skip to Step 6 once it prints the smoke-test PASS lines.
+
+### Or manually (4 terminals)
+Prefer to see each piece? Run each in its own terminal, from `aura-by-centro/`:
 ```bash
 make qdrant       # T1: vector DB  (needs Docker running)
 make backend      # T2: FastAPI    (http://localhost:8000)
@@ -145,15 +160,11 @@ When all boxes are ticked, you've personally verified the full POC.
 
 ## Daily restart (after the first setup)
 
-You don't repeat Steps 0–4. Just:
+You don't repeat Steps 0–4. Just start your engine and run the one-command demo:
 ```bash
-ollama serve          # T-engine
-make qdrant           # T1
-make backend          # T2
-make smoke            # verify green
-make frontend         # T4
+ollama serve          # in its own terminal
+make demo             # qdrant + backend + ingest + smoke + frontend
 ```
-(`make ingest` only needs re-running if you wiped the vector store.)
 
 ---
 
@@ -168,6 +179,8 @@ make frontend         # T4
 | Admin upload → 403 | Sign in via /admin dev login (role must be ≥ manager). |
 | Answers slow | Use `gemma3:1b` for the live demo; the first response after start is the slowest (model load). |
 | Port already in use | Something else is on 8000/3000/6333 — stop it or change the port. |
+| `cp: .env.local.example: No such file or directory` | You're not in `aura-by-centro/`. `cd` into it (find via `find ~ -name ".env.local.example"`). |
+| `make demo` says "Docker daemon not running" | Launch Docker Desktop, wait for the whale icon, retry. |
 
 > **Do a full dry run tonight**, exactly as you'll present. The first model load
 > is slow; after that, responses are warm and snappy.
