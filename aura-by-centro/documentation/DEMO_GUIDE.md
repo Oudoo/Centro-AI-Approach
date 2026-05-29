@@ -49,20 +49,22 @@ There is exactly **one** extra requirement beyond your chat model: Aura's CAG
 cache and RAG retrieval need a small **embedding model**. Pull one inside Msty
 (e.g. `nomic-embed-text`, 768-dim) and you're done — no other tool required.
 
-> Which Gemma to demo on? Use **Gemma 3 (small, e.g. `gemma3:1b`)** for the live
-> CTO demo — on an Intel CPU it responds in ~1–3s, which keeps the demo snappy.
-> Switch to **Gemma 4 (8B)** to show off answer quality; it's slower on CPU but
-> works. Both plug in by changing one line (`LLM_MODEL`) in `.env`.
+> Which model to demo on? Use **`qwen2.5:1.5b`** — since CAG + RAG supply the
+> facts, a small instruction model only needs to phrase the answer, so it's fast
+> and accurate on an Intel CPU. `qwen2.5:0.5b` is even faster; `llama3.2:1b` and
+> `gemma3:1b` also work. Switch by changing one line (`LLM_MODEL`) in `.env`.
 
 ```bash
-# 1. In Msty: confirm the OpenAI-compatible "Local AI" endpoint is running, and
-#    pull an embedding model (nomic-embed-text). Note the exact endpoint URL.
+# 1. Start Ollama warm and pull the models:
+OLLAMA_KEEP_ALIVE=-1 ollama serve
+ollama pull qwen2.5:1.5b
+ollama pull nomic-embed-text       # 768-dim embeddings (CAG + RAG)
 
-# 2. Point Aura at Msty (.env)
+# 2. Point Aura at Ollama (.env)
 cd aura-by-centro && cp .env.local.example .env
-#   LLM_BASE_URL=http://localhost:10000/v1     # <- your Msty endpoint (verify port)
-#   LLM_MODEL=gemma3:1b                          # your local Gemma 3 (or gemma4)
-#   EMBEDDING_BASE_URL=http://localhost:10000/v1
+#   LLM_BASE_URL=http://127.0.0.1:11434/v1
+#   LLM_MODEL=qwen2.5:1.5b
+#   EMBEDDING_BASE_URL=http://127.0.0.1:11434/v1
 #   EMBEDDING_MODEL=nomic-embed-text
 
 # 3. One-time install
@@ -178,12 +180,12 @@ This is the headline security feature. Show it with two identities:
 
 | Symptom | Fix |
 |--------|-----|
-| `make smoke` fails on LLM | Is `ollama serve` running? Is `LLM_MODEL` exactly `gemma3:1b`? |
+| `make smoke` fails on LLM | Is `ollama serve` running? Is `LLM_MODEL` (e.g. `qwen2.5:1.5b`) pulled? Run `ollama list`. |
 | `make smoke` fails on embeddings | `ollama pull nomic-embed-text`; check `EMBEDDING_DIM=768`. |
 | `make smoke` fails on Qdrant | Is `make qdrant` running / Docker Desktop started? |
 | Chat connects but no answer | Run `make ingest`; check the backend terminal for errors. |
 | Admin upload returns 403 | Sign in via /admin dev login (needs role ≥ manager). |
-| Answers are slow | Use `gemma3:1b` (not the 8B) for the live demo on Intel CPU. |
+| Answers are slow | Use `qwen2.5:1.5b` (or `qwen2.5:0.5b`) and start Ollama with `OLLAMA_KEEP_ALIVE=-1` to keep the model warm. |
 
 > Pro tip: do a **full dry run tonight** end-to-end, exactly as you'll present it.
 > The first model load is the slowest; after that responses are warm.

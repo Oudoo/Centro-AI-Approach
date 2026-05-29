@@ -86,7 +86,7 @@ class Settings(BaseSettings):
     # LLM
     llm_base_url: str = Field(default="http://localhost:1234/v1", alias="LLM_BASE_URL")
     llm_api_key: str = Field(default="local-no-key-required", alias="LLM_API_KEY")
-    llm_model: str = Field(default="gemma-3", alias="LLM_MODEL")
+    llm_model: str = Field(default="qwen2.5:1.5b", alias="LLM_MODEL")
     llm_context_window: int = Field(default=262144, alias="LLM_CONTEXT_WINDOW")
     llm_max_output_tokens: int = Field(default=768, alias="LLM_MAX_OUTPUT_TOKENS")
     llm_temperature: float = Field(default=0.2, alias="LLM_TEMPERATURE")

@@ -41,13 +41,16 @@ cd aura-by-centro
 ## STEP 2 — Start the AI engine + pull models
 
 ```bash
-ollama serve                    # leave running in its own terminal
+# keep the model warm (-1) so follow-up questions are fast:
+OLLAMA_KEEP_ALIVE=-1 ollama serve   # leave running in its own terminal
 # in another terminal:
-ollama pull gemma3:1b           # chat model — fast on Intel CPU (use for the demo)
+ollama pull qwen2.5:1.5b        # chat model — fast + great at grounded answers
 ollama pull nomic-embed-text    # embedding model — powers CAG + RAG (required)
 ```
-> Optional: `ollama pull gemma3` (the larger 4B/8B) for higher quality — slower
-> on CPU. You switch models by editing one line (`LLM_MODEL`) in `.env`.
+> Why qwen2.5:1.5b? CAG + RAG supply all the facts, so a small instruction model
+> only needs to phrase the answer — and a tiny model is far faster on a CPU-only
+> Mac. Alternatives: `qwen2.5:0.5b` (fastest), `llama3.2:1b`, `gemma3:1b`.
+> Switch any time by editing one line (`LLM_MODEL`) in `.env`.
 
 ## STEP 3 — Configure environment
 
@@ -61,9 +64,9 @@ cp .env.local.example .env
 ```
 Open `.env` and set these four lines for Ollama (everything else can stay):
 ```
-LLM_BASE_URL=http://localhost:11434/v1
-LLM_MODEL=gemma3:1b
-EMBEDDING_BASE_URL=http://localhost:11434/v1
+LLM_BASE_URL=http://127.0.0.1:11434/v1
+LLM_MODEL=qwen2.5:1.5b
+EMBEDDING_BASE_URL=http://127.0.0.1:11434/v1
 EMBEDDING_MODEL=nomic-embed-text
 ```
 
@@ -162,8 +165,8 @@ When all boxes are ticked, you've personally verified the full POC.
 
 You don't repeat Steps 0–4. Just start your engine and run the one-command demo:
 ```bash
-ollama serve          # in its own terminal
-make demo             # qdrant + backend + ingest + smoke + frontend
+OLLAMA_KEEP_ALIVE=-1 ollama serve   # in its own terminal (keeps model warm)
+make demo                           # qdrant + backend + ingest + smoke + frontend
 ```
 
 ---
@@ -172,12 +175,12 @@ make demo             # qdrant + backend + ingest + smoke + frontend
 
 | `make smoke` says… | Fix |
 |---|---|
-| FAIL LLM chat endpoint | Is `ollama serve` running? Is `LLM_MODEL` exactly `gemma3:1b` and pulled? |
+| FAIL LLM chat endpoint | Is `ollama serve` running? Is `LLM_MODEL` (e.g. `qwen2.5:1.5b`) pulled? Run `ollama list`. |
 | FAIL Embeddings endpoint | `ollama pull nomic-embed-text`; keep `EMBEDDING_DIM=768`. |
 | FAIL Qdrant | Is Docker Desktop running and `make qdrant` up? |
 | Chat connects, no answer | Did you run `make ingest`? Check the backend terminal for errors. |
 | Admin upload → 403 | Sign in via /admin dev login (role must be ≥ manager). |
-| Answers slow | Use `gemma3:1b` for the live demo; the first response after start is the slowest (model load). |
+| Answers slow | Use `qwen2.5:1.5b` (or `qwen2.5:0.5b`) and start Ollama with `OLLAMA_KEEP_ALIVE=-1`; the first response after start is always the slowest (model load). |
 | Port already in use | Something else is on 8000/3000/6333 — stop it or change the port. |
 | `cp: .env.local.example: No such file or directory` | You're not in `aura-by-centro/`. `cd` into it (find via `find ~ -name ".env.local.example"`). |
 | `make demo` says "Docker daemon not running" | Launch Docker Desktop, wait for the whale icon, retry. |
