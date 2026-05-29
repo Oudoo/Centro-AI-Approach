@@ -152,14 +152,35 @@ class ManagerAgent:
     async def _handle_rag(self, conn: Connection, user: UserContext, text: str) -> None:
         sandbox = await get_vector_sandbox()
         try:
-            chunks = await sandbox.search(text, user=user, limit=6)
+            # Keep retrieval tight: fewer, clipped chunks => a smaller prompt =>
+            # a much faster time-to-first-token on a local CPU.
+            chunks = await sandbox.search(text, user=user, limit=4)
         except Exception as exc:  # vector engine unavailable
             log.error("vector_search_failed", error=str(exc))
             chunks = []
 
+        def _clip(t: str, n: int = 700) -> str:
+            return t if len(t) <= n else t[:n].rstrip() + "…"
+
         context_block = "\n\n".join(
-            f"[{c.source or c.department}] {c.text}" for c in chunks
+            f"[{c.source or c.department}] {_clip(c.text)}" for c in chunks
         ) or "No internal documents matched within your access scope."
+
+        # FEATURE 1 + 2: decide a SAFE scope to cache this answer under. We tag
+        # the cache by the retrieved documents' scope — NOT the asker's scope —
+        # so a broad-scope viewer (e.g. global manager) can never cache a
+        # tenant-specific answer as "global" and leak it to other tenants.
+        tenant_scopes = {
+            c.account_scope
+            for c in chunks
+            if c.account_scope and c.account_scope != "global"
+        }
+        if len(tenant_scopes) == 1:
+            cache_scope: str | None = next(iter(tenant_scopes))
+        elif not tenant_scopes:
+            cache_scope = "global"
+        else:
+            cache_scope = None  # mixed tenants -> never cache
 
         messages = [
             {
@@ -184,10 +205,12 @@ class ManagerAgent:
                 raise LLMUnavailable("LLM returned 0 tokens")
                 
             await conn.complete()
-            # Promote successful answers into the CAG cache for next time.
-            if full:
+            # Promote successful answers into the CAG cache for next time,
+            # tagged with the SOURCE documents' scope (see above) — never the
+            # asker's scope. Skip caching when sources span multiple tenants.
+            if full and cache_scope is not None:
                 cache = await get_semantic_cache()
-                await cache.add(text, "".join(full), user.account_scope)
+                await cache.add(text, "".join(full), cache_scope)
         except LLMUnavailable as exc:
             # PATTERN #4: never drop the socket. Try cache, else enterprise message.
             log.error("llm_unavailable", error=str(exc), session=conn.session_id)

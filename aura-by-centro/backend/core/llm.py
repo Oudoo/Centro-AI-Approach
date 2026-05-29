@@ -27,7 +27,14 @@ class GemmaClient:
         self._timeout = s.llm_request_timeout
         self._temperature = s.llm_temperature
         self._max_tokens = s.llm_max_output_tokens
-        self._client = httpx.AsyncClient(timeout=self._timeout)
+        # Granular timeouts: fail fast if the server is unreachable (connect),
+        # but allow a slow local CPU plenty of time to produce/stream tokens
+        # (read) so we don't raise a false "heavy load" on a 2019 Intel Mac.
+        self._client = httpx.AsyncClient(
+            timeout=httpx.Timeout(
+                connect=15.0, read=max(self._timeout, 300.0), write=60.0, pool=15.0
+            )
+        )
 
     async def stream(self, messages: list[dict[str, str]]) -> AsyncIterator[str]:
         payload = {

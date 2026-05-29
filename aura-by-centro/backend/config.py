@@ -88,13 +88,13 @@ class Settings(BaseSettings):
     llm_api_key: str = Field(default="local-no-key-required", alias="LLM_API_KEY")
     llm_model: str = Field(default="gemma-3", alias="LLM_MODEL")
     llm_context_window: int = Field(default=262144, alias="LLM_CONTEXT_WINDOW")
-    llm_max_output_tokens: int = Field(default=2048, alias="LLM_MAX_OUTPUT_TOKENS")
+    llm_max_output_tokens: int = Field(default=768, alias="LLM_MAX_OUTPUT_TOKENS")
     llm_temperature: float = Field(default=0.2, alias="LLM_TEMPERATURE")
     llm_request_timeout: int = Field(default=120, alias="LLM_REQUEST_TIMEOUT")
 
     # Embeddings
     embedding_base_url: str = Field(default="http://localhost:1234/v1", alias="EMBEDDING_BASE_URL")
-    embedding_model: str = Field(default="text-embedding-nomic", alias="EMBEDDING_MODEL")
+    embedding_model: str = Field(default="nomic-embed-text", alias="EMBEDDING_MODEL")
     embedding_dim: int = Field(default=768, alias="EMBEDDING_DIM")
 
     # Vector engine

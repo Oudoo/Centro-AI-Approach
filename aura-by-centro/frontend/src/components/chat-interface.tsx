@@ -93,7 +93,7 @@ export function ChatInterface({
             </div>
             <h2 className="text-xl font-bold text-centro-onyx">Hi, I'm Aura — your Co-Pilot by Centro. Let's make your day easier.</h2>
             <p className="mt-2 text-sm text-centro-onyx/60">
-              Ask about HR, payroll, scheduling, or your connected systems.
+              Ask about HR, leave, schedules, or submit a request.
             </p>
             <div className="mt-6 grid grid-cols-1 gap-2 sm:grid-cols-2">
               {SUGGESTIONS.map((s) => (
