@@ -23,7 +23,11 @@ trap cleanup EXIT INT TERM
 # ---- preflight ----
 command -v docker >/dev/null 2>&1 || { echo "❌ Docker not found. Install/launch Docker Desktop."; exit 1; }
 docker info >/dev/null 2>&1 || { echo "❌ Docker daemon not running. Open Docker Desktop and retry."; exit 1; }
-[[ -f .env ]] || { echo "❌ Missing .env — run:  cp .env.local.example .env"; exit 1; }
+# Auto-create .env from the template the first time — no manual step needed.
+if [[ ! -f .env ]]; then
+  cp .env.local.example .env
+  echo "📝 Created .env from .env.local.example (edit it if your model/endpoint differs)."
+fi
 [[ -d backend/.venv ]] || { echo "❌ Backend venv missing — run:  make setup"; exit 1; }
 [[ -d frontend/node_modules ]] || { echo "❌ Frontend deps missing — run:  make setup"; exit 1; }
 

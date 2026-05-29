@@ -20,9 +20,10 @@ import structlog
 from config import MUTATION_INTENTS, get_settings
 from core.cache import get_semantic_cache
 from core.llm import LLMUnavailable, get_llm
+from core.notifier import notify_request
+from core.requests_store import record_request
 from core.sockets import Connection
 from core.vector_db import get_vector_sandbox
-from integrations.mcp_bridge import MCPError, get_mcp_bridge
 from integrations.schema_registry import get_schema_registry
 from models import ActionCardData, RiskLevel, UserContext
 
@@ -79,24 +80,34 @@ class ManagerAgent:
 
     # ---- Main entrypoint ---------------------------------------------------
     async def handle_query(self, conn: Connection, user: UserContext, text: str) -> None:
-        # 1) CAG fast-path -------------------------------------------------
-        cache = await get_semantic_cache()
-        hit = await cache.lookup(text, user.account_scope)
-        if hit is not None:
-            answer, score = hit
-            log.info("cag_hit", session=conn.session_id, score=round(score, 4))
-            await conn.stream_token(answer)
-            await conn.complete()
-            return
+        try:
+            # 1) CAG fast-path ---------------------------------------------
+            # A cache/embedding hiccup must never crash the turn — treat as miss.
+            try:
+                cache = await get_semantic_cache()
+                hit = await cache.lookup(text, user.account_scope)
+            except Exception as exc:
+                log.warning("cag_lookup_failed", error=str(exc))
+                hit = None
+            if hit is not None:
+                answer, score = hit
+                log.info("cag_hit", session=conn.session_id, score=round(score, 4))
+                await conn.stream_token(answer)
+                await conn.complete()
+                return
 
-        # 2) Mutation intent -> dual-confirmation Action Card --------------
-        intent = self.detect_intent(text)
-        if intent in MUTATION_INTENTS:
-            await self._handle_mutation(conn, user, intent, text)
-            return
+            # 2) Mutation intent -> dual-confirmation Action Card ----------
+            intent = self.detect_intent(text)
+            if intent in MUTATION_INTENTS:
+                await self._handle_mutation(conn, user, intent, text)
+                return
 
-        # 4) RAG answer (default path) -------------------------------------
-        await self._handle_rag(conn, user, text)
+            # 4) RAG answer (default path) ---------------------------------
+            await self._handle_rag(conn, user, text)
+        except Exception as exc:
+            # Last line of defence: a friendly fallback, never a raw error.
+            log.error("handle_query_failed", session=conn.session_id, error=str(exc))
+            await conn.error(FALLBACK_MESSAGE)
 
     # ---- FEATURE 3: dual confirmation -------------------------------------
     async def _handle_mutation(
@@ -109,15 +120,13 @@ class ManagerAgent:
             action_id=str(uuid.uuid4()),
             intent=intent,
             target_system=contract.get("target_system", intent),
-            summary=contract.get("summary", f"Execute '{intent}' as requested."),
-            api_payload=contract.get("example_payload", {"request": text}),
+            summary=contract.get("summary", "Please fill in the details below."),
+            api_payload={},  # no raw API payload shown to the user
             form_fields=contract.get("form_fields"),
-            risk_level=RiskLevel(contract.get("risk_level", "high")),
-            risk_assessment=contract.get(
-                "risk_assessment",
-                "This operation mutates a production system and requires explicit "
-                "confirmation. Review the target system and payload before approving.",
-            ),
+            # These are kept for the data contract but are no longer surfaced to
+            # the user — this assistant only files safe, reviewable requests.
+            risk_level=RiskLevel(contract.get("risk_level", "low")),
+            risk_assessment="",
         )
         future = await conn.request_action(card)
 
@@ -127,47 +136,58 @@ class ManagerAgent:
             return
 
         if form_data is None:
-            await conn.stream_token("Action cancelled. No changes were made.")
+            await conn.stream_token("No problem — I've cancelled that request. 👍")
             await conn.complete()
             return
 
-        # Write only fires here, after a signed action_confirmed=true reply.
-        # Overlay user input on top of the base payload
-        card.api_payload.update(form_data)
-        await self._execute_mutation(conn, contract, card)
+        await self._submit_request(conn, user, contract, card, form_data or {})
 
-    async def _execute_mutation(
-        self, conn: Connection, contract: dict, card: ActionCardData
+    async def _submit_request(
+        self,
+        conn: Connection,
+        user: UserContext,
+        contract: dict,
+        card: ActionCardData,
+        form_data: dict,
     ) -> None:
-        bridge = get_mcp_bridge()
+        """Persist the request and notify the team (email in demo phase)."""
+        request_type = card.intent
+        target = card.target_system
+        details = {k: v for k, v in form_data.items() if v not in (None, "")}
         try:
-            result = await bridge.call_tool(
-                system=contract.get("mcp_system", "odoo"),
-                tool=contract.get("mcp_tool", card.intent),
-                arguments=card.api_payload,
-            )
-            log.info("mutation_executed", intent=card.intent, action_id=card.action_id)
-            await conn.stream_token(
-                f"✅ Done. Your request for `{card.intent}` was processed successfully. "
-                f"An email notification has been sent to mahmoud.hassan@centrocdx.com for demo purposes.\n\nResult: {result}"
-            )
-            await conn.complete()
-        except MCPError as exc:
-            log.error("mutation_failed", intent=card.intent, error=str(exc))
+            await record_request(request_type, target, user, details)
+            sent, to_addr = await notify_request(request_type, target, user, details)
+        except Exception as exc:
+            log.error("request_submit_failed", intent=request_type, error=str(exc))
             await conn.error(
-                f"The action could not be completed on {card.target_system}: {exc}"
+                "I couldn't file that request just now — please try again in a moment."
             )
+            return
+
+        log.info("request_submitted", intent=request_type, emailed=sent)
+        pretty = request_type.replace("_", " ").title()
+        detail_lines = "\n".join(
+            f"- **{k.replace('_', ' ').title()}:** {v}" for k, v in details.items()
+        ) or "- (no extra details)"
+        notice = (
+            f"and a notification was emailed to **{to_addr}**"
+            if sent
+            else f"and logged for the team to action (routing to **{to_addr}**)"
+        )
+        await conn.stream_token(
+            f"✅ **Done!** Your **{pretty}** request has been recorded {notice}.\n\n"
+            f"{detail_lines}\n\nYou'll hear back once it's reviewed. Anything else?"
+        )
+        await conn.complete()
 
     # ---- FEATURES 1 + 4 + PATTERN 4: sandboxed RAG with fallback ----------
     async def _handle_rag(self, conn: Connection, user: UserContext, text: str) -> None:
         sandbox = await get_vector_sandbox()
-        try:
-            # Keep retrieval tight: fewer, clipped chunks => a smaller prompt =>
-            # a much faster time-to-first-token on a local CPU.
-            chunks = await sandbox.search(text, user=user, limit=4)
-        except Exception as exc:  # vector engine unavailable
-            log.error("vector_search_failed", error=str(exc))
-            chunks = []
+        # Keep retrieval tight: fewer, clipped chunks => a smaller prompt => a
+        # much faster time-to-first-token on a local CPU. If the vector engine
+        # or embeddings are DOWN this raises and the outer handler shows the
+        # graceful fallback (not a misleading "no documents" message).
+        chunks = await sandbox.search(text, user=user, limit=3)
 
         # GROUNDED-ONLY: if retrieval found nothing in the user's scope, do NOT
         # call the LLM (which would hallucinate, e.g. inventing a Coastline
@@ -178,7 +198,7 @@ class ManagerAgent:
             await conn.complete()
             return
 
-        def _clip(t: str, n: int = 700) -> str:
+        def _clip(t: str, n: int = 500) -> str:
             return t if len(t) <= n else t[:n].rstrip() + "…"
 
         context_block = "\n\n".join(

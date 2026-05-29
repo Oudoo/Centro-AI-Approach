@@ -47,6 +47,11 @@ async def lifespan(app: FastAPI):
     log.info("aura_startup", brand=Brand.FULL_NAME)
     await get_schema_registry()
     try:
+        from core.requests_store import init_store
+        await init_store()  # employee-requests SQLite table
+    except Exception as exc:
+        log.warning("requests_store_init_failed", error=str(exc))
+    try:
         await get_vector_sandbox()  # ensure collection + payload indexes
     except Exception as exc:  # vector engine may be offline in pure-frontend dev
         log.warning("vector_init_deferred", error=str(exc))

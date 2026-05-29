@@ -9,9 +9,14 @@ from __future__ import annotations
 
 from enum import Enum
 from functools import lru_cache
+from pathlib import Path
 
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+# Repo paths so the backend finds the SAME .env no matter the working directory.
+_BACKEND_DIR = Path(__file__).resolve().parent
+_ROOT_DIR = _BACKEND_DIR.parent  # aura-by-centro/
 
 
 # -----------------------------------------------------------------------------
@@ -73,7 +78,11 @@ MUTATION_INTENTS: frozenset[str] = frozenset(
 # -----------------------------------------------------------------------------
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
-        env_file=".env", env_file_encoding="utf-8", extra="ignore"
+        # Read a single .env whether the app is launched from the repo root or
+        # from backend/ (root wins). No more copying .env into backend/.
+        env_file=(str(_ROOT_DIR / ".env"), str(_BACKEND_DIR / ".env")),
+        env_file_encoding="utf-8",
+        extra="ignore",
     )
 
     # App
@@ -88,7 +97,7 @@ class Settings(BaseSettings):
     llm_api_key: str = Field(default="local-no-key-required", alias="LLM_API_KEY")
     llm_model: str = Field(default="qwen2.5:1.5b", alias="LLM_MODEL")
     llm_context_window: int = Field(default=262144, alias="LLM_CONTEXT_WINDOW")
-    llm_max_output_tokens: int = Field(default=768, alias="LLM_MAX_OUTPUT_TOKENS")
+    llm_max_output_tokens: int = Field(default=512, alias="LLM_MAX_OUTPUT_TOKENS")
     llm_temperature: float = Field(default=0.2, alias="LLM_TEMPERATURE")
     llm_request_timeout: int = Field(default=120, alias="LLM_REQUEST_TIMEOUT")
 
@@ -117,6 +126,20 @@ class Settings(BaseSettings):
     zoho_mcp_url: str = Field(default="http://localhost:9001", alias="ZOHO_MCP_URL")
     odoo_mcp_url: str = Field(default="http://localhost:9002", alias="ODOO_MCP_URL")
     genesys_mcp_url: str = Field(default="http://localhost:9003", alias="GENESYS_MCP_URL")
+
+    # Employee requests: storage + email notifications (demo phase)
+    requests_db_path: str = Field(
+        default=str(_BACKEND_DIR / "data" / "requests.db"), alias="REQUESTS_DB_PATH"
+    )
+    request_notify_email: str = Field(
+        default="mahmoud.hassan@centrocdx.com", alias="REQUEST_NOTIFY_EMAIL"
+    )
+    smtp_host: str = Field(default="", alias="SMTP_HOST")
+    smtp_port: int = Field(default=587, alias="SMTP_PORT")
+    smtp_user: str = Field(default="", alias="SMTP_USER")
+    smtp_password: str = Field(default="", alias="SMTP_PASSWORD")
+    smtp_from: str = Field(default="aura@centrocdx.com", alias="SMTP_FROM")
+    smtp_use_tls: bool = Field(default=True, alias="SMTP_USE_TLS")
 
     @property
     def origins_list(self) -> list[str]:

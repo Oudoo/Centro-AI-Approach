@@ -20,6 +20,8 @@ package-lock.json
 # Vector / data
 qdrant_storage/
 *.sqlite3
+backend/data/
+*.db
 
 # OS / editor
 .DS_Store

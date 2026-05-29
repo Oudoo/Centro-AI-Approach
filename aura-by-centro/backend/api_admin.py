@@ -17,11 +17,13 @@ from __future__ import annotations
 import uuid
 
 import structlog
-from fastapi import APIRouter, Depends, File, Form, Header, HTTPException, UploadFile
+from fastapi import APIRouter, Depends, File, Form, Header, HTTPException, Query, UploadFile
+from fastapi.responses import PlainTextResponse, Response
 
 from auth import mint_token, resolve_user
 from config import ROLE_RANK, AccountScope, Role, get_settings
 from core.chunking import chunk_text
+from core.requests_store import export_csv, list_requests
 from core.vector_db import get_vector_sandbox
 from models import UserContext
 
@@ -140,3 +142,29 @@ async def stats(user: UserContext = Depends(require_manager)) -> dict:
         "total_chunks": await sandbox.count(),
         "documents": len(await sandbox.list_documents()),
     }
+
+
+# -----------------------------------------------------------------------------
+# Employee requests — review + export for Workforce Management
+# -----------------------------------------------------------------------------
+@router.get("/requests")
+async def get_requests(user: UserContext = Depends(require_manager)) -> dict:
+    return {"requests": await list_requests()}
+
+
+@router.get("/requests/export.csv")
+async def export_requests_csv(token: str | None = Query(default=None)) -> Response:
+    """
+    Download all requests as CSV (opens directly in Excel). Browsers can't set
+    an Authorization header on a link, so the manager token is accepted as a
+    `?token=` query param here.
+    """
+    user = resolve_user(token)
+    if ROLE_RANK.get(user.role, 0) < MIN_UPLOAD_RANK:
+        raise HTTPException(403, "Exporting requests requires a manager role or above.")
+    csv_text = await export_csv()
+    return PlainTextResponse(
+        csv_text,
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=aura_requests.csv"},
+    )

@@ -93,3 +93,28 @@ export async function fetchStats(): Promise<{ total_chunks: number; documents: n
   if (!res.ok) throw new Error(`stats failed (${res.status})`);
   return res.json();
 }
+
+export interface EmployeeRequest {
+  id: number;
+  created_at: string;
+  request_type: string;
+  target_system: string;
+  employee_id: string;
+  employee_name: string;
+  account_scope: string;
+  department: string;
+  details: string;
+  status: string;
+  notified_email: string;
+}
+
+export async function listRequests(): Promise<EmployeeRequest[]> {
+  const res = await fetch(`${API_URL}/admin/requests`, { headers: authHeaders() });
+  if (!res.ok) throw new Error(`requests failed (${res.status})`);
+  return (await res.json()).requests;
+}
+
+/** CSV download link (token passed as query param so a plain <a> works). */
+export function requestsExportUrl(): string {
+  return `${API_URL}/admin/requests/export.csv?token=${encodeURIComponent(getToken())}`;
+}

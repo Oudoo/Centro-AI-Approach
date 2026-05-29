@@ -8,7 +8,9 @@
  */
 import { useCallback, useEffect, useState } from "react";
 import {
+  Download,
   FileText,
+  Inbox,
   LogIn,
   RefreshCw,
   ShieldCheck,
@@ -18,12 +20,15 @@ import {
 import { BRAND } from "@/lib/brand";
 import {
   type DocSummary,
+  type EmployeeRequest,
   deleteDocument,
   devLogin,
   fetchStats,
   getToken,
   listDocuments,
+  listRequests,
   removeToken,
+  requestsExportUrl,
   uploadDocument,
 } from "@/lib/api";
 
@@ -33,6 +38,7 @@ const ROLES = ["agent", "team_lead", "manager", "admin"];
 export default function AdminPage() {
   const [authed, setAuthed] = useState(false);
   const [docs, setDocs] = useState<DocSummary[]>([]);
+  const [requests, setRequests] = useState<EmployeeRequest[]>([]);
   const [stats, setStats] = useState({ total_chunks: 0, documents: 0 });
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -47,6 +53,7 @@ export default function AdminPage() {
     try {
       setDocs(await listDocuments());
       setStats(await fetchStats());
+      setRequests(await listRequests());
       setError("");
     } catch (e) {
       const msg = (e as Error).message;
@@ -304,6 +311,64 @@ export default function AdminPage() {
             ))}
           </tbody>
         </table>
+      </div>
+
+      {/* Employee requests (Workforce Management) */}
+      <div className="mt-8">
+        <div className="mb-3 flex items-center gap-2">
+          <Inbox size={18} className="text-centro-accent" />
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-centro-accent">
+            Employee Requests
+          </h2>
+          <span className="text-xs text-centro-onyx/50">({requests.length})</span>
+          <a
+            href={requestsExportUrl()}
+            className="ml-auto flex items-center gap-1.5 rounded-lg bg-centro-prussian px-3 py-2 text-sm font-semibold text-white hover:bg-centro-prussian-700"
+          >
+            <Download size={14} /> Export CSV (Excel)
+          </a>
+        </div>
+        <div className="overflow-hidden rounded-2xl border border-centro-mist bg-white shadow-card">
+          <table className="w-full text-left text-sm">
+            <thead className="bg-centro-mist/50 text-xs uppercase tracking-wide text-centro-onyx/60">
+              <tr>
+                <th className="px-4 py-3">When</th>
+                <th className="px-4 py-3">Type</th>
+                <th className="px-4 py-3">Employee</th>
+                <th className="px-4 py-3">Account</th>
+                <th className="px-4 py-3">Details</th>
+              </tr>
+            </thead>
+            <tbody>
+              {requests.length === 0 && (
+                <tr>
+                  <td colSpan={5} className="px-4 py-8 text-center text-centro-onyx/50">
+                    No requests submitted yet. Try one from the chat (e.g. "I want to request an annual leave").
+                  </td>
+                </tr>
+              )}
+              {requests.map((r) => (
+                <tr key={r.id} className="border-t border-centro-mist align-top">
+                  <td className="px-4 py-3 text-centro-onyx/60">
+                    {new Date(r.created_at).toLocaleString()}
+                  </td>
+                  <td className="px-4 py-3">
+                    <span className="rounded-full bg-centro-prussian/10 px-2 py-0.5 text-xs font-medium text-centro-prussian">
+                      {r.request_type.replace(/_/g, " ")}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-centro-onyx/80">
+                    {r.employee_name || r.employee_id}
+                  </td>
+                  <td className="px-4 py-3 text-centro-onyx/70">{r.account_scope}</td>
+                  <td className="px-4 py-3 text-xs text-centro-onyx/60">
+                    {r.details}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </main>
   );
