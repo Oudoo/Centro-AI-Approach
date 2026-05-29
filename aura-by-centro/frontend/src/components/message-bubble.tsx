@@ -1,8 +1,8 @@
 "use client";
 
-import { Sparkles, User2 } from "lucide-react";
 import type { ChatMessage } from "@/lib/types";
 import ReactMarkdown from "react-markdown";
+import { Logo } from "@/components/logo";
 
 /** A single chat bubble, branded per Centro palette. */
 export function MessageBubble({ message }: { message: ChatMessage }) {
@@ -25,7 +25,7 @@ export function MessageBubble({ message }: { message: ChatMessage }) {
     >
       {!isUser && (
         <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-centro-prussian text-white">
-          <Sparkles size={18} />
+          <Logo className="h-5 w-5" />
         </div>
       )}
       <div

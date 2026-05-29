@@ -25,6 +25,7 @@ from core.requests_store import record_request
 from core.sockets import Connection
 from core.vector_db import get_vector_sandbox
 from integrations.schema_registry import get_schema_registry
+from integrations.zoho_people import submit_to_zoho
 from models import ActionCardData, RiskLevel, UserContext
 
 log = structlog.get_logger("aura.agent")
@@ -156,6 +157,8 @@ class ManagerAgent:
         details = {k: v for k, v in form_data.items() if v not in (None, "")}
         try:
             await record_request(request_type, target, user, details)
+            # Try the live Zoho People integration (no-op unless enabled).
+            zoho_ok, zoho_note = await submit_to_zoho(contract, user, details)
             sent, to_addr = await notify_request(request_type, target, user, details)
         except Exception as exc:
             log.error("request_submit_failed", intent=request_type, error=str(exc))
@@ -164,16 +167,17 @@ class ManagerAgent:
             )
             return
 
-        log.info("request_submitted", intent=request_type, emailed=sent)
+        log.info("request_submitted", intent=request_type, emailed=sent, zoho=zoho_ok)
         pretty = request_type.replace("_", " ").title()
         detail_lines = "\n".join(
             f"- **{k.replace('_', ' ').title()}:** {v}" for k, v in details.items()
         ) or "- (no extra details)"
-        notice = (
-            f"and a notification was emailed to **{to_addr}**"
-            if sent
-            else f"and logged for the team to action (routing to **{to_addr}**)"
-        )
+        if zoho_ok:
+            notice = f"and submitted to Zoho People. {zoho_note}"
+        elif sent:
+            notice = f"and a notification was emailed to **{to_addr}**"
+        else:
+            notice = f"and logged for the team to action (routing to **{to_addr}**)"
         await conn.stream_token(
             f"✅ **Done!** Your **{pretty}** request has been recorded {notice}.\n\n"
             f"{detail_lines}\n\nYou'll hear back once it's reviewed. Anything else?"

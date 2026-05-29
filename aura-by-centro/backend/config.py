@@ -126,6 +126,11 @@ class Settings(BaseSettings):
     zoho_mcp_url: str = Field(default="http://localhost:9001", alias="ZOHO_MCP_URL")
     odoo_mcp_url: str = Field(default="http://localhost:9002", alias="ODOO_MCP_URL")
     genesys_mcp_url: str = Field(default="http://localhost:9003", alias="GENESYS_MCP_URL")
+    # When False (default), requests run in demo mode (store + email) and do NOT
+    # call Zoho. Flip on once a live Zoho People MCP server is reachable.
+    zoho_integration_enabled: bool = Field(
+        default=False, alias="ZOHO_INTEGRATION_ENABLED"
+    )
 
     # Employee requests: storage + email notifications (demo phase)
     requests_db_path: str = Field(

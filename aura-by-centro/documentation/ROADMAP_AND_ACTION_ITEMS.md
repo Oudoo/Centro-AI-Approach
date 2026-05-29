@@ -59,12 +59,41 @@ envs to make end-to-end mutations execute.
 
 ---
 
+## 🔲 ACTION ITEM 5 — Configure SMTP for request emails
+
+Today: requests run in **demo mode** — recorded to the DB and composed as an
+email but only *logged* (no SMTP credentials). To actually send to
+`mahmoud.hassan@centrocdx.com` (and later each reporting manager), set in `.env`:
+```
+SMTP_HOST=smtp.your-provider.com
+SMTP_PORT=587
+SMTP_USER=...
+SMTP_PASSWORD=...        # use an app password / secrets manager in prod
+SMTP_FROM=aura@centrocdx.com
+```
+Owner: you (provide the SMTP relay or a Zoho Mail app password).
+
+---
+
+## 🔲 ACTION ITEM 6 — Move requests store from SQLite to PostgreSQL (company scale)
+
+Today: requests are stored in **SQLite** (free, file-based) — perfect for the
+demo and single-node. SQLite is **never paid**. At company scale (1,500 users,
+multiple backend instances, concurrent writes) migrate to **PostgreSQL on AWS
+RDS**. The store is isolated in `backend/core/requests_store.py`, so this is a
+small, contained change (swap the driver + connection string; same function
+signatures). Owner: us, when we deploy to AWS.
+
+---
+
 ## ✅ Done in the POC
 - Monorepo scaffold, FastAPI WebSocket backbone, typed socket contract.
 - Feature 1 — metadata-enforced vector sandboxing (index-layer isolation).
 - Feature 2 — semantic CAG cache (>= 0.92 bypasses the LLM).
-- Feature 3 — dual-confirmation Action Cards.
+- Feature 3 — dual-confirmation Action Cards (now friendly request forms).
 - Feature 4 — dynamic schema retrieval from the registry.
+- Employee requests: leave / shift-swap / break-timing → SQLite + email + CSV export.
+- Zoho People integration scaffold (MCP-backed, off by default).
 - Admin dashboard + department-head document uploads (RBAC-gated).
 - One-shot RAG ingestion + sample docs.
 - `/embed` widget for the Zoho People Web Tab.

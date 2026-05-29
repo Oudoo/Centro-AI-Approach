@@ -5,11 +5,12 @@
  * Wires the WebSocket hook to the message list, action cards, and composer.
  */
 import { useEffect, useRef, useState } from "react";
-import { Send, Sparkles, Wifi, WifiOff, Menu } from "lucide-react";
+import { Send, Wifi, WifiOff, Menu } from "lucide-react";
 import { useWebSocket } from "@/hooks/useWebSocket";
 import { BRAND } from "@/lib/brand";
 import { ActionCard } from "@/components/action-card";
 import { MessageBubble } from "@/components/message-bubble";
+import { Logo } from "@/components/logo";
 
 const SUGGESTIONS = [
   "How do I submit my resignation?",
@@ -64,7 +65,7 @@ export function ChatInterface({
           </button>
         )}
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-centro-prussian text-white shadow-card">
-          <Sparkles size={20} />
+          <Logo className="h-6 w-6" />
         </div>
         <div>
           <h1 className="text-lg font-bold leading-tight text-centro-onyx">
@@ -89,7 +90,7 @@ export function ChatInterface({
         {messages.length === 0 && (
           <div className="mx-auto mt-10 max-w-lg text-center">
             <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-centro-prussian text-white shadow-card">
-              <Sparkles size={26} />
+              <Logo className="h-8 w-8" />
             </div>
             <h2 className="text-xl font-bold text-centro-onyx">Hi, I'm Aura — your Co-Pilot by Centro. Let's make your day easier.</h2>
             <p className="mt-2 text-sm text-centro-onyx/60">
