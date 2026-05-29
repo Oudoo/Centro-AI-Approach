@@ -1,0 +1,31 @@
+# ---- Aura (by Centro) Backend Core ----
+# Pin to ranges that stay on Pydantic v2 + modern FastAPI/Starlette.
+
+# Web framework & ASGI
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+starlette==0.41.3
+websockets==14.1
+python-multipart==0.0.20
+
+# Typing & validation (Pydantic v2)
+pydantic==2.10.4
+pydantic-settings==2.7.1
+
+# Async HTTP / LLM (OpenAI-compatible) clients
+httpx==0.28.1
+openai==1.59.6
+
+# Vector engines
+qdrant-client==1.12.2
+chromadb==0.5.23
+numpy==2.2.1
+
+# Auth / security
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+
+# Utilities
+orjson==3.10.13
+tenacity==9.0.0
+structlog==24.4.0

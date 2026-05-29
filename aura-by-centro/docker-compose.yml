@@ -1,0 +1,40 @@
+# Aura (by Centro) — local development stack
+# Brings up the vector engine + FastAPI backend. The Next.js frontend runs
+# separately (npm run dev) or is deployed to Vercel.
+
+services:
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: aura-qdrant
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant_storage:/qdrant/storage
+
+  backend:
+    build: ./backend
+    container_name: aura-backend
+    env_file: .env
+    ports:
+      - "8000:8000"
+    depends_on:
+      - qdrant
+    environment:
+      - QDRANT_URL=http://qdrant:6333
+    volumes:
+      - ./documentation:/app/../documentation
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    container_name: aura-frontend
+    env_file: .env
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  qdrant_storage:

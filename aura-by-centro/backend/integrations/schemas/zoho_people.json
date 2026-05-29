@@ -1,0 +1,26 @@
+{
+  "name": "Zoho People",
+  "version": "v1",
+  "target_system": "Zoho People",
+  "mcp_system": "zoho",
+  "mcp_tool": "people.update_record",
+  "intents": ["zoho_people_record_update", "zoho_leave_approval"],
+  "summary": "Update an employee record or approve a leave request in Zoho People.",
+  "risk_level": "medium",
+  "risk_assessment": "Mutates HR records of record. Leave approvals adjust balances and trigger notifications to the employee and reporting manager.",
+  "endpoint": "/people/api/forms/json/{form}/updateRecord",
+  "auth": "zoho_oauth",
+  "fields": {
+    "form": { "type": "string", "enum": ["P_EmployeeView", "P_ApplyLeaveView"], "required": true },
+    "record_id": { "type": "string", "required": true },
+    "account_scope": { "type": "string", "enum": ["coastline", "trueblue", "global"], "required": true },
+    "input_data": { "type": "object", "required": true }
+  },
+  "example_payload": {
+    "form": "P_ApplyLeaveView",
+    "record_id": "986214000000412015",
+    "account_scope": "coastline",
+    "input_data": { "ApprovalStatus": "Approved" }
+  },
+  "min_role_required": "team_lead"
+}

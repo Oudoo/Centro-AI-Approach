@@ -1,0 +1,203 @@
+"""
+Aura (by Centro) — Central Manager Agent & orchestration.
+
+Pipeline for every inbound query (see main.py wiring):
+
+    1. CAG fast-path  (FEATURE 2) — semantic cache hit >= 0.92 bypasses the LLM.
+    2. Intent routing (FEATURE 3) — mutation intents emit an Action Card and
+       block on dual confirmation before any write executes.
+    3. Dynamic schema retrieval (FEATURE 4) — integration contracts are pulled
+       from the technical vector space, never hard-coded into prompts.
+    4. RAG answer    (FEATURE 1) — sandboxed retrieval + streamed Gemma-4 answer
+       with graceful fallback (PATTERN #4) on OOM/latency.
+"""
+from __future__ import annotations
+
+import uuid
+
+import structlog
+
+from config import MUTATION_INTENTS, get_settings
+from core.cache import get_semantic_cache
+from core.llm import LLMUnavailable, get_llm
+from core.sockets import Connection
+from core.vector_db import get_vector_sandbox
+from integrations.mcp_bridge import MCPError, get_mcp_bridge
+from integrations.schema_registry import get_schema_registry
+from models import ActionCardData, RiskLevel, UserContext
+
+log = structlog.get_logger("aura.agent")
+
+SYSTEM_PROMPT = (
+    "You are Aura, the enterprise AI co-pilot by Centro — a global BPO leader. "
+    "Your voice is professional, strategic, innovative and authoritative, and you "
+    "embody Centro's values: Innovation, Efficiency, Operational Excellence, "
+    "Accountability and Precision. Answer concisely and ground every statement in "
+    "the provided CONTEXT. If the context is insufficient, say so plainly rather "
+    "than inventing details."
+)
+
+FALLBACK_MESSAGE = (
+    "Aura is experiencing heavy load on the local model cluster right now. "
+    "I've logged the issue and your session is still active — please retry your "
+    "request in a moment, or rephrase it so I can serve it from cached knowledge."
+)
+
+
+class ManagerAgent:
+    """Stateless orchestrator; per-request state lives on the Connection."""
+
+    def __init__(self) -> None:
+        self._settings = get_settings()
+
+    # ---- Intent routing (lightweight, deterministic) ----------------------
+    def detect_intent(self, text: str) -> str | None:
+        """
+        Map a query to a known mutation intent. Kept rule-based for determinism
+        and auditability; swap for an LLM classifier later if needed.
+        """
+        t = text.lower()
+        if "payroll" in t and any(k in t for k in ("run", "sync", "process")):
+            return "odoo_payroll_sync"
+        if "shift" in t and any(k in t for k in ("change", "update", "override", "swap")):
+            return "trueblue_shift_update"
+        if "leave" in t and any(k in t for k in ("approve", "approval")):
+            return "zoho_leave_approval"
+        if "routing" in t and "override" in t:
+            return "genesys_routing_override"
+        return None
+
+    # ---- Main entrypoint ---------------------------------------------------
+    async def handle_query(self, conn: Connection, user: UserContext, text: str) -> None:
+        # 1) CAG fast-path -------------------------------------------------
+        cache = await get_semantic_cache()
+        hit = await cache.lookup(text)
+        if hit is not None:
+            answer, score = hit
+            log.info("cag_hit", session=conn.session_id, score=round(score, 4))
+            await conn.stream_token(answer)
+            await conn.complete()
+            return
+
+        # 2) Mutation intent -> dual-confirmation Action Card --------------
+        intent = self.detect_intent(text)
+        if intent in MUTATION_INTENTS:
+            await self._handle_mutation(conn, user, intent, text)
+            return
+
+        # 4) RAG answer (default path) -------------------------------------
+        await self._handle_rag(conn, user, text)
+
+    # ---- FEATURE 3: dual confirmation -------------------------------------
+    async def _handle_mutation(
+        self, conn: Connection, user: UserContext, intent: str, text: str
+    ) -> None:
+        registry = await get_schema_registry()
+        # FEATURE 4: pull the live contract instead of hard-coding it.
+        contract = await registry.resolve(intent, user)
+        card = ActionCardData(
+            action_id=str(uuid.uuid4()),
+            intent=intent,
+            target_system=contract.get("target_system", intent),
+            summary=contract.get("summary", f"Execute '{intent}' as requested."),
+            api_payload=contract.get("example_payload", {"request": text}),
+            risk_level=RiskLevel(contract.get("risk_level", "high")),
+            risk_assessment=contract.get(
+                "risk_assessment",
+                "This operation mutates a production system and requires explicit "
+                "confirmation. Review the target system and payload before approving.",
+            ),
+        )
+        future = await conn.request_action(card)
+
+        try:
+            confirmed = await future
+        except Exception:  # cancelled on disconnect
+            return
+
+        if not confirmed:
+            await conn.stream_token("Action cancelled. No changes were made.")
+            await conn.complete()
+            return
+
+        # Write only fires here, after a signed action_confirmed=true reply.
+        await self._execute_mutation(conn, contract, card)
+
+    async def _execute_mutation(
+        self, conn: Connection, contract: dict, card: ActionCardData
+    ) -> None:
+        bridge = get_mcp_bridge()
+        try:
+            result = await bridge.call_tool(
+                system=contract.get("mcp_system", "odoo"),
+                tool=contract.get("mcp_tool", card.intent),
+                arguments=card.api_payload,
+            )
+            log.info("mutation_executed", intent=card.intent, action_id=card.action_id)
+            await conn.stream_token(
+                f"✅ Done. **{card.target_system}** executed `{card.intent}` "
+                f"successfully.\n\nResult: {result}"
+            )
+            await conn.complete()
+        except MCPError as exc:
+            log.error("mutation_failed", intent=card.intent, error=str(exc))
+            await conn.error(
+                f"The action could not be completed on {card.target_system}: {exc}"
+            )
+
+    # ---- FEATURES 1 + 4 + PATTERN 4: sandboxed RAG with fallback ----------
+    async def _handle_rag(self, conn: Connection, user: UserContext, text: str) -> None:
+        sandbox = await get_vector_sandbox()
+        try:
+            chunks = await sandbox.search(text, user=user, limit=6)
+        except Exception as exc:  # vector engine unavailable
+            log.error("vector_search_failed", error=str(exc))
+            chunks = []
+
+        context_block = "\n\n".join(
+            f"[{c.source or c.department}] {c.text}" for c in chunks
+        ) or "No internal documents matched within your access scope."
+
+        messages = [
+            {"role": "system", "content": SYSTEM_PROMPT},
+            {
+                "role": "system",
+                "content": (
+                    f"User scope: account={user.account_scope}, role={user.role}, "
+                    f"department={user.department}.\n\nCONTEXT:\n{context_block}"
+                ),
+            },
+            {"role": "user", "content": text},
+        ]
+
+        llm = get_llm()
+        full: list[str] = []
+        try:
+            async for token in llm.stream(messages):
+                full.append(token)
+                await conn.stream_token(token)
+            await conn.complete()
+            # Promote successful answers into the CAG cache for next time.
+            if full:
+                cache = await get_semantic_cache()
+                await cache.add(text, "".join(full))
+        except LLMUnavailable as exc:
+            # PATTERN #4: never drop the socket. Try cache, else enterprise message.
+            log.error("llm_unavailable", error=str(exc), session=conn.session_id)
+            cache = await get_semantic_cache()
+            fallback = await cache.lookup(text)
+            if fallback is not None:
+                await conn.stream_token(fallback[0])
+                await conn.complete()
+            else:
+                await conn.error(FALLBACK_MESSAGE)
+
+
+_agent: ManagerAgent | None = None
+
+
+def get_agent() -> ManagerAgent:
+    global _agent
+    if _agent is None:
+        _agent = ManagerAgent()
+    return _agent
