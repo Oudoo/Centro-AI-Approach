@@ -41,23 +41,28 @@ never at risk.
 
 ## 1. Fastest reliable demo setup (Intel Mac)
 
-For a CTO demo, **reliability > raw model size**. Use **Ollama** as the engine —
-it exposes both chat *and* embeddings on one OpenAI-compatible endpoint, which is
-the safest path on Intel hardware. (Keep Msty as your playground; Ollama is the
-demo workhorse.)
+**Demo on the Gemma you already have.** Aura doesn't care which app serves the
+model — it only needs an **OpenAI-compatible endpoint**, and Msty Studio provides
+exactly that. So your local **Gemma 3** and **Gemma 4** are fully demo-ready.
+
+There is exactly **one** extra requirement beyond your chat model: Aura's CAG
+cache and RAG retrieval need a small **embedding model**. Pull one inside Msty
+(e.g. `nomic-embed-text`, 768-dim) and you're done — no other tool required.
+
+> Which Gemma to demo on? Use **Gemma 3 (small, e.g. `gemma3:1b`)** for the live
+> CTO demo — on an Intel CPU it responds in ~1–3s, which keeps the demo snappy.
+> Switch to **Gemma 4 (8B)** to show off answer quality; it's slower on CPU but
+> works. Both plug in by changing one line (`LLM_MODEL`) in `.env`.
 
 ```bash
-# 1. Engine
-brew install ollama
-ollama serve                       # http://localhost:11434/v1
-ollama pull gemma3:1b              # fast on Intel CPU — use this for the live demo
-ollama pull nomic-embed-text      # 768-dim embeddings (powers CAG + RAG)
+# 1. In Msty: confirm the OpenAI-compatible "Local AI" endpoint is running, and
+#    pull an embedding model (nomic-embed-text). Note the exact endpoint URL.
 
-# 2. Point Aura at Ollama (.env)
+# 2. Point Aura at Msty (.env)
 cd aura-by-centro && cp .env.local.example .env
-#   LLM_BASE_URL=http://localhost:11434/v1
-#   LLM_MODEL=gemma3:1b
-#   EMBEDDING_BASE_URL=http://localhost:11434/v1
+#   LLM_BASE_URL=http://localhost:10000/v1     # <- your Msty endpoint (verify port)
+#   LLM_MODEL=gemma3:1b                          # your local Gemma 3 (or gemma4)
+#   EMBEDDING_BASE_URL=http://localhost:10000/v1
 #   EMBEDDING_MODEL=nomic-embed-text
 
 # 3. One-time install
@@ -70,6 +75,11 @@ make ingest        # terminal 3 — seed RAG with sample docs (run once)
 make smoke         # terminal 3 — VERIFY everything is green before you demo
 make frontend      # terminal 4 — Next.js UI
 ```
+
+> Not using Msty? Any OpenAI-compatible server works the same way (Ollama, vLLM,
+> LM Studio). Just set `LLM_BASE_URL`/`EMBEDDING_BASE_URL` to that server. The
+> app is engine-agnostic by design.
+
 
 Open:
 - **http://localhost:3000** — chat
