@@ -253,11 +253,82 @@ def slide_roadmap(c):
                  "Accountability · Precision")
 
 
+def slide_agentic_rag(c):
+    c.setFillColor(WHITE); c.rect(0, 0, PAGE_W, PAGE_H, fill=1, stroke=0)
+    c.setFillColor(PRUSSIAN); c.rect(0, PAGE_H - 22 * mm, PAGE_W, 22 * mm, fill=1, stroke=0)
+    logo(c, 16 * mm, PAGE_H - 11 * mm, 6 * mm)
+    c.setFillColor(WHITE); c.setFont("Helvetica-Bold", 18)
+    c.drawString(26 * mm, PAGE_H - 14 * mm, "Advanced & Agentic RAG — beyond a naive chatbot")
+
+    mid = 112 * mm
+    pillars = [
+        ("1 · Smart Chunking", ["Header-aware Markdown,", "JSON-coupled schemas,", "Parent-Child retrieval"]),
+        ("2 · Hybrid Search", ["Dense (semantic) +", "Sparse BM25 (exact),", "fused via RRF"]),
+        ("3 · Reranking", ["Cross-encoder re-orders", "top 20 → best 5", "→ fewer hallucinations"]),
+        ("4 · Agentic Loop", ["Rewrite → Route(RBAC)", "→ Reflect & re-search;", "never guesses"]),
+    ]
+    n = len(pillars)
+    gap = 6 * mm
+    bw = (PAGE_W - 32 * mm - gap * (n - 1)) / n
+    x = 16 * mm
+    for i, (title, lines) in enumerate(pillars):
+        box(c, x, mid, bw, 40 * mm, title, lines, fill=HexColor("#dfeaed"), ls=8.4)
+        if i < n - 1:
+            arrow(c, x + bw, mid + 20 * mm, x + bw + gap, mid + 20 * mm)
+        x += bw + gap
+
+    # input/output rail
+    c.setFillColor(ONYX_60); c.setFont("Helvetica-Oblique", 10)
+    c.drawString(16 * mm, mid + 46 * mm, "Messy human question  →  optimized query  →  sandboxed, reranked context  →  grounded answer with 📄 citations")
+
+    # impact band
+    c.setFillColor(HexColor("#0a7d52"))
+    c.roundRect(16 * mm, mid - 30 * mm, PAGE_W - 32 * mm, 22 * mm, 4, fill=1, stroke=0)
+    c.setFillColor(WHITE); c.setFont("Helvetica-Bold", 11)
+    c.drawString(22 * mm, mid - 16 * mm, "IMPACT")
+    c.setFont("Helvetica", 10)
+    c.drawString(40 * mm, mid - 14 * mm,
+                 "Exact-match + semantic recall · sharply reduced hallucinations · RBAC enforced on every path · "
+                 "graceful degradation if any component is offline.")
+    c.drawString(40 * mm, mid - 20 * mm,
+                 "All pillars are config-flagged in backend/config.py and implemented in core/{chunking,retrieval,rerank,agent}.py.")
+
+    c.setFillColor(ONYX); c.rect(0, 0, PAGE_W, 9 * mm, fill=1, stroke=0)
+    c.setFillColor(MIST); c.setFont("Helvetica", 8)
+    c.drawString(16 * mm, 3.2 * mm, "Most vendors charge enterprise SaaS fees for this retrieval stack. Aura runs it on Centro hardware at $0 licensing.")
+
+
+def slide_why(c):
+    c.setFillColor(WHITE); c.rect(0, 0, PAGE_W, PAGE_H, fill=1, stroke=0)
+    c.setFillColor(PRUSSIAN); c.rect(0, PAGE_H - 22 * mm, PAGE_W, 22 * mm, fill=1, stroke=0)
+    logo(c, 16 * mm, PAGE_H - 11 * mm, 6 * mm)
+    c.setFillColor(WHITE); c.setFont("Helvetica-Bold", 18)
+    c.drawString(26 * mm, PAGE_H - 14 * mm, "Why Aura wins the room")
+
+    quad = [
+        ("Not a wrapper", "Hybrid + rerank + agentic retrieval — a defensible architecture, not a thin API shim."),
+        ("Private & compliant", "Every byte stays on Centro infra; tenant isolation enforced at the DB index."),
+        ("Safe by design", "Grounded-only answers, no silent writes, full audit trail + CSV export."),
+        ("Cheap & scalable", "$0 software licensing; one config flip from laptop to a multi-GPU AWS fleet."),
+    ]
+    xw = (PAGE_W - 32 * mm - 6 * mm) / 2
+    coords = [(16 * mm, 95 * mm), (16 * mm + xw + 6 * mm, 95 * mm),
+              (16 * mm, 58 * mm), (16 * mm + xw + 6 * mm, 58 * mm)]
+    for (title, body), (x, y) in zip(quad, coords):
+        box(c, x, y, xw, 30 * mm, title, [body[:58], body[58:]], fill=MIST, ls=9)
+
+    c.setFillColor(ONYX); c.rect(0, 0, PAGE_W, 9 * mm, fill=1, stroke=0)
+    c.setFillColor(MIST); c.setFont("Helvetica", 8)
+    c.drawString(16 * mm, 3.2 * mm, "Local LLM · Qdrant (dense) + BM25 (sparse) · cross-encoder rerank · MCP integrations · WebSocket streaming.")
+
+
 def main():
     c = canvas.Canvas(str(OUT), pagesize=(PAGE_W, PAGE_H))
     c.setTitle("Aura by Centro — CTO Deck")
     slide_title(c); c.showPage()
     slide_architecture(c); c.showPage()
+    slide_agentic_rag(c); c.showPage()
+    slide_why(c); c.showPage()
     slide_roadmap(c); c.showPage()
     c.save()
     print(f"Wrote {OUT}")

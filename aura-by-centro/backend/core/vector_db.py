@@ -107,9 +107,23 @@ class VectorSandbox:
             ]
         )
 
+    @staticmethod
+    def _to_chunk(payload: dict, score: float) -> RetrievedChunk:
+        return RetrievedChunk(
+            text=payload.get("text", ""),
+            score=score,
+            department=payload.get("department", ""),
+            account_scope=payload.get("account_scope", ""),
+            min_role_required=payload.get("min_role_required", ""),
+            source=payload.get("source", ""),
+            parent_text=payload.get("parent_text", ""),
+            doc_id=payload.get("doc_id", ""),
+        )
+
     async def search(
         self, query: str, user: UserContext, limit: int = 6
     ) -> list[RetrievedChunk]:
+        """Dense (cosine) search with RBAC enforced at the index layer."""
         embedder = await get_embedding_client()
         vector = await embedder.embed(query)
         hits = await self._client.query_points(
@@ -119,20 +133,22 @@ class VectorSandbox:
             limit=limit,
             with_payload=True,
         )
-        results: list[RetrievedChunk] = []
-        for h in hits.points:
-            p = h.payload or {}
-            results.append(
-                RetrievedChunk(
-                    text=p.get("text", ""),
-                    score=h.score,
-                    department=p.get("department", ""),
-                    account_scope=p.get("account_scope", ""),
-                    min_role_required=p.get("min_role_required", ""),
-                    source=p.get("source", ""),
-                )
-            )
-        return results
+        return [self._to_chunk(h.payload or {}, h.score) for h in hits.points]
+
+    async def scope_chunks(self, user: UserContext, limit: int = 2000) -> list[RetrievedChunk]:
+        """
+        All chunks visible to the user (RBAC filter applied at the Qdrant layer).
+        Used to build the in-memory BM25 sparse index for hybrid search, so the
+        keyword path stays sandboxed exactly like the dense path.
+        """
+        points, _ = await self._client.scroll(
+            collection_name=self._collection,
+            scroll_filter=self._build_filter(user),
+            limit=limit,
+            with_payload=True,
+            with_vectors=False,
+        )
+        return [self._to_chunk(pt.payload or {}, 0.0) for pt in points]
 
     # -- Admin / document management ----------------------------------------
     async def count(self) -> int:

@@ -27,7 +27,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from config import ROLE_RANK, AccountScope  # noqa: E402
-from core.chunking import chunk_text  # noqa: E402
+from core.ingest import ingest_document  # noqa: E402
 from core.vector_db import get_vector_sandbox  # noqa: E402
 
 TEXT_SUFFIXES = (".md", ".markdown", ".txt")
@@ -64,12 +64,10 @@ async def run(args: argparse.Namespace) -> None:
     total_chunks = 0
     for path in files:
         meta = derive_metadata(path, args)
-        chunks = chunk_text(path.read_text(encoding="utf-8"))
-        for chunk in chunks:
-            await sandbox.ingest(chunk, meta)
-        total_chunks += len(chunks)
+        n = await ingest_document(path.name, path.read_text(encoding="utf-8"), meta)
+        total_chunks += n
         print(
-            f"  ✓ {path.name:<40} {len(chunks):>3} chunks "
+            f"  ✓ {path.name:<40} {n:>3} chunks "
             f"[scope={meta['account_scope']}, min_role={meta['min_role_required']}]"
         )
 

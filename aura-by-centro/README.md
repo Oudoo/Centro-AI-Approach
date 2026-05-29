@@ -96,6 +96,7 @@ match documents where `account_scope ∈ {coastline, global}` — enforced insid
 vector engine, never post-filtered in Python.
 
 ## Documentation
+- **[documentation/ARCHITECTURE.md](./documentation/ARCHITECTURE.md)** — CTO brief: Advanced & Agentic RAG, security, cost, stack.
 - **[documentation/GUIDE.md](./documentation/GUIDE.md)** — run locally, test every feature, deploy to AWS, troubleshoot.
 - **[documentation/ROADMAP.md](./documentation/ROADMAP.md)** — action items + pre-demo enhancement TODO.
 - **[documentation/BRANDING.md](./documentation/BRANDING.md)** — colors, font, and which logo/favicon files to replace.

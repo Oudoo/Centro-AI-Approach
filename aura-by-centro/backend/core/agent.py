@@ -23,6 +23,7 @@ from core.cache import get_semantic_cache
 from core.llm import LLMUnavailable, get_llm
 from core.notifier import notify_request
 from core.requests_store import record_request
+from core.retrieval import hybrid_search
 from core.smalltalk import smalltalk_response
 from core.sockets import Connection
 from core.vector_db import get_vector_sandbox
@@ -199,18 +200,39 @@ class ManagerAgent:
         )
         await conn.complete()
 
-    # ---- FEATURES 1 + 4 + PATTERN 4: sandboxed RAG with fallback ----------
-    async def _handle_rag(self, conn: Connection, user: UserContext, text: str) -> None:
-        sandbox = await get_vector_sandbox()
-        # Keep retrieval tight: fewer, clipped chunks => a smaller prompt => a
-        # much faster time-to-first-token on a local CPU. If the vector engine
-        # or embeddings are DOWN this raises and the outer handler shows the
-        # graceful fallback (not a misleading "no documents" message).
-        chunks = await sandbox.search(text, user=user, limit=3)
+    # ---- Pillar 4: Agentic query rewrite (optional, off by default) -------
+    async def _rewrite_query(self, text: str) -> str:
+        if not self._settings.agentic_rewrite_enabled:
+            return text
+        try:
+            out = await get_llm().generate([
+                {"role": "system", "content": (
+                    "Rewrite the user's message into a concise search query (keywords + "
+                    "intent) for a company knowledge base. Return ONLY the query."
+                )},
+                {"role": "user", "content": text},
+            ])
+            return out.strip() or text
+        except Exception:
+            return text  # never let rewrite block the answer
 
-        # GROUNDED-ONLY: if retrieval found nothing in the user's scope, do NOT
-        # call the LLM (which would hallucinate, e.g. inventing a Coastline
-        # policy for a Trueblue agent). Return a deterministic, instant message.
+    # ---- FEATURES 1-4 + PATTERN 4: agentic hybrid RAG with fallback -------
+    async def _handle_rag(self, conn: Connection, user: UserContext, text: str) -> None:
+        # Step 1 (Rewrite) + Step 2 (Route: RBAC scope filter inside the index).
+        search_query = await self._rewrite_query(text)
+        chunks = await hybrid_search(search_query, user=user)
+
+        # Step 3 (Reflect): if the best result is weak, retry once with the raw
+        # query (or a keyword variant) before giving up — never guess.
+        top = chunks[0].score if chunks else 0.0
+        if (not chunks or top < self._settings.rag_min_score) and search_query != text:
+            log.info("rag_reflect_retry", session=conn.session_id)
+            retry = await hybrid_search(text, user=user)
+            if retry and (not chunks or retry[0].score >= top):
+                chunks = retry
+
+        # GROUNDED-ONLY: nothing in the user's scope -> deterministic message,
+        # never an LLM guess (which could leak/hallucinate cross-tenant data).
         if not chunks:
             analytics.incr("out_of_scope")
             log.info("rag_no_context", session=conn.session_id, scope=user.account_scope)
@@ -218,11 +240,12 @@ class ManagerAgent:
             await conn.complete()
             return
 
-        def _clip(t: str, n: int = 500) -> str:
+        def _clip(t: str, n: int = 900) -> str:
             return t if len(t) <= n else t[:n].rstrip() + "…"
 
+        # Send the larger PARENT section to the LLM (parent-child retrieval).
         context_block = "\n\n".join(
-            f"[{c.source or c.department}] {_clip(c.text)}" for c in chunks
+            f"[{c.source or c.department}] {_clip(c.context)}" for c in chunks
         ) or "No internal documents matched within your access scope."
 
         # FEATURE 1 + 2: decide a SAFE scope to cache this answer under. We tag

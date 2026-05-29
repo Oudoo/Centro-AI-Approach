@@ -101,9 +101,16 @@ class ClientActionResponse(BaseModel):
 # Internal pipeline DTOs
 # -----------------------------------------------------------------------------
 class RetrievedChunk(BaseModel):
-    text: str
+    text: str                 # the (child) text that matched / was embedded
     score: float
     department: str
     account_scope: str
     min_role_required: str
     source: str = ""
+    parent_text: str = ""     # the larger parent section to send to the LLM
+    doc_id: str = ""
+
+    @property
+    def context(self) -> str:
+        """Text to hand to the LLM: prefer the parent section if present."""
+        return self.parent_text or self.text

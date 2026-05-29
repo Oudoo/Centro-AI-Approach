@@ -15,7 +15,7 @@ from pathlib import Path
 import structlog
 
 from config import ROLE_RANK, AccountScope
-from core.chunking import chunk_text
+from core.ingest import ingest_document
 from core.vector_db import get_vector_sandbox
 
 log = structlog.get_logger("aura.seed")
@@ -53,8 +53,6 @@ async def seed_if_empty() -> None:
     total = 0
     for path in files:
         meta = _metadata_for(path)
-        for chunk in chunk_text(path.read_text(encoding="utf-8")):
-            await sandbox.ingest(chunk, meta)
-            total += 1
+        total += await ingest_document(path.name, path.read_text(encoding="utf-8"), meta)
     if total:
         log.info("seeded_sample_docs", files=len(files), chunks=total)

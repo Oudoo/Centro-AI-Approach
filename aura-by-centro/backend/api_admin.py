@@ -22,7 +22,7 @@ from fastapi.responses import PlainTextResponse, Response
 
 from auth import mint_token, resolve_user
 from config import ROLE_RANK, AccountScope, Role, get_settings
-from core.chunking import chunk_text
+from core.ingest import ingest_document
 from core.requests_store import export_csv, list_requests
 from core.vector_db import get_vector_sandbox
 from models import UserContext
@@ -95,9 +95,7 @@ async def upload_document(
         text = raw.decode("utf-8")
     except UnicodeDecodeError:
         raise HTTPException(400, "File must be UTF-8 encoded text.")
-
-    chunks = chunk_text(text)
-    if not chunks:
+    if not text.strip():
         raise HTTPException(400, "File appears to be empty.")
 
     doc_id = str(uuid.uuid4())
@@ -110,13 +108,12 @@ async def upload_document(
         "uploaded_by": user.display_name,
     }
 
-    sandbox = await get_vector_sandbox()
-    for chunk in chunks:
-        await sandbox.ingest(chunk, metadata)
+    # Smart chunking (markdown/JSON/parent-child) + auto-promote global -> CAG.
+    n_chunks = await ingest_document(name, text, metadata)
 
-    log.info("doc_uploaded", doc_id=doc_id, source=name, chunks=len(chunks),
+    log.info("doc_uploaded", doc_id=doc_id, source=name, chunks=n_chunks,
              scope=account_scope, by=user.user_id)
-    return {"doc_id": doc_id, "source": name, "chunks": len(chunks), "metadata": metadata}
+    return {"doc_id": doc_id, "source": name, "chunks": n_chunks, "metadata": metadata}
 
 
 @router.get("/documents")

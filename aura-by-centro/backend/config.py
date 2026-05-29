@@ -122,6 +122,20 @@ class Settings(BaseSettings):
     # CAG
     cag_similarity_threshold: float = Field(default=0.92, alias="CAG_SIMILARITY_THRESHOLD")
     cag_max_entries: int = Field(default=2048, alias="CAG_MAX_ENTRIES")
+    # (a) Auto-promote GLOBAL markdown sections (heading -> body) into the CAG
+    # cache at ingest, so common global FAQs answer instantly without the LLM.
+    cag_auto_promote_global: bool = Field(default=True, alias="CAG_AUTO_PROMOTE_GLOBAL")
+
+    # Advanced RAG (see documentation/ARCHITECTURE.md)
+    hybrid_search_enabled: bool = Field(default=True, alias="HYBRID_SEARCH_ENABLED")
+    rerank_enabled: bool = Field(default=True, alias="RERANK_ENABLED")
+    # Heavier/slower — off by default to keep the local CPU demo fast:
+    agentic_rewrite_enabled: bool = Field(default=False, alias="AGENTIC_REWRITE_ENABLED")
+    cross_encoder_enabled: bool = Field(default=False, alias="CROSS_ENCODER_ENABLED")
+    cross_encoder_model: str = Field(default="BAAI/bge-reranker-v2-m3", alias="CROSS_ENCODER_MODEL")
+    rag_candidates: int = Field(default=20, alias="RAG_CANDIDATES")   # hybrid pool
+    rag_top_k: int = Field(default=5, alias="RAG_TOP_K")              # after rerank
+    rag_min_score: float = Field(default=0.02, alias="RAG_MIN_SCORE")  # reflect threshold
 
     # Auth
     jwt_secret: str = Field(default="change-me", alias="JWT_SECRET")
