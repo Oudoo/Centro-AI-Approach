@@ -13,6 +13,7 @@ Run locally:  uvicorn main:app --reload --port 8000
 """
 from __future__ import annotations
 
+import asyncio
 import logging
 from contextlib import asynccontextmanager
 
@@ -69,11 +70,39 @@ async def lifespan(app: FastAPI):
 
 settings = get_settings()
 app = FastAPI(
-    title="Aura by Centro",
+    title="Aura by Centro — API",
     description=Brand.TAGLINE,
     version="0.1.0",
     lifespan=lifespan,
+    docs_url=None,   # served below, Centro-branded
+    redoc_url=None,
 )
+
+# Centro-branded brand mark + Swagger UI ----------------------------------------
+_BRAND_ICON_SVG = (
+    '<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" '
+    'viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#004A59"/>'
+    '<path d="M16 48 L32 16 L48 48" stroke="#FFFFFF" stroke-width="6" fill="none" '
+    'stroke-linecap="round" stroke-linejoin="round"/>'
+    '<path d="M22.5 37 L41.5 37" stroke="#FFFFFF" stroke-width="6" '
+    'stroke-linecap="round"/></svg>'
+)
+
+
+@app.get("/brand-icon.svg", include_in_schema=False)
+async def brand_icon():
+    from fastapi.responses import Response
+    return Response(_BRAND_ICON_SVG, media_type="image/svg+xml")
+
+
+@app.get("/docs", include_in_schema=False)
+async def custom_docs():
+    from fastapi.openapi.docs import get_swagger_ui_html
+    return get_swagger_ui_html(
+        openapi_url=app.openapi_url or "/openapi.json",
+        title="Aura by Centro — API",
+        swagger_favicon_url="/brand-icon.svg",
+    )
 
 app.add_middleware(
     CORSMiddleware,
@@ -136,6 +165,11 @@ async def chat_socket(websocket: WebSocket) -> None:
     session_id = websocket.query_params.get("session_id") or user.user_id
     conn = await manager.connect(session_id, websocket)
     agent = get_agent()
+    # Queries run as background tasks so the receive loop keeps reading. This is
+    # essential for Action Cards: handle_query awaits the user's confirmation
+    # (a future), and that future is only resolved by the NEXT message we read —
+    # blocking the loop on it would deadlock the confirmation.
+    tasks: set[asyncio.Task] = set()
     log.info("ws_connect", session=session_id, scope=user.account_scope, role=user.role)
 
     try:
@@ -166,7 +200,10 @@ async def chat_socket(websocket: WebSocket) -> None:
                 await conn.error(f"Malformed query: {exc.errors()}")
                 continue
 
-            await agent.handle_query(conn, user, query.text)
+            # Fire-and-track so the loop stays free to deliver action responses.
+            task = asyncio.create_task(agent.handle_query(conn, user, query.text))
+            tasks.add(task)
+            task.add_done_callback(tasks.discard)
 
     except WebSocketDisconnect:
         log.info("ws_disconnect", session=session_id)

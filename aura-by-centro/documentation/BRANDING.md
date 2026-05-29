@@ -22,16 +22,18 @@ components.
 `frontend/src/app/globals.css` and set as the Tailwind `sans` default. Weights
 300/400/500/700.
 
-## Logo
-The Aura "A" monogram is a single reusable component:
-`frontend/src/components/logo.tsx` (`<Logo />`). It uses `currentColor`, so it
-inherits the surrounding text color (white inside a Prussian chip). Applied in:
-- Chat header + empty-state hero
-- Assistant message avatars
-- Favicon / tab icon (`public/aura-mark.svg`, wired in `layout.tsx`)
+## Logo & favicon — files to replace
+To rebrand, replace these files (they're the single sources of truth):
 
-Minimum clear space and minimum size follow the brand book (don't render the
-mark below ~16px).
+| Asset | Path | Used for |
+|-------|------|----------|
+| In-app logo (inline SVG) | `frontend/src/components/logo.tsx` | chat header, empty-state hero, assistant avatars (uses `currentColor`) |
+| Favicon / browser tab | `frontend/src/app/icon.svg` | auto-served by Next.js as the favicon |
+| Public mark | `frontend/public/aura-mark.svg` | OG/social + standalone reference |
+| API docs favicon | inline `_BRAND_ICON_SVG` in `backend/main.py` | the `/docs` tab icon |
+
+Just drop in your own SVG at those paths (keep the same filenames). The current
+mark is the Aura "A" monogram on Prussian Blue `#004A59`. Minimum size ~16px.
 
 ## Voice & tone
 Friendly, helpful, concise — a supportive colleague. Professional and precise,

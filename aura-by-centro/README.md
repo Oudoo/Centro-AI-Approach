@@ -95,4 +95,16 @@ Connect with a token whose claims set `account_scope` (`coastline` | `trueblue` 
 match documents where `account_scope ∈ {coastline, global}` — enforced inside the
 vector engine, never post-filtered in Python.
 
+## Documentation
+- **[documentation/GUIDE.md](./documentation/GUIDE.md)** — run locally, test every feature, deploy to AWS, troubleshoot.
+- **[documentation/ROADMAP.md](./documentation/ROADMAP.md)** — action items + pre-demo enhancement TODO.
+- **[documentation/BRANDING.md](./documentation/BRANDING.md)** — colors, font, and which logo/favicon files to replace.
+- CTO collateral: `documentation/Aura_by_Centro_CTO_Onepager.pdf` and `…_CTO_Deck.pdf`.
+
+## Quick start (TL;DR)
+```bash
+OLLAMA_KEEP_ALIVE=-1 ollama serve   # terminal 1 (after: ollama pull qwen2.5:1.5b nomic-embed-text)
+make setup && make demo             # terminal 2 — no Docker needed
+```
+
 > Built to the spec in [`system_prompt.md`](./system_prompt.md).
