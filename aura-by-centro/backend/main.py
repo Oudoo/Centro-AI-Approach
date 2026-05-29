@@ -21,6 +21,7 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import ValidationError
 
+from api_admin import router as admin_router
 from auth import resolve_user, verify_action_signature
 from config import Brand, get_settings
 from core.agent import get_agent
@@ -68,6 +69,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Admin / document-management routes (department-head uploads).
+app.include_router(admin_router)
 
 
 # -----------------------------------------------------------------------------

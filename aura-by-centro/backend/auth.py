@@ -37,6 +37,25 @@ def resolve_user(token: str | None) -> UserContext:
         return UserContext(user_id="anonymous", account_scope="global", role="agent")
 
 
+def mint_token(
+    user_id: str,
+    role: str = "agent",
+    account_scope: str = "global",
+    department: str = "general",
+    name: str | None = None,
+) -> str:
+    """Issue a signed JWT carrying RBAC claims. Used by the dev login helper."""
+    settings = get_settings()
+    claims = {
+        "sub": user_id,
+        "name": name or user_id,
+        "role": role,
+        "account_scope": account_scope,
+        "department": department,
+    }
+    return jwt.encode(claims, settings.jwt_secret, algorithm=settings.jwt_algorithm)
+
+
 def verify_action_signature(session_id: str, action_id: str, signature: str | None) -> bool:
     """
     Validate the HMAC signature on a confirmed Action Card. In dev (no signature

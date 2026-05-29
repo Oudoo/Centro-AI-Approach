@@ -45,7 +45,7 @@ class VectorSandbox:
                 ),
             )
         # Payload indexes make the metadata filter cheap and enforceable.
-        for field in MANDATORY_METADATA:
+        for field in (*MANDATORY_METADATA, "doc_id"):
             try:
                 await self._client.create_payload_index(
                     collection_name=self._collection,
@@ -127,6 +127,56 @@ class VectorSandbox:
                 )
             )
         return results
+
+    # -- Admin / document management ----------------------------------------
+    async def count(self) -> int:
+        result = await self._client.count(self._collection, exact=True)
+        return result.count
+
+    async def list_documents(self, limit: int = 1000) -> list[dict[str, Any]]:
+        """
+        Aggregate stored chunks into a per-document view (grouped by doc_id).
+        Suitable for the admin dashboard; scale-bounded by `limit`.
+        """
+        points, _ = await self._client.scroll(
+            collection_name=self._collection,
+            limit=limit,
+            with_payload=True,
+            with_vectors=False,
+        )
+        docs: dict[str, dict[str, Any]] = {}
+        for pt in points:
+            p = pt.payload or {}
+            doc_id = p.get("doc_id", str(pt.id))
+            entry = docs.setdefault(
+                doc_id,
+                {
+                    "doc_id": doc_id,
+                    "source": p.get("source", "untitled"),
+                    "department": p.get("department", ""),
+                    "account_scope": p.get("account_scope", ""),
+                    "min_role_required": p.get("min_role_required", ""),
+                    "uploaded_by": p.get("uploaded_by", ""),
+                    "chunks": 0,
+                },
+            )
+            entry["chunks"] += 1
+        return sorted(docs.values(), key=lambda d: d["source"])
+
+    async def delete_document(self, doc_id: str) -> None:
+        """Remove every chunk belonging to a document."""
+        await self._client.delete(
+            collection_name=self._collection,
+            points_selector=qm.FilterSelector(
+                filter=qm.Filter(
+                    must=[
+                        qm.FieldCondition(
+                            key="doc_id", match=qm.MatchValue(value=doc_id)
+                        )
+                    ]
+                )
+            ),
+        )
 
     async def aclose(self) -> None:
         await self._client.close()
