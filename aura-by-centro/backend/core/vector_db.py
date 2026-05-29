@@ -13,6 +13,7 @@ Every ingested chunk carries mandatory metadata:
 from __future__ import annotations
 
 import uuid
+from pathlib import Path
 from typing import Any
 
 from qdrant_client import AsyncQdrantClient, models as qm
@@ -31,9 +32,14 @@ class VectorSandbox:
         s = get_settings()
         self._collection = s.vector_collection
         self._dim = s.embedding_dim
-        self._client = AsyncQdrantClient(
-            url=s.qdrant_url, api_key=s.qdrant_api_key or None
-        )
+        if s.qdrant_local:
+            # Embedded, on-disk Qdrant — no Docker, no server. One process only.
+            Path(s.qdrant_path).mkdir(parents=True, exist_ok=True)
+            self._client = AsyncQdrantClient(path=s.qdrant_path)
+        else:
+            self._client = AsyncQdrantClient(
+                url=s.qdrant_url, api_key=s.qdrant_api_key or None
+            )
 
     async def ensure_collection(self) -> None:
         existing = {c.name for c in (await self._client.get_collections()).collections}

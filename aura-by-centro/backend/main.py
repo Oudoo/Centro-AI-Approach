@@ -53,6 +53,10 @@ async def lifespan(app: FastAPI):
         log.warning("requests_store_init_failed", error=str(exc))
     try:
         await get_vector_sandbox()  # ensure collection + payload indexes
+        # Auto-seed sample docs on first run (esp. embedded mode, where a
+        # separate ingest process can't open the same DB).
+        from core.seed import seed_if_empty
+        await seed_if_empty()
     except Exception as exc:  # vector engine may be offline in pure-frontend dev
         log.warning("vector_init_deferred", error=str(exc))
     try:

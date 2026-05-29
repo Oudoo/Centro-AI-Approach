@@ -79,6 +79,10 @@ async def check_embeddings(s) -> bool:
 
 
 async def check_qdrant(s) -> bool:
+    if s.qdrant_local:
+        # Embedded mode — the running backend owns the DB; just confirm config.
+        ok("Vector store", f"embedded (no Docker) @ {s.qdrant_path}")
+        return True
     try:
         async with httpx.AsyncClient(timeout=10) as c:
             r = await c.get(f"{s.qdrant_url.rstrip('/')}/collections")

@@ -108,6 +108,12 @@ class Settings(BaseSettings):
 
     # Vector engine
     vector_backend: str = Field(default="qdrant", alias="VECTOR_BACKEND")
+    # Embedded mode (default): Qdrant runs in-process on disk — NO Docker/server
+    # needed for local dev. Set QDRANT_LOCAL=false (+ QDRANT_URL) for a server.
+    qdrant_local: bool = Field(default=True, alias="QDRANT_LOCAL")
+    qdrant_path: str = Field(
+        default=str(_BACKEND_DIR / "data" / "qdrant_local"), alias="QDRANT_PATH"
+    )
     qdrant_url: str = Field(default="http://localhost:6333", alias="QDRANT_URL")
     qdrant_api_key: str = Field(default="", alias="QDRANT_API_KEY")
     vector_collection: str = Field(default="aura_knowledge", alias="VECTOR_COLLECTION")

@@ -15,17 +15,15 @@ engine-agnostic.)
 ```bash
 # Homebrew packages
 brew install python@3.11 node ollama git
-
-# Docker Desktop (for the Qdrant vector DB) — install + launch it:
-#   https://www.docker.com/products/docker-desktop/
-# Make sure the Docker whale icon is running before Step 3.
 ```
+> 🎉 **No Docker needed.** The vector store runs **embedded** (in-process, on
+> disk) by default, so local dev is just Python + Node + Ollama. (Docker is only
+> needed if you opt into a Qdrant *server* with `QDRANT_LOCAL=false`.)
 
 Verify:
 ```bash
 python3.11 --version    # 3.11.x
 node --version          # v20+ (any recent LTS is fine)
-docker --version        # any
 ollama --version        # any
 ```
 

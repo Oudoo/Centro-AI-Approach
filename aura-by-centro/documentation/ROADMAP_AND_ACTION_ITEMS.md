@@ -75,14 +75,22 @@ Owner: you (provide the SMTP relay or a Zoho Mail app password).
 
 ---
 
-## 🔲 ACTION ITEM 6 — Move requests store from SQLite to PostgreSQL (company scale)
+## 🔲 ACTION ITEM 6 — Move to a server database (PostgreSQL on AWS RDS) — BEFORE PRODUCTION
 
-Today: requests are stored in **SQLite** (free, file-based) — perfect for the
-demo and single-node. SQLite is **never paid**. At company scale (1,500 users,
-multiple backend instances, concurrent writes) migrate to **PostgreSQL on AWS
-RDS**. The store is isolated in `backend/core/requests_store.py`, so this is a
-small, contained change (swap the driver + connection string; same function
-signatures). Owner: us, when we deploy to AWS.
+⛔ **Gate: do this before going to production.** Today both stores are
+file-based and single-node:
+- Employee requests → **SQLite** (`backend/core/requests_store.py`)
+- Vector knowledge → **embedded Qdrant** (on-disk, in-process)
+
+SQLite is **free, never paid** — great for the demo. But at company scale
+(1,500 users, multiple backend instances, concurrent writes) a file DB won't do.
+Before production:
+- **Requests:** migrate to **PostgreSQL on AWS RDS** (swap driver + connection
+  string in the one store module; same function signatures).
+- **Vectors:** set `QDRANT_LOCAL=false` + point `QDRANT_URL` at a **Qdrant
+  server** (self-hosted on AWS EC2/ECS, or Qdrant Cloud).
+
+Owner: us, at AWS deployment time.
 
 ---
 
