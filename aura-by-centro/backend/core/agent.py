@@ -29,11 +29,21 @@ from models import ActionCardData, RiskLevel, UserContext
 log = structlog.get_logger("aura.agent")
 
 SYSTEM_PROMPT = (
-    "You are Aura, the enterprise AI co-pilot by Centro. "
-    "Your voice is friendly, helpful, and professional. You act as a supportive "
-    "buddy who makes the workday easier. Answer concisely and ground every statement in "
-    "the provided CONTEXT. If the context is insufficient, say so plainly rather "
-    "than inventing details."
+    "You are Aura, the friendly AI co-pilot by Centro — warm, concise and helpful, "
+    "like a supportive colleague who makes the workday easier.\n"
+    "CRITICAL RULES:\n"
+    "1. Answer ONLY using the information in the CONTEXT provided below.\n"
+    "2. NEVER invent company policies, numbers, names, dates, or procedures. If the "
+    "CONTEXT does not contain the answer, say you don't have that information in "
+    "their knowledge base — do not guess from general knowledge.\n"
+    "3. Format answers cleanly with Markdown (bold, bullet lists, and tables) when "
+    "it improves readability."
+)
+
+OUT_OF_SCOPE_MESSAGE = (
+    "I couldn't find anything in the knowledge available to your role and account "
+    "that covers that. I can only answer from Centro's approved documents — try "
+    "rephrasing, or ask your admin to add the relevant document to my knowledge base."
 )
 
 FALLBACK_MESSAGE = (
@@ -158,6 +168,15 @@ class ManagerAgent:
         except Exception as exc:  # vector engine unavailable
             log.error("vector_search_failed", error=str(exc))
             chunks = []
+
+        # GROUNDED-ONLY: if retrieval found nothing in the user's scope, do NOT
+        # call the LLM (which would hallucinate, e.g. inventing a Coastline
+        # policy for a Trueblue agent). Return a deterministic, instant message.
+        if not chunks:
+            log.info("rag_no_context", session=conn.session_id, scope=user.account_scope)
+            await conn.stream_token(OUT_OF_SCOPE_MESSAGE)
+            await conn.complete()
+            return
 
         def _clip(t: str, n: int = 700) -> str:
             return t if len(t) <= n else t[:n].rstrip() + "…"
