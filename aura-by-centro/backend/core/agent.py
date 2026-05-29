@@ -18,10 +18,12 @@ import uuid
 import structlog
 
 from config import MUTATION_INTENTS, get_settings
+from core import analytics
 from core.cache import get_semantic_cache
 from core.llm import LLMUnavailable, get_llm
 from core.notifier import notify_request
 from core.requests_store import record_request
+from core.smalltalk import smalltalk_response
 from core.sockets import Connection
 from core.vector_db import get_vector_sandbox
 from integrations.schema_registry import get_schema_registry
@@ -82,6 +84,16 @@ class ManagerAgent:
     # ---- Main entrypoint ---------------------------------------------------
     async def handle_query(self, conn: Connection, user: UserContext, text: str) -> None:
         try:
+            analytics.incr("queries")
+
+            # 0) Small talk (no LLM, no embeddings) — instant, works offline.
+            small = smalltalk_response(text)
+            if small is not None:
+                analytics.incr("smalltalk")
+                await conn.stream_token(small)
+                await conn.complete()
+                return
+
             # 1) CAG fast-path ---------------------------------------------
             # A cache/embedding hiccup must never crash the turn — treat as miss.
             try:
@@ -92,6 +104,7 @@ class ManagerAgent:
                 hit = None
             if hit is not None:
                 answer, score = hit
+                analytics.incr("cag_hits")
                 log.info("cag_hit", session=conn.session_id, score=round(score, 4))
                 await conn.stream_token(answer)
                 await conn.complete()
@@ -167,6 +180,8 @@ class ManagerAgent:
             )
             return
 
+        analytics.incr("requests_submitted")
+        analytics.incr_intent(request_type)
         log.info("request_submitted", intent=request_type, emailed=sent, zoho=zoho_ok)
         pretty = request_type.replace("_", " ").title()
         detail_lines = "\n".join(
@@ -197,6 +212,7 @@ class ManagerAgent:
         # call the LLM (which would hallucinate, e.g. inventing a Coastline
         # policy for a Trueblue agent). Return a deterministic, instant message.
         if not chunks:
+            analytics.incr("out_of_scope")
             log.info("rag_no_context", session=conn.session_id, scope=user.account_scope)
             await conn.stream_token(OUT_OF_SCOPE_MESSAGE)
             await conn.complete()
@@ -225,12 +241,19 @@ class ManagerAgent:
         else:
             cache_scope = None  # mixed tenants -> never cache
 
+        from datetime import date
+        today = date.today().isoformat()
         messages = [
             {
                 "role": "system",
                 "content": (
                     SYSTEM_PROMPT
-                    + f"\n\nUser scope: account={user.account_scope}, role={user.role}, "
+                    + f"\n\nToday's date is {today}.\n"
+                    + "When asked for an age or duration, COMPUTE it from the dates in "
+                    + "the context relative to today and state the number of years. "
+                    + "Read values exactly and never swap units — 'cm' is height, "
+                    + "'kg' is weight; do not call a weight a height.\n"
+                    + f"\nUser scope: account={user.account_scope}, role={user.role}, "
                     + f"department={user.department}.\n\nCONTEXT:\n{context_block}"
                 )
             },
@@ -243,10 +266,17 @@ class ManagerAgent:
             async for token in llm.stream(messages):
                 full.append(token)
                 await conn.stream_token(token)
-            
+
             if not full:
                 raise LLMUnavailable("LLM returned 0 tokens")
-                
+
+            # A2: source citations — show which document(s) grounded the answer.
+            sources = sorted({c.source for c in chunks if c.source})
+            if sources:
+                await conn.stream_token(
+                    "\n\n— 📄 *Source: " + ", ".join(sources) + "*"
+                )
+            analytics.incr("rag_answered")
             await conn.complete()
             # Promote successful answers into the CAG cache for next time,
             # tagged with the SOURCE documents' scope (see above) — never the

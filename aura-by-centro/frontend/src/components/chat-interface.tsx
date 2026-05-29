@@ -5,9 +5,10 @@
  * Wires the WebSocket hook to the message list, action cards, and composer.
  */
 import { useEffect, useRef, useState } from "react";
-import { Send, Wifi, WifiOff, Menu } from "lucide-react";
+import { Send, Wifi, WifiOff, Menu, UserCog } from "lucide-react";
 import { useWebSocket } from "@/hooks/useWebSocket";
 import { BRAND } from "@/lib/brand";
+import { mintIdentity } from "@/lib/api";
 import { ActionCard } from "@/components/action-card";
 import { MessageBubble } from "@/components/message-bubble";
 import { Logo } from "@/components/logo";
@@ -20,9 +21,18 @@ const SUGGESTIONS = [
   "Can I update my break timing?",
 ];
 
+// A1 — demo identities so HR can show RBAC sandboxing live in one window.
+const DEMO_IDENTITIES = [
+  { label: "Global Agent", role: "agent", scope: "global" },
+  { label: "Coastline Agent", role: "agent", scope: "coastline" },
+  { label: "Coastline Manager", role: "manager", scope: "coastline" },
+  { label: "Trueblue Agent", role: "agent", scope: "trueblue" },
+  { label: "Trueblue Manager", role: "manager", scope: "trueblue" },
+];
+
 export function ChatInterface({
   sessionId,
-  token,
+  token: tokenProp,
   onMenuClick,
   onFirstMessage,
 }: {
@@ -31,6 +41,24 @@ export function ChatInterface({
   onMenuClick?: () => void;
   onFirstMessage?: (text: string) => void;
 }) {
+  // When no token is supplied (main chat), let the user pick a demo identity.
+  const usingDemoIdentity = !tokenProp;
+  const [identityIdx, setIdentityIdx] = useState(0);
+  const [identityToken, setIdentityToken] = useState<string | undefined>(undefined);
+
+  useEffect(() => {
+    if (!usingDemoIdentity) return;
+    let cancelled = false;
+    const id = DEMO_IDENTITIES[identityIdx];
+    mintIdentity(id.role, id.scope)
+      .then((t) => !cancelled && setIdentityToken(t))
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [identityIdx, usingDemoIdentity]);
+
+  const token = tokenProp ?? identityToken;
   const { messages, connState, sendQuery, respondToAction } = useWebSocket(
     sessionId,
     token
@@ -73,8 +101,24 @@ export function ChatInterface({
           </h1>
           <p className="text-xs text-centro-onyx/60">{BRAND.tagline}</p>
         </div>
+        {usingDemoIdentity && (
+          <label className="ml-auto flex items-center gap-1.5 rounded-lg border border-centro-mist bg-centro-mist/30 px-2 py-1 text-xs text-centro-onyx/70">
+            <UserCog size={14} className="text-centro-prussian" />
+            <span className="hidden sm:inline">Acting as</span>
+            <select
+              value={identityIdx}
+              onChange={(e) => setIdentityIdx(Number(e.target.value))}
+              className="bg-transparent font-medium text-centro-onyx outline-none"
+              title="Demo identity (drives RBAC sandboxing)"
+            >
+              {DEMO_IDENTITIES.map((id, i) => (
+                <option key={id.label} value={i}>{id.label}</option>
+              ))}
+            </select>
+          </label>
+        )}
         <div
-          className={`ml-auto flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium ${
+          className={`${usingDemoIdentity ? "" : "ml-auto"} flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium ${
             connState === "open"
               ? "bg-emerald-50 text-emerald-700"
               : "bg-gray-100 text-gray-500"

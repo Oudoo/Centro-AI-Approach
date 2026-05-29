@@ -147,6 +147,12 @@ async def stats(user: UserContext = Depends(require_manager)) -> dict:
 # -----------------------------------------------------------------------------
 # Employee requests — review + export for Workforce Management
 # -----------------------------------------------------------------------------
+@router.get("/analytics")
+async def get_analytics(user: UserContext = Depends(require_manager)) -> dict:
+    from core import analytics
+    return analytics.snapshot()
+
+
 @router.get("/requests")
 async def get_requests(user: UserContext = Depends(require_manager)) -> dict:
     return {"requests": await list_requests()}

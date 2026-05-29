@@ -8,6 +8,7 @@
  */
 import { useCallback, useEffect, useState } from "react";
 import {
+  BarChart3,
   Download,
   FileText,
   Inbox,
@@ -16,13 +17,16 @@ import {
   ShieldCheck,
   Trash2,
   UploadCloud,
+  Zap,
 } from "lucide-react";
 import { BRAND } from "@/lib/brand";
 import {
+  type Analytics,
   type DocSummary,
   type EmployeeRequest,
   deleteDocument,
   devLogin,
+  fetchAnalytics,
   fetchStats,
   getToken,
   listDocuments,
@@ -39,6 +43,7 @@ export default function AdminPage() {
   const [authed, setAuthed] = useState(false);
   const [docs, setDocs] = useState<DocSummary[]>([]);
   const [requests, setRequests] = useState<EmployeeRequest[]>([]);
+  const [analytics, setAnalytics] = useState<Analytics | null>(null);
   const [stats, setStats] = useState({ total_chunks: 0, documents: 0 });
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -54,6 +59,7 @@ export default function AdminPage() {
       setDocs(await listDocuments());
       setStats(await fetchStats());
       setRequests(await listRequests());
+      setAnalytics(await fetchAnalytics());
       setError("");
     } catch (e) {
       const msg = (e as Error).message;
@@ -198,6 +204,27 @@ export default function AdminPage() {
       {error && (
         <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-700">
           {error}
+        </div>
+      )}
+
+      {/* Usage analytics (A3) */}
+      {analytics && (
+        <div className="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
+          {[
+            { label: "Queries answered", value: analytics.queries, icon: BarChart3 },
+            { label: "Instant (no-LLM) rate", value: `${analytics.instant_rate}%`, icon: Zap, hint: "CAG + small talk — cost saved" },
+            { label: "RAG answers", value: analytics.rag_answered, icon: FileText },
+            { label: "Requests filed", value: analytics.requests_submitted, icon: Inbox },
+          ].map((t) => (
+            <div key={t.label} className="rounded-2xl border border-centro-mist bg-white p-4 shadow-card">
+              <div className="flex items-center gap-2 text-centro-accent">
+                <t.icon size={15} />
+                <span className="text-xs font-semibold uppercase tracking-wide">{t.label}</span>
+              </div>
+              <p className="mt-2 text-2xl font-bold text-centro-onyx">{t.value}</p>
+              {t.hint && <p className="text-[11px] text-centro-onyx/50">{t.hint}</p>}
+            </div>
+          ))}
         </div>
       )}
 

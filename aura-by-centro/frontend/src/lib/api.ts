@@ -108,6 +108,35 @@ export interface EmployeeRequest {
   notified_email: string;
 }
 
+/** Mint a token for a chosen demo identity WITHOUT touching the admin token. */
+export async function mintIdentity(role: string, account_scope: string): Promise<string> {
+  const body = new FormData();
+  body.set("role", role);
+  body.set("account_scope", account_scope);
+  body.set("department", "general");
+  const res = await fetch(`${API_URL}/admin/dev-token`, { method: "POST", body });
+  if (!res.ok) throw new Error(`identity mint failed (${res.status})`);
+  return (await res.json()).token;
+}
+
+export interface Analytics {
+  since: string;
+  queries: number;
+  cag_hits: number;
+  smalltalk: number;
+  rag_answered: number;
+  out_of_scope: number;
+  requests_submitted: number;
+  instant_rate: number;
+  top_intents: [string, number][];
+}
+
+export async function fetchAnalytics(): Promise<Analytics> {
+  const res = await fetch(`${API_URL}/admin/analytics`, { headers: authHeaders() });
+  if (!res.ok) throw new Error(`analytics failed (${res.status})`);
+  return res.json();
+}
+
 export async function listRequests(): Promise<EmployeeRequest[]> {
   const res = await fetch(`${API_URL}/admin/requests`, { headers: authHeaders() });
   if (!res.ok) throw new Error(`requests failed (${res.status})`);
