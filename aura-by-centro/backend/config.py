@@ -100,6 +100,9 @@ class Settings(BaseSettings):
     llm_max_output_tokens: int = Field(default=512, alias="LLM_MAX_OUTPUT_TOKENS")
     llm_temperature: float = Field(default=0.2, alias="LLM_TEMPERATURE")
     llm_request_timeout: int = Field(default=120, alias="LLM_REQUEST_TIMEOUT")
+    # Fire a tiny prompt at startup so the first real demo query isn't the cold
+    # model load. Runs in the background; failures are ignored.
+    llm_warmup: bool = Field(default=True, alias="LLM_WARMUP")
 
     # Embeddings
     embedding_base_url: str = Field(default="http://localhost:1234/v1", alias="EMBEDDING_BASE_URL")

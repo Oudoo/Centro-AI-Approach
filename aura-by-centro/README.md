@@ -97,6 +97,7 @@ vector engine, never post-filtered in Python.
 
 ## Documentation
 - **[documentation/ARCHITECTURE.md](./documentation/ARCHITECTURE.md)** — CTO brief: Advanced & Agentic RAG, security, cost, stack.
+- **[documentation/DEMO.md](./documentation/DEMO.md)** — demo playbook: fast setup, sanity + test checklists, live script, next stages, delivery.
 - **[documentation/GUIDE.md](./documentation/GUIDE.md)** — run locally, test every feature, deploy to AWS, troubleshoot.
 - **[documentation/ROADMAP.md](./documentation/ROADMAP.md)** — action items + pre-demo enhancement TODO.
 - **[documentation/BRANDING.md](./documentation/BRANDING.md)** — colors, font, and which logo/favicon files to replace.

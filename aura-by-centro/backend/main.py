@@ -64,6 +64,15 @@ async def lifespan(app: FastAPI):
         await get_semantic_cache()  # pre-embed FAQ corpus
     except Exception as exc:
         log.warning("cache_warm_deferred", error=str(exc))
+    if settings.llm_warmup:
+        async def _warmup():
+            try:
+                from core.llm import get_llm
+                await get_llm().generate([{"role": "user", "content": "hi"}])
+                log.info("llm_warmed")
+            except Exception as exc:
+                log.info("llm_warmup_skipped", error=str(exc))
+        asyncio.create_task(_warmup())  # background — never delays startup
     yield
     log.info("aura_shutdown")
 
