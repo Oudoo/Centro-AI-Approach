@@ -1,0 +1,47 @@
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "@id": "https://centrocdx.com/#organization",
+  "name": "Centro CDX",
+  "legalName": "Centro Global Solutions",
+  "alternateName": ["Centro", "Centro Global Solutions"],
+  "url": "https://centrocdx.com/",
+  "logo": {
+    "@type": "ImageObject",
+    "@id": "https://centrocdx.com/#logo",
+    "url": "https://centrocdx.com/logo.png"
+  },
+  "description": "Centro CDX is a technology-driven business process outsourcing (BPO) company founded in 2009, delivering customer experience, digital experience, data intelligence, and healthcare services across the US, Egypt, the GCC, Europe, and Africa.",
+  "foundingDate": "2009",
+  "founder": { "@type": "Person", "name": "Hesham Farag" },
+  "knowsAbout": [
+    "Business Process Outsourcing",
+    "Customer Experience",
+    "Omnichannel Contact Center",
+    "Digital Experience",
+    "Data Intelligence",
+    "Healthcare BPO",
+    "HR Outsourcing",
+    "AI Transformation"
+  ],
+  "areaServed": ["United States", "Canada", "Egypt", "Saudi Arabia", "United Arab Emirates", "Qatar", "Kuwait", "Bahrain", "Oman", "Europe", "Africa"],
+  "address": {
+    "@type": "PostalAddress",
+    "addressLocality": "Winchester",
+    "addressRegion": "VA",
+    "addressCountry": "US"
+  },
+  "sameAs": [
+    "https://www.linkedin.com/company/centrocdx",
+    "https://www.crunchbase.com/organization/centro-global-solutions",
+    "https://clutch.co/profile/centro-0"
+  ],
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "contactType": "sales",
+    "email": "connect@centrocdx.com",
+    "telephone": "+1-800-903-4283",
+    "areaServed": ["US", "EG", "AE", "SA"],
+    "availableLanguage": ["en", "ar", "fr"]
+  }
+}

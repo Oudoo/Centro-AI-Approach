@@ -1,0 +1,5 @@
+# Only one dependency, and only for the YAML scorecard.
+# All other scripts (check_ai_crawlers, validate_schema, passage_lint) are
+# pure standard library and need nothing installed.
+# If you prefer zero dependencies, write the scorecard as JSON instead of YAML.
+pyyaml>=6.0

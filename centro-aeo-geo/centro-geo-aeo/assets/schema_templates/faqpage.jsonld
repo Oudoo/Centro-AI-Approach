@@ -1,0 +1,24 @@
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "@id": "https://centrocdx.com/services/REPLACE-SLUG#faq",
+  "isPartOf": { "@id": "https://centrocdx.com/services/REPLACE-SLUG#service" },
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "REPLACE — the literal question a user would ask an AI",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "REPLACE — a direct 40-80 word answer. No marketing language. Lead with the answer, then one supporting fact (metric, technology, or region)."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "REPLACE — second question",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "REPLACE — direct answer."
+      }
+    }
+  ]
+}
