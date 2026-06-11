@@ -1,0 +1,35 @@
+{
+  "name": "Zoho Annual Leave Request",
+  "version": "v1",
+  "target_system": "Zoho People",
+  "mcp_system": "zoho",
+  "mcp_tool": "leave.request.annual",
+  "intents": ["annual_leave_request"],
+  "summary": "Submit an annual leave request to Zoho People.",
+  "risk_level": "medium",
+  "risk_assessment": "Deducts from your annual leave balance upon approval.",
+  "endpoint": "/api/v2/leave/request",
+  "auth": "zoho_oauth",
+  "example_payload": {
+    "leave_type": "Annual Leave"
+  },
+  "form_fields": [
+    {
+      "name": "start_date",
+      "type": "date",
+      "label": "Start Date"
+    },
+    {
+      "name": "end_date",
+      "type": "date",
+      "label": "End Date"
+    },
+    {
+      "name": "reason",
+      "type": "textarea",
+      "label": "Reason for Leave",
+      "required": false
+    }
+  ],
+  "min_role_required": "agent"
+}

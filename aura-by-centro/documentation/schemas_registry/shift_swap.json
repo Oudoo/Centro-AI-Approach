@@ -1,0 +1,34 @@
+{
+  "name": "Trueblue Shift Swap",
+  "version": "v1",
+  "target_system": "Trueblue Scheduling",
+  "mcp_system": "trueblue",
+  "mcp_tool": "shift.swap",
+  "intents": ["swap_shift"],
+  "summary": "Send a shift swap request to your team leader for approval.",
+  "risk_level": "medium",
+  "risk_assessment": "This sends a swap notification to your team leader and the requested partner.",
+  "endpoint": "/schedule/api/swap",
+  "auth": "trueblue_oauth",
+  "example_payload": {
+    "action": "swap_request"
+  },
+  "form_fields": [
+    {
+      "name": "original_shift_date",
+      "type": "date",
+      "label": "Your Original Shift Date"
+    },
+    {
+      "name": "new_shift_date",
+      "type": "date",
+      "label": "Requested Shift Date"
+    },
+    {
+      "name": "partner_employee_id",
+      "type": "text",
+      "label": "Partner Employee ID"
+    }
+  ],
+  "min_role_required": "agent"
+}

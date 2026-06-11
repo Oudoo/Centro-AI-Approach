@@ -1,0 +1,329 @@
+"""
+Aura (by Centro) — Central Manager Agent & orchestration.
+
+Pipeline for every inbound query (see main.py wiring):
+
+    1. CAG fast-path  (FEATURE 2) — semantic cache hit >= 0.92 bypasses the LLM.
+    2. Intent routing (FEATURE 3) — mutation intents emit an Action Card and
+       block on dual confirmation before any write executes.
+    3. Dynamic schema retrieval (FEATURE 4) — integration contracts are pulled
+       from the technical vector space, never hard-coded into prompts.
+    4. RAG answer    (FEATURE 1) — sandboxed retrieval + streamed Gemma-3 answer
+       with graceful fallback (PATTERN #4) on OOM/latency.
+"""
+from __future__ import annotations
+
+import uuid
+
+import structlog
+
+from config import MUTATION_INTENTS, get_settings
+from core import analytics
+from core.cache import get_semantic_cache
+from core.llm import LLMUnavailable, get_llm
+from core.notifier import notify_request
+from core.requests_store import record_request
+from core.retrieval import hybrid_search
+from core.smalltalk import smalltalk_response
+from core.sockets import Connection
+from core.vector_db import get_vector_sandbox
+from integrations.schema_registry import get_schema_registry
+from integrations.zoho_people import submit_to_zoho
+from models import ActionCardData, RiskLevel, UserContext
+
+log = structlog.get_logger("aura.agent")
+
+SYSTEM_PROMPT = (
+    "You are Aura, the friendly AI co-pilot by Centro — warm, concise and helpful, "
+    "like a supportive colleague who makes the workday easier.\n"
+    "CRITICAL RULES:\n"
+    "1. Answer ONLY using the information in the CONTEXT provided below.\n"
+    "2. NEVER invent company policies, numbers, names, dates, or procedures. If the "
+    "CONTEXT does not contain the answer, say you don't have that information in "
+    "their knowledge base — do not guess from general knowledge.\n"
+    "3. Format answers cleanly with Markdown (bold, bullet lists, and tables) when "
+    "it improves readability."
+)
+
+OUT_OF_SCOPE_MESSAGE = (
+    "I couldn't find anything in the knowledge available to your role and account "
+    "that covers that. I can only answer from Centro's approved documents — try "
+    "rephrasing, or ask your admin to add the relevant document to my knowledge base."
+)
+
+FALLBACK_MESSAGE = (
+    "Aura is experiencing heavy load on the local model cluster right now. "
+    "I've logged the issue and your session is still active — please retry your "
+    "request in a moment, or rephrase it so I can serve it from cached knowledge."
+)
+
+
+class ManagerAgent:
+    """Stateless orchestrator; per-request state lives on the Connection."""
+
+    def __init__(self) -> None:
+        self._settings = get_settings()
+
+    # ---- Intent routing (lightweight, deterministic) ----------------------
+    def detect_intent(self, text: str) -> str | None:
+        """
+        Map a query to a known mutation intent. Kept rule-based for determinism
+        and auditability; swap for an LLM classifier later if needed.
+        """
+        t = text.lower()
+        if "swap" in t and "shift" in t:
+            return "swap_shift"
+        if "leave" in t:
+            if "annual" in t:
+                return "annual_leave_request"
+            if "casual" in t:
+                return "casual_leave_request"
+        if "break" in t and ("timing" in t or "update" in t):
+            return "update_break_timing"
+        return None
+
+    # ---- Main entrypoint ---------------------------------------------------
+    async def handle_query(self, conn: Connection, user: UserContext, text: str) -> None:
+        try:
+            analytics.incr("queries")
+
+            # 0) Small talk (no LLM, no embeddings) — instant, works offline.
+            small = smalltalk_response(text)
+            if small is not None:
+                analytics.incr("smalltalk")
+                await conn.stream_token(small)
+                await conn.complete()
+                return
+
+            # 1) CAG fast-path ---------------------------------------------
+            # A cache/embedding hiccup must never crash the turn — treat as miss.
+            try:
+                cache = await get_semantic_cache()
+                hit = await cache.lookup(text, user.account_scope)
+            except Exception as exc:
+                log.warning("cag_lookup_failed", error=str(exc))
+                hit = None
+            if hit is not None:
+                answer, score = hit
+                analytics.incr("cag_hits")
+                log.info("cag_hit", session=conn.session_id, score=round(score, 4))
+                await conn.stream_token(answer)
+                await conn.complete()
+                return
+
+            # 2) Mutation intent -> dual-confirmation Action Card ----------
+            intent = self.detect_intent(text)
+            if intent in MUTATION_INTENTS:
+                await self._handle_mutation(conn, user, intent, text)
+                return
+
+            # 4) RAG answer (default path) ---------------------------------
+            await self._handle_rag(conn, user, text)
+        except Exception as exc:
+            # Last line of defence: a friendly fallback, never a raw error.
+            log.error("handle_query_failed", session=conn.session_id, error=str(exc))
+            await conn.error(FALLBACK_MESSAGE)
+
+    # ---- FEATURE 3: dual confirmation -------------------------------------
+    async def _handle_mutation(
+        self, conn: Connection, user: UserContext, intent: str, text: str
+    ) -> None:
+        registry = await get_schema_registry()
+        # FEATURE 4: pull the live contract instead of hard-coding it.
+        contract = await registry.resolve(intent, user)
+        card = ActionCardData(
+            action_id=str(uuid.uuid4()),
+            intent=intent,
+            target_system=contract.get("target_system", intent),
+            summary=contract.get("summary", "Please fill in the details below."),
+            api_payload={},  # no raw API payload shown to the user
+            form_fields=contract.get("form_fields"),
+            # These are kept for the data contract but are no longer surfaced to
+            # the user — this assistant only files safe, reviewable requests.
+            risk_level=RiskLevel(contract.get("risk_level", "low")),
+            risk_assessment="",
+        )
+        future = await conn.request_action(card)
+
+        try:
+            form_data = await future
+        except Exception:  # cancelled on disconnect
+            return
+
+        if form_data is None:
+            await conn.stream_token("No problem — I've cancelled that request. 👍")
+            await conn.complete()
+            return
+
+        await self._submit_request(conn, user, contract, card, form_data or {})
+
+    async def _submit_request(
+        self,
+        conn: Connection,
+        user: UserContext,
+        contract: dict,
+        card: ActionCardData,
+        form_data: dict,
+    ) -> None:
+        """Persist the request and notify the team (email in demo phase)."""
+        request_type = card.intent
+        target = card.target_system
+        details = {k: v for k, v in form_data.items() if v not in (None, "")}
+        try:
+            await record_request(request_type, target, user, details)
+            # Try the live Zoho People integration (no-op unless enabled).
+            zoho_ok, zoho_note = await submit_to_zoho(contract, user, details)
+            sent, to_addr = await notify_request(request_type, target, user, details)
+        except Exception as exc:
+            log.error("request_submit_failed", intent=request_type, error=str(exc))
+            await conn.error(
+                "I couldn't file that request just now — please try again in a moment."
+            )
+            return
+
+        analytics.incr("requests_submitted")
+        analytics.incr_intent(request_type)
+        log.info("request_submitted", intent=request_type, emailed=sent, zoho=zoho_ok)
+        pretty = request_type.replace("_", " ").title()
+        detail_lines = "\n".join(
+            f"- **{k.replace('_', ' ').title()}:** {v}" for k, v in details.items()
+        ) or "- (no extra details)"
+        if zoho_ok:
+            notice = f"and submitted to Zoho People. {zoho_note}"
+        elif sent:
+            notice = f"and a notification was emailed to **{to_addr}**"
+        else:
+            notice = f"and logged for the team to action (routing to **{to_addr}**)"
+        await conn.stream_token(
+            f"✅ **Done!** Your **{pretty}** request has been recorded {notice}.\n\n"
+            f"{detail_lines}\n\nYou'll hear back once it's reviewed. Anything else?"
+        )
+        await conn.complete()
+
+    # ---- Pillar 4: Agentic query rewrite (optional, off by default) -------
+    async def _rewrite_query(self, text: str) -> str:
+        if not self._settings.agentic_rewrite_enabled:
+            return text
+        try:
+            out = await get_llm().generate([
+                {"role": "system", "content": (
+                    "Rewrite the user's message into a concise search query (keywords + "
+                    "intent) for a company knowledge base. Return ONLY the query."
+                )},
+                {"role": "user", "content": text},
+            ])
+            return out.strip() or text
+        except Exception:
+            return text  # never let rewrite block the answer
+
+    # ---- FEATURES 1-4 + PATTERN 4: agentic hybrid RAG with fallback -------
+    async def _handle_rag(self, conn: Connection, user: UserContext, text: str) -> None:
+        # Step 1 (Rewrite) + Step 2 (Route: RBAC scope filter inside the index).
+        search_query = await self._rewrite_query(text)
+        chunks = await hybrid_search(search_query, user=user)
+
+        # Step 3 (Reflect): if the best result is weak, retry once with the raw
+        # query (or a keyword variant) before giving up — never guess.
+        top = chunks[0].score if chunks else 0.0
+        if (not chunks or top < self._settings.rag_min_score) and search_query != text:
+            log.info("rag_reflect_retry", session=conn.session_id)
+            retry = await hybrid_search(text, user=user)
+            if retry and (not chunks or retry[0].score >= top):
+                chunks = retry
+
+        # GROUNDED-ONLY: nothing in the user's scope -> deterministic message,
+        # never an LLM guess (which could leak/hallucinate cross-tenant data).
+        if not chunks:
+            analytics.incr("out_of_scope")
+            log.info("rag_no_context", session=conn.session_id, scope=user.account_scope)
+            await conn.stream_token(OUT_OF_SCOPE_MESSAGE)
+            await conn.complete()
+            return
+
+        def _clip(t: str, n: int = 900) -> str:
+            return t if len(t) <= n else t[:n].rstrip() + "…"
+
+        # Send the larger PARENT section to the LLM (parent-child retrieval).
+        context_block = "\n\n".join(
+            f"[{c.source or c.department}] {_clip(c.context)}" for c in chunks
+        ) or "No internal documents matched within your access scope."
+
+        # FEATURE 1 + 2: decide a SAFE scope to cache this answer under. We tag
+        # the cache by the retrieved documents' scope — NOT the asker's scope —
+        # so a broad-scope viewer (e.g. global manager) can never cache a
+        # tenant-specific answer as "global" and leak it to other tenants.
+        tenant_scopes = {
+            c.account_scope
+            for c in chunks
+            if c.account_scope and c.account_scope != "global"
+        }
+        if len(tenant_scopes) == 1:
+            cache_scope: str | None = next(iter(tenant_scopes))
+        elif not tenant_scopes:
+            cache_scope = "global"
+        else:
+            cache_scope = None  # mixed tenants -> never cache
+
+        from datetime import date
+        today = date.today().isoformat()
+        messages = [
+            {
+                "role": "system",
+                "content": (
+                    SYSTEM_PROMPT
+                    + f"\n\nToday's date is {today}.\n"
+                    + "When asked for an age or duration, COMPUTE it from the dates in "
+                    + "the context relative to today and state the number of years. "
+                    + "Read values exactly and never swap units — 'cm' is height, "
+                    + "'kg' is weight; do not call a weight a height.\n"
+                    + f"\nUser scope: account={user.account_scope}, role={user.role}, "
+                    + f"department={user.department}.\n\nCONTEXT:\n{context_block}"
+                )
+            },
+            {"role": "user", "content": text},
+        ]
+
+        llm = get_llm()
+        full: list[str] = []
+        try:
+            async for token in llm.stream(messages):
+                full.append(token)
+                await conn.stream_token(token)
+
+            if not full:
+                raise LLMUnavailable("LLM returned 0 tokens")
+
+            # A2: source citations — show which document(s) grounded the answer.
+            sources = sorted({c.source for c in chunks if c.source})
+            if sources:
+                await conn.stream_token(
+                    "\n\n— 📄 *Source: " + ", ".join(sources) + "*"
+                )
+            analytics.incr("rag_answered")
+            await conn.complete()
+            # Promote successful answers into the CAG cache for next time,
+            # tagged with the SOURCE documents' scope (see above) — never the
+            # asker's scope. Skip caching when sources span multiple tenants.
+            if full and cache_scope is not None:
+                cache = await get_semantic_cache()
+                await cache.add(text, "".join(full), cache_scope)
+        except LLMUnavailable as exc:
+            # PATTERN #4: never drop the socket. Try cache, else enterprise message.
+            log.error("llm_unavailable", error=str(exc), session=conn.session_id)
+            cache = await get_semantic_cache()
+            fallback = await cache.lookup(text, user.account_scope)
+            if fallback is not None:
+                await conn.stream_token(fallback[0])
+                await conn.complete()
+            else:
+                await conn.error(FALLBACK_MESSAGE)
+
+
+_agent: ManagerAgent | None = None
+
+
+def get_agent() -> ManagerAgent:
+    global _agent
+    if _agent is None:
+        _agent = ManagerAgent()
+    return _agent
