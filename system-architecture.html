@@ -1,0 +1,1809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Centro CDX · AI Recruiter — System Architecture</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --primary: #004a59;
+      --primary-light: #006d80;
+      --primary-ultra-light: #e8f4f8;
+      --accent: #00b4d8;
+      --accent-warm: #f77f00;
+      --surface: #ffffff;
+      --surface-alt: #f8fafb;
+      --surface-elevated: #ffffff;
+      --ink: #1a2332;
+      --ink-secondary: #4a5568;
+      --ink-muted: #8896a7;
+      --border: #e2e8f0;
+      --border-light: #f0f4f8;
+      --success: #059669;
+      --success-bg: #ecfdf5;
+      --warning: #d97706;
+      --warning-bg: #fffbeb;
+      --danger: #dc2626;
+      --danger-bg: #fef2f2;
+      --info: #2563eb;
+      --info-bg: #eff6ff;
+      --purple: #7c3aed;
+      --purple-bg: #f5f3ff;
+      --radius: 12px;
+      --radius-sm: 8px;
+      --radius-xs: 6px;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.04), 0 1px 3px rgba(0,0,0,0.06);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.06), 0 2px 4px -2px rgba(0,0,0,0.05);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -4px rgba(0,0,0,0.04);
+      --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.08), 0 8px 10px -6px rgba(0,0,0,0.04);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      color: var(--ink);
+      background: var(--surface-alt);
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* ── Hero Header ─────────────────────────────────── */
+    .hero {
+      background: linear-gradient(135deg, var(--primary) 0%, #003845 40%, #002a35 100%);
+      color: #fff;
+      padding: 3.5rem 2rem 3rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -20%;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(0,180,216,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero::after {
+      content: '';
+      position: absolute;
+      bottom: -30%;
+      left: -10%;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(247,127,0,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 100px;
+      padding: 5px 14px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-bottom: 1.25rem;
+      backdrop-filter: blur(8px);
+    }
+    .hero-badge::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      background: var(--accent);
+      border-radius: 50%;
+      box-shadow: 0 0 6px var(--accent);
+    }
+    .hero h1 {
+      font-size: clamp(1.75rem, 4vw, 2.5rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.2;
+      margin-bottom: 0.75rem;
+    }
+    .hero h1 span {
+      background: linear-gradient(135deg, var(--accent) 0%, #48cae4 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero p {
+      font-size: 1rem;
+      opacity: 0.8;
+      max-width: 680px;
+      line-height: 1.7;
+    }
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+      font-size: 0.8rem;
+      opacity: 0.65;
+    }
+    .hero-meta div { display: flex; align-items: center; gap: 6px; }
+
+    /* ── Layout ───────────────────────────────────────── */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    /* ── Navigation / TOC ──────────────────────────────── */
+    .toc-strip {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow-sm);
+    }
+    .toc-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .toc-inner::-webkit-scrollbar { display: none; }
+    .toc-link {
+      display: block;
+      padding: 0.75rem 0.85rem;
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: var(--ink-secondary);
+      text-decoration: none;
+      white-space: nowrap;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+    }
+    .toc-link:hover {
+      color: var(--primary);
+      border-bottom-color: var(--accent);
+    }
+
+    /* ── Sections ──────────────────────────────────────── */
+    .section {
+      padding: 3rem 0;
+      scroll-margin-top: 56px;
+    }
+    .section + .section {
+      border-top: 1px solid var(--border-light);
+    }
+    .section-header {
+      margin-bottom: 1.75rem;
+    }
+    .section-number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      background: var(--primary);
+      color: #fff;
+      font-size: 0.8rem;
+      font-weight: 700;
+      border-radius: 8px;
+      margin-right: 0.75rem;
+      vertical-align: middle;
+    }
+    .section h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary);
+      letter-spacing: -0.02em;
+      display: inline;
+      vertical-align: middle;
+    }
+    .section h3 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--ink);
+      margin: 2rem 0 0.75rem;
+      letter-spacing: -0.01em;
+    }
+    .section h4 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--ink-secondary);
+      margin: 1.25rem 0 0.5rem;
+    }
+    .section p {
+      color: var(--ink-secondary);
+      margin-bottom: 0.75rem;
+      max-width: 800px;
+    }
+
+    /* ── Diagrams ──────────────────────────────────────── */
+    .diagram-container {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      overflow-x: auto;
+      box-shadow: var(--shadow-sm);
+    }
+    .diagram-container .mermaid {
+      display: flex;
+      justify-content: center;
+    }
+    .diagram-title {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--ink-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .diagram-title::before {
+      content: '';
+      width: 3px;
+      height: 16px;
+      background: var(--accent);
+      border-radius: 2px;
+    }
+
+    /* ── Cards & Grids ─────────────────────────────────── */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1rem;
+      margin: 1.25rem 0;
+    }
+    .card-grid-3 {
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      transition: box-shadow 0.2s, border-color 0.2s;
+    }
+    .card:hover {
+      box-shadow: var(--shadow-md);
+      border-color: var(--accent);
+    }
+    .card-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      margin-bottom: 0.75rem;
+    }
+    .card h4 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--ink);
+      margin: 0 0 0.35rem;
+    }
+    .card p, .card li {
+      font-size: 0.85rem;
+      color: var(--ink-secondary);
+      line-height: 1.6;
+    }
+    .card ul {
+      padding-left: 1.1rem;
+      margin: 0.5rem 0 0;
+    }
+    .card li { margin-bottom: 0.2rem; }
+
+    /* ── Callout Boxes ─────────────────────────────────── */
+    .callout {
+      border-radius: var(--radius-sm);
+      padding: 1rem 1.25rem;
+      margin: 1rem 0;
+      font-size: 0.88rem;
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+    }
+    .callout-icon {
+      font-size: 1.1rem;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .callout-info { background: var(--info-bg); border-left: 3px solid var(--info); }
+    .callout-warning { background: var(--warning-bg); border-left: 3px solid var(--warning); }
+    .callout-success { background: var(--success-bg); border-left: 3px solid var(--success); }
+    .callout-danger { background: var(--danger-bg); border-left: 3px solid var(--danger); }
+    .callout p { margin: 0; color: var(--ink); }
+
+    /* ── Tables ────────────────────────────────────────── */
+    .table-wrap {
+      overflow-x: auto;
+      margin: 1rem 0;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+    th {
+      background: var(--surface-alt);
+      color: var(--ink-muted);
+      font-weight: 600;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.75rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    td {
+      padding: 0.65rem 1rem;
+      border-bottom: 1px solid var(--border-light);
+      color: var(--ink-secondary);
+      vertical-align: top;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: var(--primary-ultra-light); }
+
+    /* ── Code / Mono ───────────────────────────────────── */
+    code {
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      font-size: 0.82em;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      padding: 0.15em 0.4em;
+      border-radius: 4px;
+      color: var(--primary);
+    }
+    pre {
+      background: #0d1117;
+      color: #c9d1d9;
+      border-radius: var(--radius-sm);
+      padding: 1.25rem;
+      overflow-x: auto;
+      font-size: 0.82rem;
+      line-height: 1.6;
+      margin: 1rem 0;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* ── Tags / Pills ──────────────────────────────────── */
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      border-radius: 100px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+    .tag-primary { background: var(--primary-ultra-light); color: var(--primary); }
+    .tag-accent { background: #e0f7fa; color: #00838f; }
+    .tag-warning { background: var(--warning-bg); color: var(--warning); }
+    .tag-success { background: var(--success-bg); color: var(--success); }
+    .tag-danger { background: var(--danger-bg); color: var(--danger); }
+    .tag-purple { background: var(--purple-bg); color: var(--purple); }
+
+    /* ── Separator ─────────────────────────────────────── */
+    .sep {
+      height: 1px;
+      background: var(--border);
+      margin: 2.5rem 0;
+    }
+
+    /* ── Footer ────────────────────────────────────────── */
+    .footer {
+      background: var(--primary);
+      color: rgba(255,255,255,0.6);
+      padding: 2rem;
+      text-align: center;
+      font-size: 0.8rem;
+    }
+    .footer strong { color: rgba(255,255,255,0.85); }
+
+    /* ── Responsive ────────────────────────────────────── */
+    @media (max-width: 768px) {
+      .hero { padding: 2.5rem 1.25rem; }
+      .card-grid { grid-template-columns: 1fr; }
+      .section { padding: 2rem 0; }
+      .hero-meta { gap: 1rem; }
+    }
+
+    /* ── Print ──────────────────────────────────────────── */
+    @media print {
+      .toc-strip { display: none; }
+      .hero { break-after: page; }
+      .section { break-inside: avoid; }
+      .card:hover { box-shadow: none; border-color: var(--border); }
+    }
+
+    /* ── Mermaid theme overrides ────────────────────────── */
+    .mermaid svg {
+      max-width: 100%;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════
+     HERO HEADER
+     ═══════════════════════════════════════════════════ -->
+<header class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge">Internal Architecture Document</div>
+    <h1>Centro CDX · <span>AI Recruiter</span><br/>System Architecture</h1>
+    <p>
+      Comprehensive technical architecture for Centro CDX's AI-powered screening platform.
+      Covers all subsystems, data flows, external integrations, security boundaries,
+      deployment topology, and the phased roadmap from v1.0 to v2.0.
+    </p>
+    <div class="hero-meta">
+      <div>📦 <strong>Version:</strong> v1.0.0</div>
+      <div>📅 <strong>Updated:</strong> June 11, 2026</div>
+      <div>🛠 <strong>Stack:</strong> Next.js 15 · TypeScript · React 19</div>
+      <div>☁️ <strong>Deploy:</strong> Vercel Edge</div>
+    </div>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════════════════
+     TABLE OF CONTENTS NAV
+     ═══════════════════════════════════════════════════ -->
+<nav class="toc-strip">
+  <div class="toc-inner">
+    <a class="toc-link" href="#overview">Overview</a>
+    <a class="toc-link" href="#high-level">High-Level Flow</a>
+    <a class="toc-link" href="#stack">Tech Stack</a>
+    <a class="toc-link" href="#candidate-flow">Candidate Journey</a>
+    <a class="toc-link" href="#ai-pipeline">AI Pipeline</a>
+    <a class="toc-link" href="#integrations">Integrations</a>
+    <a class="toc-link" href="#api">API Contracts</a>
+    <a class="toc-link" href="#data">Data Model</a>
+    <a class="toc-link" href="#admin">Admin Panel</a>
+    <a class="toc-link" href="#security">Security</a>
+    <a class="toc-link" href="#deployment">Deployment</a>
+    <a class="toc-link" href="#file-structure">File Map</a>
+    <a class="toc-link" href="#roadmap">Roadmap</a>
+  </div>
+</nav>
+
+<main class="container">
+
+<!-- ═══════════════════════════════════════════════════
+     1. EXECUTIVE OVERVIEW
+     ═══════════════════════════════════════════════════ -->
+<section id="overview" class="section">
+  <div class="section-header">
+    <span class="section-number">1</span>
+    <h2>Executive Overview</h2>
+  </div>
+  <p>
+    Centro CDX AI Recruiter is a standalone Next.js 15 web application that automates
+    the initial screening stage of BPO candidate recruitment. It replaces the
+    traditional manual phone-screen workflow with an AI-led, 5-minute voice interview
+    conducted by <strong>"Maya"</strong>, a Hume AI EVI 2 voice agent, combined with
+    real-time facial expression analysis and post-session rubric scoring via
+    Anthropic Claude Sonnet 4.6.
+  </p>
+
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-icon" style="background:var(--info-bg);color:var(--info);">🎯</div>
+      <h4>Problem Statement</h4>
+      <p>Centro CDX screens 200+ BPO candidates monthly. Manual phone screens take ~15 min/candidate, are subjective, and create a 3-day bottleneck before onboarding.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon" style="background:var(--success-bg);color:var(--success);">⚡</div>
+      <h4>Solution</h4>
+      <p>A self-service, 5-minute AI screening that runs 24/7, scores candidates on a standardized rubric, and auto-syncs results to Zoho Recruit for recruiter review.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon" style="background:var(--purple-bg);color:var(--purple);">📊</div>
+      <h4>Key Metrics</h4>
+      <ul>
+        <li>Screen time: 15 min → 5 min</li>
+        <li>Recruiter review: 10 min → 2 min</li>
+        <li>Rubric consistency: ~65% → ~95%</li>
+        <li>Capacity: unlimited concurrent</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="callout callout-info">
+    <span class="callout-icon">ℹ️</span>
+    <p><strong>Scope:</strong> This document covers the v1.0 production architecture and the planned phases through v2.0. The system is designed for Centro CDX's Egypt + Jordan operations, screening Customer Service, Technical Support, and Back Office roles in English.</p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     2. HIGH-LEVEL ARCHITECTURE
+     ═══════════════════════════════════════════════════ -->
+<section id="high-level" class="section">
+  <div class="section-header">
+    <span class="section-number">2</span>
+    <h2>High-Level System Architecture</h2>
+  </div>
+  <p>The platform connects four major subsystems: the candidate-facing interview UI, the AI processing pipeline, the admin review dashboard, and the Zoho ecosystem for CRM/record management.</p>
+
+  <div class="diagram-container">
+    <div class="diagram-title">System Architecture — Bird's Eye View</div>
+    <div class="mermaid">
+graph TB
+    subgraph CANDIDATE["🧑‍💻 Candidate Browser"]
+        LP["Landing Page<br/><code>app/page.tsx</code>"]
+        VF["Identity Verify<br/><code>app/verify/[id]</code>"]
+        SC["Screening UI<br/><code>app/screen/[id]</code>"]
+        RS["Results Page<br/><code>app/results/[id]</code>"]
+    end
+
+    subgraph NEXTJS["⚡ Next.js 15 App Router — Vercel Edge"]
+        MW["Edge Middleware<br/><code>middleware.ts</code>"]
+        API_TOKEN["<code>/api/hume-token</code>"]
+        API_VERIFY["<code>/api/verify-identity</code>"]
+        API_SCORE["<code>/api/score</code>"]
+        API_UPLOAD["<code>/api/upload-recording</code>"]
+        API_CV["<code>/api/upload-cv</code>"]
+        API_START["<code>/api/start-session</code>"]
+        API_ADMIN["<code>/api/admin/*</code>"]
+    end
+
+    subgraph AI["🤖 AI Services"]
+        HUME_EVI["Hume AI EVI 2<br/>Voice Agent WSS"]
+        HUME_FACE["Hume Expression<br/>Measurement WSS"]
+        CLAUDE_SCORE["Claude Sonnet 4.6<br/>Rubric Scoring"]
+        CLAUDE_FACE["Claude Sonnet 4.6<br/>Vision Face Analysis"]
+        CLAUDE_ID["Claude Sonnet 4.6<br/>Arabic ID Parser"]
+        CLAUDE_CV["Claude Sonnet 4.6<br/>CV Parser"]
+    end
+
+    subgraph AWS["☁️ AWS Services"]
+        REKOG["AWS Rekognition<br/>CompareFaces + DetectText"]
+    end
+
+    subgraph ZOHO["🔵 Zoho Ecosystem"]
+        CREATOR["Zoho Creator<br/>Screening_Session form"]
+        WORKDRIVE["Zoho WorkDrive<br/>Recording Storage"]
+        RECRUIT["Zoho Recruit<br/>Job Openings<br/><em>(Phase 2.5)</em>"]
+    end
+
+    subgraph GENESYS["📞 Genesys Cloud"]
+        WA_OUT["WhatsApp Outbound<br/>Agentless Messaging"]
+    end
+
+    subgraph ADMIN["👩‍💼 Admin Dashboard"]
+        DASH["Sessions Dashboard<br/><code>app/admin</code>"]
+        DETAIL["Session Detail<br/><code>app/admin/[id]</code>"]
+        FORGE["Candidate Forge<br/><code>app/admin/forge</code>"]
+        BIAS["Bias Audit<br/><code>app/admin/bias</code>"]
+        ROUTING["Job Routing<br/><code>app/admin/routing</code>"]
+        SOURCING["Sourcing<br/><code>app/admin/sourcing</code>"]
+        USAGE["Usage Analytics<br/><code>app/admin/usage</code>"]
+    end
+
+    subgraph STORAGE["💾 Data Storage"]
+        IDB["IndexedDB<br/>Recordings + Usage"]
+        LOCALFS["File System<br/><code>data/sessions.json</code>"]
+    end
+
+    LP -->|"Name + Email + Consent"| VF
+    VF -->|"ID + Selfie"| API_VERIFY
+    API_VERIFY -->|"CompareFaces"| REKOG
+    API_VERIFY -->|"OCR → Translate"| CLAUDE_ID
+    VF -->|"Verified"| SC
+    SC -->|"Request Token"| API_TOKEN
+    API_TOKEN -->|"OAuth2 CC"| HUME_EVI
+    SC <-->|"WebSocket Stream"| HUME_EVI
+    SC -->|"Webcam Frames"| IDB
+    SC -->|"Session End"| API_SCORE
+    API_SCORE -->|"Face Frames"| CLAUDE_FACE
+    API_SCORE -->|"Transcript + Prosody + Face"| CLAUDE_SCORE
+    API_SCORE -->|"Save Session"| LOCALFS
+    API_SCORE -->|"Sync Session"| CREATOR
+    API_SCORE -->|"→ Redirect"| RS
+    SC -->|"Upload WebM"| API_UPLOAD
+    API_UPLOAD -->|"Upload File"| WORKDRIVE
+    SC -->|"Upload CV"| API_CV
+    API_CV -->|"Parse PDF/DOCX"| CLAUDE_CV
+    MW -->|"Auth Gate"| API_ADMIN
+    API_ADMIN --> CREATOR
+    API_ADMIN --> LOCALFS
+    DASH --> API_ADMIN
+    DETAIL --> API_ADMIN
+    FORGE --> API_ADMIN
+    API_ADMIN -->|"WhatsApp Invite"| WA_OUT
+    
+    classDef candidate fill:#e0f7fa,stroke:#00838f,color:#004d40
+    classDef nextjs fill:#f0fdf4,stroke:#059669,color:#065f46
+    classDef ai fill:#fef3c7,stroke:#d97706,color:#92400e
+    classDef aws fill:#fff7ed,stroke:#ea580c,color:#9a3412
+    classDef zoho fill:#eff6ff,stroke:#2563eb,color:#1e40af
+    classDef genesys fill:#faf5ff,stroke:#7c3aed,color:#5b21b6
+    classDef admin fill:#fdf2f8,stroke:#db2777,color:#9d174d
+    classDef storage fill:#f8fafc,stroke:#64748b,color:#334155
+    
+    class LP,VF,SC,RS candidate
+    class MW,API_TOKEN,API_VERIFY,API_SCORE,API_UPLOAD,API_CV,API_START,API_ADMIN nextjs
+    class HUME_EVI,HUME_FACE,CLAUDE_SCORE,CLAUDE_FACE,CLAUDE_ID,CLAUDE_CV ai
+    class REKOG aws
+    class CREATOR,WORKDRIVE,RECRUIT zoho
+    class WA_OUT genesys
+    class DASH,DETAIL,FORGE,BIAS,ROUTING,SOURCING,USAGE admin
+    class IDB,LOCALFS storage
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     3. TECH STACK BREAKDOWN
+     ═══════════════════════════════════════════════════ -->
+<section id="stack" class="section">
+  <div class="section-header">
+    <span class="section-number">3</span>
+    <h2>Technology Stack</h2>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Layer</th>
+          <th>Technology</th>
+          <th>Version</th>
+          <th>Purpose</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="tag tag-primary">Runtime</span></td><td>Next.js (App Router)</td><td>15.x</td><td>Full-stack React framework, SSR, API routes, edge middleware</td></tr>
+        <tr><td><span class="tag tag-primary">Runtime</span></td><td>React</td><td>19.x</td><td>Component UI layer</td></tr>
+        <tr><td><span class="tag tag-primary">Runtime</span></td><td>TypeScript</td><td>5.6+</td><td>Type-safe development</td></tr>
+        <tr><td><span class="tag tag-accent">Styling</span></td><td>Tailwind CSS</td><td>3.4.x</td><td>Utility-first CSS framework</td></tr>
+        <tr><td><span class="tag tag-accent">Styling</span></td><td>Roboto (Google Fonts)</td><td>—</td><td>Brand-consistent typography</td></tr>
+        <tr><td><span class="tag tag-warning">AI — Voice</span></td><td>Hume AI EVI 2</td><td>SDK 0.2.14</td><td>Real-time voice agent (WebSocket), prosody emotion detection</td></tr>
+        <tr><td><span class="tag tag-warning">AI — Scoring</span></td><td>Anthropic Claude Sonnet 4.6</td><td>SDK 0.96</td><td>Rubric-based interview scoring, CV parsing, ID translation</td></tr>
+        <tr><td><span class="tag tag-warning">AI — Vision</span></td><td>Claude Sonnet 4.6 Vision</td><td>—</td><td>Facial expression analysis from webcam frames</td></tr>
+        <tr><td><span class="tag tag-danger">Identity</span></td><td>AWS Rekognition</td><td>SDK 3.700</td><td>Face matching (ID vs selfie), OCR text detection</td></tr>
+        <tr><td><span class="tag tag-success">CRM</span></td><td>Zoho Creator REST API</td><td>v2.1</td><td>Screening session records, AI_Config rubric management</td></tr>
+        <tr><td><span class="tag tag-success">Storage</span></td><td>Zoho WorkDrive API</td><td>v1</td><td>Video recording file storage</td></tr>
+        <tr><td><span class="tag tag-purple">Comms</span></td><td>Genesys Cloud</td><td>—</td><td>WhatsApp outbound invite messaging</td></tr>
+        <tr><td><span class="tag tag-primary">Docs</span></td><td>mammoth + pdf-parse</td><td>—</td><td>DOCX and PDF text extraction for CV parsing</td></tr>
+        <tr><td><span class="tag tag-primary">Client Storage</span></td><td>IndexedDB</td><td>—</td><td>Client-side recording blobs + usage log (no size cap)</td></tr>
+        <tr><td><span class="tag tag-primary">Server Storage</span></td><td>File System JSON</td><td>—</td><td>Local session persistence (<code>data/sessions.json</code>)</td></tr>
+        <tr><td><span class="tag tag-accent">Deploy</span></td><td>Vercel</td><td>—</td><td>Edge deployment, environment secrets, domain management</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     4. CANDIDATE JOURNEY
+     ═══════════════════════════════════════════════════ -->
+<section id="candidate-flow" class="section">
+  <div class="section-header">
+    <span class="section-number">4</span>
+    <h2>Candidate Journey — End-to-End Flow</h2>
+  </div>
+  <p>The candidate moves through six discrete stages. Each stage maps to a dedicated Next.js route, with server-side API calls orchestrating the AI services.</p>
+
+  <div class="diagram-container">
+    <div class="diagram-title">Candidate Screening Flow — Sequence Diagram</div>
+    <div class="mermaid">
+sequenceDiagram
+    autonumber
+    participant C as 🧑 Candidate
+    participant LP as Landing Page
+    participant VF as Verify Page
+    participant API_V as /api/verify-identity
+    participant REKOG as AWS Rekognition
+    participant CLAUDE_ID as Claude ID Parser
+    participant SC as Screen Page
+    participant API_T as /api/hume-token
+    participant HUME as Hume EVI 2
+    participant API_CV as /api/upload-cv
+    participant API_S as /api/score
+    participant CLAUDE_S as Claude Scorer
+    participant CLAUDE_F as Claude Face
+    participant ZC as Zoho Creator
+    participant RS as Results Page
+
+    C->>LP: Enter name + email + consent
+    LP->>LP: Generate sessionId (UUID)
+    LP->>VF: Redirect → /verify/[sessionId]
+    
+    rect rgb(255, 248, 240)
+    Note over VF, CLAUDE_ID: Stage 2 — Identity Verification
+    C->>VF: Upload National ID photo
+    C->>VF: Capture live selfie
+    VF->>API_V: POST (idImage + selfieImage)
+    API_V->>REKOG: CompareFaces(ID, Selfie)
+    API_V->>REKOG: DetectText(ID image)
+    REKOG-->>API_V: Similarity ≥ 85%
+    API_V->>CLAUDE_ID: Parse Arabic OCR → English
+    CLAUDE_ID-->>API_V: {idNameArabic, idNameEnglish, nationalId, dob}
+    API_V-->>VF: verification result
+    end
+
+    VF->>SC: Redirect → /screen/[sessionId]
+
+    rect rgb(240, 253, 244)
+    Note over SC, HUME: Stage 3 — AI Voice Screening (~5 min)
+    SC->>API_T: GET /api/hume-token
+    API_T->>HUME: OAuth2 Client Credentials
+    HUME-->>API_T: access_token
+    API_T-->>SC: {accessToken}
+    SC->>SC: Start webcam + MediaRecorder
+    SC->>HUME: WebSocket connect (EVI Config)
+    HUME->>C: "Hi, I'm Maya..."
+    loop 5-Segment Interview
+        C->>HUME: Candidate speaks
+        HUME->>SC: Transcription + prosody emotions
+        HUME->>C: Maya responds
+        SC->>SC: Capture webcam frame every 10s
+    end
+    HUME->>SC: Session complete signal
+    SC->>SC: Stop MediaRecorder → Blob
+    SC->>SC: Save recording to IndexedDB
+    end
+
+    rect rgb(254, 252, 232)
+    Note over SC, ZC: Stage 4 — Scoring + Sync
+    SC->>API_CV: POST upload-cv (if CV present)
+    API_CV->>API_CV: pdf-parse / mammoth extract
+    API_CV-->>SC: {parsedCV}
+    SC->>API_S: POST /api/score
+    Note right of API_S: {transcript, prosody,<br/>faceFrames[], verification,<br/>cvName, durationSec}
+    API_S->>CLAUDE_F: Analyze face frames (batches of 6)
+    CLAUDE_F-->>API_S: emotion timeline[]
+    API_S->>CLAUDE_S: Score transcript + prosody + face
+    CLAUDE_S-->>API_S: {fluency, composure, eq, confidence, overall}
+    API_S->>API_S: Fuzzy name match (CV vs ID)
+    API_S->>API_S: Save to local DB (data/sessions.json)
+    API_S->>ZC: syncScreeningSession() → Creator
+    ZC-->>API_S: creatorRecordId
+    API_S-->>SC: Score payload
+    end
+
+    SC->>RS: Redirect → /results/[sessionId]
+    RS->>C: Score breakdown + transcript + per-segment notes
+    </div>
+  </div>
+
+  <h3>Stage Breakdown</h3>
+  <div class="card-grid card-grid-3">
+    <div class="card">
+      <h4>1. Landing & Consent</h4>
+      <p><code>/</code> — Collects name, email. Requires two consent checkboxes: recording consent and network stability acknowledgment. Live network ping indicator refreshes every 4 seconds.</p>
+    </div>
+    <div class="card">
+      <h4>2. Identity Verification</h4>
+      <p><code>/verify/[sessionId]</code> — Two-image flow: National ID photo upload + live selfie capture. AWS Rekognition CompareFaces enforces ≥85% similarity. OCR → Claude transliterates Arabic name to English. Creates audit trail for identity fraud prevention.</p>
+    </div>
+    <div class="card">
+      <h4>3. AI Voice Screening</h4>
+      <p><code>/screen/[sessionId]</code> — Hume EVI 2 WebSocket session. Maya runs a 5-segment structured interview: Intro → Read-Aloud → Situational → Role-Play (angry customer) → Scheduling. WebRTC audio + webcam recording via MediaRecorder API.</p>
+    </div>
+    <div class="card">
+      <h4>4. Post-Session Scoring</h4>
+      <p><code>/api/score</code> — Claude Sonnet 4.6 scores the transcript on 4 weighted dimensions (Fluency 20%, Composure 30%, EQ 25%, Confidence 25%). Claude Vision analyzes face frames for expression timelines. Fuzzy name matching catches CV/ID discrepancies.</p>
+    </div>
+    <div class="card">
+      <h4>5. Zoho Sync</h4>
+      <p>Session data, scores, and rationale are POSTed to Zoho Creator's <code>Screening_Session</code> form via OAuth2 refresh-token flow. Silent-fail design — candidate never sees Zoho errors.</p>
+    </div>
+    <div class="card">
+      <h4>6. Results Display</h4>
+      <p><code>/results/[sessionId]</code> — Candidate-facing score breakdown with dimension cards, per-segment notes, methodology panel, emotion timeline chart, and the full AI rationale.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     5. AI PIPELINE DEEP DIVE
+     ═══════════════════════════════════════════════════ -->
+<section id="ai-pipeline" class="section">
+  <div class="section-header">
+    <span class="section-number">5</span>
+    <h2>AI Processing Pipeline</h2>
+  </div>
+
+  <h3>5.1 Scoring Rubric Engine</h3>
+  <p>The scoring rubric is the core intellectual property of the system. It defines how Maya interviews candidates and how Claude scores them.</p>
+
+  <div class="diagram-container">
+    <div class="diagram-title">AI Scoring Pipeline — Data Flow</div>
+    <div class="mermaid">
+flowchart LR
+    subgraph INPUT["📥 Scoring Inputs"]
+        T["Full Transcript<br/><em>CANDIDATE: / MAYA: lines</em>"]
+        P["Prosody Timeline<br/><em>Hume voice-emotion</em>"]
+        F["Face Timeline<br/><em>Claude Vision emotions</em>"]
+    end
+
+    subgraph RUBRIC["📋 Active Rubric"]
+        R["Customer_Service_English_v1<br/>v1.0.0"]
+    end
+
+    subgraph SCORING["🧠 Claude Sonnet 4.6"]
+        direction TB
+        S1["Dimension Scoring<br/>4 dimensions × 5-point scale"]
+        S2["Evidence Extraction<br/>Verbatim quotes"]
+        S3["Per-Segment Notes<br/>5 segments scored"]
+        S4["Weighted Aggregate<br/>Pass / Borderline / Reject"]
+    end
+
+    subgraph OUTPUT["📊 Score Output"]
+        O1["Fluency: 0-5 (20%)"]
+        O2["Composure: 0-5 (30%)"]
+        O3["EQ: 0-5 (25%)"]
+        O4["Confidence: 0-5 (25%)"]
+        O5["Overall Weighted"]
+        O6["English Level Map"]
+        O7["Full Rationale (~400 words)"]
+    end
+
+    T --> SCORING
+    P --> SCORING
+    F --> SCORING
+    R --> SCORING
+    SCORING --> O1
+    SCORING --> O2
+    SCORING --> O3
+    SCORING --> O4
+    S4 --> O5
+    O1 --> O6
+    S1 --> O7
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Dimension</th>
+          <th>Weight</th>
+          <th>Focus</th>
+          <th>Level 5 (Max)</th>
+          <th>Level 1 (Min)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Fluency</strong></td>
+          <td>20%</td>
+          <td>Spoken English clarity, pronunciation, vocabulary. Accent-independent.</td>
+          <td>Native or near-native fluency</td>
+          <td>Poor fluency, breakdowns</td>
+        </tr>
+        <tr>
+          <td><strong>Composure</strong></td>
+          <td>30%</td>
+          <td>Calm under angry-customer role-play. Key BPO signal.</td>
+          <td>Completely calm, natural de-escalation</td>
+          <td>Lost composure, argued or froze</td>
+        </tr>
+        <tr>
+          <td><strong>EQ</strong></td>
+          <td>25%</td>
+          <td>Empathy, emotion-naming, active listening cues.</td>
+          <td>Clear empathy statements, named the emotion</td>
+          <td>Cold or dismissive</td>
+        </tr>
+        <tr>
+          <td><strong>Confidence</strong></td>
+          <td>25%</td>
+          <td>Voice steadiness, declarative speech, eye contact.</td>
+          <td>Steady voice, declarative, direct eye contact</td>
+          <td>Very low confidence, mumbled</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>5.2 Decision Thresholds</h3>
+  <div class="card-grid">
+    <div class="card" style="border-left: 4px solid var(--success);">
+      <h4>✅ Pass</h4>
+      <p>Weighted overall ≥ <strong>3.0</strong><br/>Candidate recommended for human interview stage.</p>
+    </div>
+    <div class="card" style="border-left: 4px solid var(--warning);">
+      <h4>⚠️ Borderline</h4>
+      <p>Weighted overall between <strong>1.5 – 3.0</strong><br/>Recruiter review required. Candidate Forge coaching recommended.</p>
+    </div>
+    <div class="card" style="border-left: 4px solid var(--danger);">
+      <h4>❌ Auto-Flag Reject</h4>
+      <p>Weighted overall ≤ <strong>1.5</strong><br/>Automatic rejection flag. Recruiter can override.</p>
+    </div>
+  </div>
+
+  <h3>5.3 Interview Structure (Maya's 5 Segments)</h3>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Segment</th>
+          <th>Duration</th>
+          <th>What Maya Does</th>
+          <th>What's Evaluated</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td><strong>Intro</strong></td><td>~1 min</td><td>Greeting, asks candidate to introduce themselves</td><td>Fluency, Confidence</td></tr>
+        <tr><td>2</td><td><strong>Read-Aloud</strong></td><td>~1 min</td><td>Candidate reads a BPO paragraph displayed on-screen</td><td>Fluency, Pronunciation</td></tr>
+        <tr><td>3</td><td><strong>Situational</strong></td><td>~1 min</td><td>"Tell me about a time you handled a difficult customer"</td><td>EQ, Composure, Fluency</td></tr>
+        <tr><td>4</td><td><strong>Role-Play</strong></td><td>60-90s</td><td>Maya becomes "Sarah Williams" — angry internet customer</td><td>Composure, EQ, Confidence</td></tr>
+        <tr><td>5</td><td><strong>Schedule/Close</strong></td><td>~30s</td><td>Availability check, thank you, session end</td><td>Confidence</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>5.4 Facial Expression Analysis</h3>
+  <p>Webcam frames are captured every ~10 seconds during the screening, yielding 30-40 frames per session. Two analysis providers are implemented:</p>
+  <div class="card-grid">
+    <div class="card">
+      <h4>Claude Vision (Primary — v1.0)</h4>
+      <p>Frames sent in batches of 6 to Claude Sonnet 4.6 Vision. Analyzes: Joy, Calmness, Confidence, Engagement, Anxiety, Interest, and 10 more micro-expressions on a 0.0–1.0 scale. Results corroborate Composure and Confidence rubric dimensions.</p>
+      <p><code>lib/claude-face.ts</code></p>
+    </div>
+    <div class="card">
+      <h4>Hume Expression Measurement (Backup)</h4>
+      <p>Frames streamed to Hume's Expression Measurement WebSocket API. Uses burst-and-backpressure send pattern (4 initial, then 1-per-response). Provides an alternative emotion taxonomy.</p>
+      <p><code>lib/hume-face.ts</code></p>
+    </div>
+  </div>
+
+  <h3>5.5 CV Parsing Pipeline</h3>
+  <p>Candidates may upload a CV (PDF or DOCX) during the screening. The file is processed in two stages:</p>
+  <div class="diagram-container">
+    <div class="diagram-title">CV Processing Pipeline</div>
+    <div class="mermaid">
+flowchart LR
+    CV["PDF / DOCX<br/>Upload"] --> EXT["Text Extraction<br/><code>pdf-parse</code> / <code>mammoth</code>"]
+    EXT --> CLAUDE["Claude Sonnet 4.6<br/>Structured Field Extraction"]
+    CLAUDE --> PARSED["ParsedCV<br/>{name, email, phone,<br/>education[], experience[],<br/>skills[], languages[]}"]
+    PARSED --> FUZZY["Fuzzy Name Match<br/><code>lib/fuzzy.ts</code><br/>Levenshtein Distance"]
+    FUZZY -->|"Similarity < 75%"| FLAG["⚠️ Discrepancy Flag"]
+    FUZZY -->|"Similarity ≥ 75%"| OK["✅ Names Match"]
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     6. EXTERNAL INTEGRATIONS
+     ═══════════════════════════════════════════════════ -->
+<section id="integrations" class="section">
+  <div class="section-header">
+    <span class="section-number">6</span>
+    <h2>External Service Integrations</h2>
+  </div>
+
+  <div class="diagram-container">
+    <div class="diagram-title">Integration Map — Authentication Flows</div>
+    <div class="mermaid">
+flowchart TB
+    subgraph APP["Centro AI Recruiter"]
+        TOKEN_CACHE["In-Memory Token Cache"]
+    end
+
+    subgraph HUME["Hume AI"]
+        HUME_AUTH["OAuth2 Client Credentials<br/><code>api.hume.ai/oauth2-cc/token</code>"]
+        HUME_EVI["EVI 2 WebSocket<br/><code>wss://api.hume.ai</code>"]
+        HUME_EXPR["Expression Measurement WSS<br/><code>wss://api.hume.ai/v0/stream</code>"]
+    end
+
+    subgraph ANTHROPIC["Anthropic"]
+        CLAUDE_API["Messages API<br/><code>api.anthropic.com</code><br/>API Key auth"]
+    end
+
+    subgraph AWS["AWS"]
+        AWS_REKOG["Rekognition<br/>Region: eu-central-1<br/>IAM AccessKey auth"]
+    end
+
+    subgraph ZOHO["Zoho"]
+        ZOHO_AUTH["OAuth2 Refresh Token<br/><code>accounts.zoho.com</code>"]
+        ZOHO_CREATOR_API["Creator REST v2.1<br/><code>creator.zoho.com</code>"]
+        ZOHO_WD_API["WorkDrive REST v1<br/><code>zohoapis.com/workdrive</code>"]
+    end
+
+    subgraph GEN["Genesys Cloud"]
+        GEN_AUTH["OAuth2 Client Credentials<br/><code>login.mypurecloud.com</code>"]
+        GEN_MSG["Agentless Messaging API<br/><code>api.mypurecloud.com</code>"]
+    end
+
+    APP -->|"Basic Auth<br/>API_KEY:SECRET_KEY"| HUME_AUTH
+    HUME_AUTH -->|"access_token"| TOKEN_CACHE
+    TOKEN_CACHE -->|"Bearer token"| HUME_EVI
+    APP -->|"X-Hume-Api-Key header"| HUME_EXPR
+    APP -->|"x-api-key header"| CLAUDE_API
+    APP -->|"AWS SDK v3<br/>AccessKey + SecretKey"| AWS_REKOG
+    APP -->|"refresh_token grant"| ZOHO_AUTH
+    ZOHO_AUTH -->|"access_token<br/>cached ~50 min"| TOKEN_CACHE
+    TOKEN_CACHE -->|"Zoho-oauthtoken"| ZOHO_CREATOR_API
+    TOKEN_CACHE -->|"Zoho-oauthtoken"| ZOHO_WD_API
+    APP -->|"Basic Auth<br/>client_id:client_secret"| GEN_AUTH
+    GEN_AUTH -->|"Bearer token"| GEN_MSG
+    </div>
+  </div>
+
+  <h3>Integration Details</h3>
+  <div class="card-grid card-grid-3">
+    <div class="card">
+      <h4>🔊 Hume AI</h4>
+      <ul>
+        <li><strong>EVI 2:</strong> WebSocket voice agent with persona prompt</li>
+        <li><strong>Auth:</strong> OAuth2 Client Credentials → short-lived token</li>
+        <li><strong>Config ID:</strong> Pre-configured in Hume Platform dashboard</li>
+        <li><strong>Output:</strong> Transcript + prosody emotions per turn</li>
+        <li><strong>Module:</strong> <code>lib/hume.ts</code></li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>🧠 Anthropic Claude</h4>
+      <ul>
+        <li><strong>Model:</strong> Claude Sonnet 4.6 (claude-sonnet-4-6)</li>
+        <li><strong>Uses:</strong> Scoring, face analysis, CV parsing, ID parsing</li>
+        <li><strong>Auth:</strong> API key in header</li>
+        <li><strong>Max tokens:</strong> 6000 (scoring), 3000 (CV), 2000 (face), 1000 (ID)</li>
+        <li><strong>Module:</strong> <code>lib/claude.ts</code>, <code>lib/claude-face.ts</code>, <code>lib/cv-parser.ts</code></li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>👁 AWS Rekognition</h4>
+      <ul>
+        <li><strong>Region:</strong> eu-central-1 (Frankfurt) — closest to Egypt</li>
+        <li><strong>APIs:</strong> CompareFaces, DetectText, DetectFaces</li>
+        <li><strong>Threshold:</strong> 85% similarity (configurable)</li>
+        <li><strong>Max image:</strong> 5MB per image (direct bytes)</li>
+        <li><strong>Module:</strong> <code>lib/aws-rekognition.ts</code></li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>🔵 Zoho Creator</h4>
+      <ul>
+        <li><strong>API:</strong> REST v2.1</li>
+        <li><strong>Auth:</strong> OAuth2 refresh token → access token (cached 50 min)</li>
+        <li><strong>Forms:</strong> Screening_Session, AI_Config</li>
+        <li><strong>Multi-region:</strong> us, eu, in, au, jp, sa</li>
+        <li><strong>Module:</strong> <code>lib/zoho-creator.ts</code> (1152 lines)</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>📁 Zoho WorkDrive</h4>
+      <ul>
+        <li><strong>API:</strong> REST v1 upload endpoint</li>
+        <li><strong>Auth:</strong> Reuses Creator's OAuth token (same Zoho One workspace)</li>
+        <li><strong>Purpose:</strong> Store session recording WebM files</li>
+        <li><strong>Response:</strong> File ID + permalink</li>
+        <li><strong>Module:</strong> <code>lib/zoho-workdrive.ts</code></li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>📞 Genesys Cloud</h4>
+      <ul>
+        <li><strong>API:</strong> Agentless Outbound Messaging</li>
+        <li><strong>Channel:</strong> WhatsApp</li>
+        <li><strong>Auth:</strong> OAuth2 Client Credentials</li>
+        <li><strong>Template:</strong> Optional — falls back to raw message body</li>
+        <li><strong>Module:</strong> <code>lib/genesys.ts</code></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     7. API CONTRACTS
+     ═══════════════════════════════════════════════════ -->
+<section id="api" class="section">
+  <div class="section-header">
+    <span class="section-number">7</span>
+    <h2>API Route Contracts</h2>
+  </div>
+  <p>All API routes are Next.js App Router route handlers under <code>app/api/</code>. Public routes serve the candidate flow; <code>/api/admin/*</code> routes are gated by session-cookie middleware.</p>
+
+  <h3>7.1 Public API Routes</h3>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Endpoint</th><th>Method</th><th>Purpose</th><th>Auth</th><th>Max Duration</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>/api/hume-token</code></td><td>GET</td><td>Issue short-lived Hume access token for client-side EVI</td><td>None</td><td>Default</td></tr>
+        <tr><td><code>/api/verify-identity</code></td><td>POST</td><td>ID + selfie face matching via Rekognition + Arabic OCR</td><td>None</td><td>30s</td></tr>
+        <tr><td><code>/api/start-session</code></td><td>POST</td><td>Register session start time and candidate metadata</td><td>None</td><td>Default</td></tr>
+        <tr><td><code>/api/score</code></td><td>POST</td><td>Full scoring: face analysis → Claude scoring → Zoho sync</td><td>None</td><td>300s (5 min)</td></tr>
+        <tr><td><code>/api/upload-cv</code></td><td>POST</td><td>Parse uploaded PDF/DOCX CV via Claude</td><td>None</td><td>Default</td></tr>
+        <tr><td><code>/api/upload-recording</code></td><td>POST</td><td>Upload session recording to Zoho WorkDrive</td><td>None</td><td>Default</td></tr>
+        <tr><td><code>/api/ping</code></td><td>GET</td><td>Health check for network status indicator</td><td>None</td><td>Default</td></tr>
+        <tr><td><code>/api/booking/confirm</code></td><td>POST</td><td>Confirm candidate booking time slot</td><td>None</td><td>Default</td></tr>
+        <tr><td><code>/api/genesys/outbound</code></td><td>POST</td><td>Send WhatsApp invite via Genesys Cloud</td><td>None</td><td>Default</td></tr>
+        <tr><td><code>/api/genesys/whatsapp-booking</code></td><td>POST</td><td>WhatsApp booking-specific invite</td><td>None</td><td>Default</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>7.2 Admin API Routes (Cookie-Gated)</h3>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Endpoint</th><th>Method</th><th>Purpose</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>/api/admin/login</code></td><td>POST</td><td>Authenticate with shared credentials → set HMAC session cookie</td></tr>
+        <tr><td><code>/api/admin/logout</code></td><td>POST</td><td>Clear session cookie</td></tr>
+        <tr><td><code>/api/admin/sessions</code></td><td>GET</td><td>List all screening sessions (from Creator or mock data)</td></tr>
+        <tr><td><code>/api/admin/sessions/[id]</code></td><td>GET</td><td>Fetch single session detail</td></tr>
+        <tr><td><code>/api/admin/sessions/[id]/override</code></td><td>POST</td><td>Apply recruiter score override</td></tr>
+        <tr><td><code>/api/admin/sessions/bulk-action</code></td><td>POST</td><td>Bulk approve/reject selected sessions</td></tr>
+        <tr><td><code>/api/admin/invitations</code></td><td>POST</td><td>Create candidate invitation (generates URL + PIN)</td></tr>
+        <tr><td><code>/api/admin/match-jobs</code></td><td>POST</td><td>Match candidate to open roles from role catalog</td></tr>
+        <tr><td><code>/api/admin/draft-coaching</code></td><td>POST</td><td>Generate coaching draft for Candidate Forge</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     8. DATA MODEL
+     ═══════════════════════════════════════════════════ -->
+<section id="data" class="section">
+  <div class="section-header">
+    <span class="section-number">8</span>
+    <h2>Data Model & Storage</h2>
+  </div>
+
+  <div class="diagram-container">
+    <div class="diagram-title">Data Entity Relationship</div>
+    <div class="mermaid">
+erDiagram
+    SCREENING_SESSION {
+        string id PK
+        string candidateName
+        string candidateEmail
+        string candidatePhone
+        string candidatePosition
+        string candidateExternalId
+        string candidateRecruitId
+        string sessionStatus
+        datetime startedTime
+        datetime completedTime
+        float overallScore
+        float composureScore
+        float eqScore
+        float confidenceScore
+        float fluencyScore
+        string englishLevel
+        string passFailRecommendation
+        string aiRationaleSummary
+        text aiRationaleFull
+        text fullTranscript
+        string recordingUrl
+        boolean reviewerOverrideApplied
+        float reviewerOverrideScore
+        string reviewerOverrideReason
+        string reviewerEmail
+        datetime reviewedTime
+        boolean syncedToRecruit
+        string syncError
+        string inviteChannel
+        boolean verifiedIdentity
+        float verificationConfidence
+        string verificationMethod
+        string cvName
+        boolean discrepancyFlag
+    }
+    
+    AI_CONFIG {
+        string id PK
+        string rubricName
+        string version
+        string roleFamily
+        string language
+        text personaPrompt
+        text rolePlayScenario
+        json weightedDimensions
+        float passThreshold
+        float autoFlagRejectThreshold
+        json englishLevelMapping
+    }
+
+    ROLE_CATALOG {
+        string id PK
+        string title
+        string account
+        string shift
+        string[] languageRequirements
+        string minEnglishLevel
+        float minOverallScore
+        string[] emphasis
+        string description
+        int monthlySeats
+    }
+
+    USAGE_LOG {
+        string sessionId PK
+        string candidateName
+        string candidateEmail
+        datetime startedAtIso
+        datetime endedAtIso
+        float durationSec
+        int faceFramesSent
+        int faceFramesAnalyzed
+        int claudeInputTokens
+        int claudeOutputTokens
+        string endReasonKind
+        boolean scoringSuccess
+        float estimatedHumeEviMinutes
+        float estimatedHumeFaceMinutes
+    }
+
+    SCREENING_SESSION ||--|| AI_CONFIG : "scored by"
+    SCREENING_SESSION ||--|{ USAGE_LOG : "tracked in"
+    SCREENING_SESSION }|--|| ROLE_CATALOG : "matched to"
+    </div>
+  </div>
+
+  <h3>Storage Architecture</h3>
+  <div class="card-grid">
+    <div class="card">
+      <h4>🗄 Zoho Creator (Primary SoR)</h4>
+      <p><code>Screening_Session</code> form — all scored sessions synced via REST API. 35+ fields including scores, transcript, verification data, reviewer overrides. <code>AI_Config</code> form stores the active rubric for hot-reloading without redeployment.</p>
+    </div>
+    <div class="card">
+      <h4>📁 Local File DB (Fallback)</h4>
+      <p><code>data/sessions.json</code> — file-system JSON store via <code>lib/local-db.ts</code>. Primary write target in v1.0. Ensures sessions are never lost even if Zoho Creator sync fails.</p>
+    </div>
+    <div class="card">
+      <h4>💾 IndexedDB (Client-Side)</h4>
+      <p>Two object stores: <code>recordings</code> (session WebM blobs, ~20-30MB each) and <code>usage_log</code> (per-session consumption metrics). DB version 2. Auto-recovery on version mismatch.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     9. ADMIN DASHBOARD
+     ═══════════════════════════════════════════════════ -->
+<section id="admin" class="section">
+  <div class="section-header">
+    <span class="section-number">9</span>
+    <h2>Admin Dashboard Architecture</h2>
+  </div>
+  <p>The admin panel is a multi-page React SPA under <code>/admin/*</code>, protected by edge middleware session-cookie authentication. It provides full lifecycle management for screened candidates.</p>
+
+  <div class="diagram-container">
+    <div class="diagram-title">Admin Module Map</div>
+    <div class="mermaid">
+graph LR
+    LOGIN["/login<br/>Shared Credentials"] --> DASH
+
+    subgraph ADMIN_PANEL["Admin Dashboard"]
+        DASH["📋 Sessions Dashboard<br/><code>/admin</code><br/>KPI tiles, sortable table,<br/>filters, bulk actions,<br/>CSV export"]
+        DETAIL["🔍 Session Detail<br/><code>/admin/[sessionId]</code><br/>Full score card, transcript,<br/>emotion timeline, override form"]
+        FORGE["🔨 Candidate Forge<br/><code>/admin/forge</code><br/>AI coaching drafts for<br/>borderline candidates"]
+        BIAS["📊 Bias Audit<br/><code>/admin/bias</code><br/>Scoring distribution analysis,<br/>fairness metrics"]
+        ROUTING["🗺 Job Routing<br/><code>/admin/routing</code><br/>Match candidates to<br/>open roles in catalog"]
+        SOURCING["🎯 Sourcing<br/><code>/admin/sourcing</code><br/>Candidate pipeline<br/>source analysis"]
+        USAGE["📈 Usage Analytics<br/><code>/admin/usage</code><br/>API consumption,<br/>Hume + Claude costs"]
+    end
+
+    DASH --> DETAIL
+    DASH --> FORGE
+    DASH --> BIAS
+    DASH --> ROUTING
+    DASH --> SOURCING
+    DASH --> USAGE
+    DASH -->|"+ Invite"| INVITE["📩 Invite Modal<br/>WhatsApp / Email / Link<br/>via Genesys Cloud"]
+    </div>
+  </div>
+
+  <h3>Dashboard KPI Tiles</h3>
+  <div class="card-grid">
+    <div class="card"><h4>Total Screenings</h4><p>All-time completed sessions</p></div>
+    <div class="card"><h4>Pass Rate</h4><p>% of candidates scoring ≥ 3.0 overall</p></div>
+    <div class="card"><h4>Avg Overall Score</h4><p>Mean weighted score across all sessions</p></div>
+    <div class="card"><h4>Last 7 Days</h4><p>Sessions completed in rolling 7-day window</p></div>
+    <div class="card"><h4>Borderline Count</h4><p>Candidates between 1.5 and 3.0 — review queue</p></div>
+    <div class="card"><h4>Auto-Flag Rejects</h4><p>Candidates ≤ 1.5 — auto-rejected</p></div>
+    <div class="card"><h4>Awaiting Recruit Sync</h4><p>Sessions not yet synced to Zoho Recruit</p></div>
+    <div class="card"><h4>Manual Overrides</h4><p>Recruiter score overrides applied</p></div>
+  </div>
+
+  <h3>Bulk Operations</h3>
+  <p>The admin dashboard supports multi-select with three bulk actions:</p>
+  <ul style="padding-left: 1.5rem; margin: 0.5rem 0; color: var(--ink-secondary);">
+    <li><strong>Approve for Human Interview</strong> — marks selected sessions as approved with a required reason (min 10 chars)</li>
+    <li><strong>Reject</strong> — marks selected sessions as rejected with a required reason</li>
+    <li><strong>Export CSV</strong> — downloads selected sessions as a structured CSV with 20 columns</li>
+  </ul>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     10. SECURITY ARCHITECTURE
+     ═══════════════════════════════════════════════════ -->
+<section id="security" class="section">
+  <div class="section-header">
+    <span class="section-number">10</span>
+    <h2>Security Architecture</h2>
+  </div>
+
+  <div class="diagram-container">
+    <div class="diagram-title">Security Boundary Model</div>
+    <div class="mermaid">
+flowchart TB
+    subgraph PUBLIC["🌐 Public Zone (No Auth)"]
+        LP2["Landing Page"]
+        VF2["Verify Identity"]
+        SC2["Screening UI"]
+        RS2["Results Page"]
+        PUB_API["Public API Routes<br/>/api/hume-token<br/>/api/verify-identity<br/>/api/score<br/>/api/upload-*<br/>/api/ping"]
+    end
+
+    subgraph PROTECTED["🔒 Protected Zone (Session Cookie)"]
+        ADMIN2["Admin Dashboard<br/>/admin/*"]
+        ADMIN_API2["Admin API Routes<br/>/api/admin/*"]
+    end
+
+    subgraph MW["⚡ Edge Middleware"]
+        AUTH_CHECK["Cookie Verification<br/>HMAC-SHA256 Signature<br/>Expiry Check (12h TTL)<br/>Constant-Time Compare"]
+    end
+
+    subgraph SECRETS["🔐 Server-Only Secrets"]
+        ENV["Environment Variables<br/>• ANTHROPIC_API_KEY<br/>• HUME_API_KEY + SECRET_KEY<br/>• AWS credentials<br/>• Zoho OAuth tokens<br/>• ADMIN_USERNAME/PASSWORD<br/>• Genesys credentials"]
+    end
+
+    PUBLIC --> MW
+    MW -->|"Passes through"| PUB_API
+    MW -->|"Validates cookie"| PROTECTED
+    MW -->|"401 or redirect /login"| REJECT["Rejected"]
+    SECRETS -.->|"Server-only, never exposed"| ADMIN_API2
+    SECRETS -.->|"Server-only"| PUB_API
+    </div>
+  </div>
+
+  <div class="card-grid card-grid-3">
+    <div class="card" style="border-left: 4px solid var(--danger);">
+      <h4>🔐 Authentication</h4>
+      <ul>
+        <li><strong>Admin:</strong> Shared TA-team credentials (POC)</li>
+        <li><strong>Session:</strong> HMAC-SHA256 signed cookie, 12h TTL</li>
+        <li><strong>Edge-safe:</strong> Web Crypto API only (no node:crypto)</li>
+        <li><strong>Constant-time:</strong> Signature comparison prevents timing attacks</li>
+        <li><strong>Planned:</strong> Zoho One SSO (Phase 1.5)</li>
+      </ul>
+    </div>
+    <div class="card" style="border-left: 4px solid var(--warning);">
+      <h4>🛡 Data Protection</h4>
+      <ul>
+        <li><strong>ID images:</strong> Not retained — processed in-memory only</li>
+        <li><strong>Secrets:</strong> All in <code>.env.local</code>, never committed</li>
+        <li><strong>Production:</strong> Vercel environment variables</li>
+        <li><strong>Rekognition:</strong> eu-central-1 region for GDPR proximity</li>
+        <li><strong>Consent:</strong> Explicit opt-in before recording starts</li>
+      </ul>
+    </div>
+    <div class="card" style="border-left: 4px solid var(--success);">
+      <h4>🤖 AI Safety</h4>
+      <ul>
+        <li><strong>Prompt injection:</strong> Maya's system prompt has strict SAFETY block</li>
+        <li><strong>Persona lock:</strong> Candidate inputs treated as data, never instructions</li>
+        <li><strong>Off-topic:</strong> Maya redirects all non-interview questions</li>
+        <li><strong>Profanity:</strong> Auto-terminates on abusive language</li>
+        <li><strong>Role-play containment:</strong> Only the defined scenario runs</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     11. DEPLOYMENT TOPOLOGY
+     ═══════════════════════════════════════════════════ -->
+<section id="deployment" class="section">
+  <div class="section-header">
+    <span class="section-number">11</span>
+    <h2>Deployment & Infrastructure</h2>
+  </div>
+
+  <div class="diagram-container">
+    <div class="diagram-title">Deployment Architecture</div>
+    <div class="mermaid">
+flowchart TB
+    subgraph VERCEL["☁️ Vercel Platform"]
+        EDGE["Edge Network<br/>Global CDN"]
+        MW3["Edge Middleware<br/>Auth checks at the edge"]
+        SSR["Serverless Functions<br/>API routes (Node.js 20)"]
+        STATIC["Static Assets<br/>Optimized by Next.js"]
+    end
+
+    subgraph BROWSER["🖥 Client Browser"]
+        REACT["React 19 SPA<br/>Client Components"]
+        IDB2["IndexedDB<br/>Recordings + Usage"]
+        WEBRTC["WebRTC<br/>Hume WebSocket"]
+        MEDIA["MediaRecorder<br/>Session Recording"]
+    end
+
+    subgraph EXTERNAL["🌍 External Services"]
+        HUME3["Hume AI<br/>(US)"]
+        CLAUDE3["Anthropic<br/>(US)"]
+        AWS3["AWS Rekognition<br/>(eu-central-1)"]
+        ZOHO3["Zoho<br/>(Multi-region)"]
+        GEN3["Genesys Cloud"]
+    end
+
+    BROWSER -->|"HTTPS"| EDGE
+    EDGE --> MW3
+    MW3 --> SSR
+    MW3 --> STATIC
+    SSR --> HUME3
+    SSR --> CLAUDE3
+    SSR --> AWS3
+    SSR --> ZOHO3
+    SSR --> GEN3
+    REACT <-->|"WSS"| HUME3
+    </div>
+  </div>
+
+  <h3>Environment Configuration</h3>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Variable</th><th>Source</th><th>Required For</th><th>Phase</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>ANTHROPIC_API_KEY</code></td><td>console.anthropic.com</td><td>Scoring, face analysis, CV parsing, ID parsing</td><td>v1.0</td></tr>
+        <tr><td><code>HUME_API_KEY</code></td><td>platform.hume.ai</td><td>EVI token issuance</td><td>v1.0</td></tr>
+        <tr><td><code>HUME_SECRET_KEY</code></td><td>platform.hume.ai</td><td>EVI token issuance</td><td>v1.0</td></tr>
+        <tr><td><code>HUME_EVI_CONFIG_ID</code></td><td>platform.hume.ai</td><td>Maya persona config</td><td>v1.0</td></tr>
+        <tr><td><code>ZOHO_CREATOR_OAUTH_*</code></td><td>api-console.zoho.com</td><td>Session sync to Creator</td><td>v1.1</td></tr>
+        <tr><td><code>ZOHO_WORKDRIVE_FOLDER_ID</code></td><td>WorkDrive UI</td><td>Recording upload</td><td>v1.2</td></tr>
+        <tr><td><code>AWS_ACCESS_KEY_ID</code></td><td>AWS IAM</td><td>ID verification</td><td>v1.0</td></tr>
+        <tr><td><code>AWS_SECRET_ACCESS_KEY</code></td><td>AWS IAM</td><td>ID verification</td><td>v1.0</td></tr>
+        <tr><td><code>ADMIN_USERNAME</code></td><td>Manual</td><td>Admin dashboard auth</td><td>v1.0</td></tr>
+        <tr><td><code>ADMIN_PASSWORD</code></td><td>Manual</td><td>Admin dashboard auth</td><td>v1.0</td></tr>
+        <tr><td><code>GENESYS_CLIENT_ID</code></td><td>Genesys admin</td><td>WhatsApp invites</td><td>v1.5</td></tr>
+        <tr><td><code>GENESYS_CLIENT_SECRET</code></td><td>Genesys admin</td><td>WhatsApp invites</td><td>v1.5</td></tr>
+        <tr><td><code>GENESYS_WHATSAPP_FROM_ADDRESS</code></td><td>Genesys admin</td><td>WhatsApp sender</td><td>v1.5</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout callout-warning">
+    <span class="callout-icon">⚠️</span>
+    <p><strong>High-Fidelity Mock Mode:</strong> Every integration has a built-in mock fallback. When API keys are not configured, the system runs realistic mock responses (deterministic but dynamic) so demos work offline. The mock scorer uses name-hash-seeded scores; the mock face analyzer generates sinusoidal emotion curves; the mock Genesys client logs the full WhatsApp message to console.</p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     12. FILE STRUCTURE MAP
+     ═══════════════════════════════════════════════════ -->
+<section id="file-structure" class="section">
+  <div class="section-header">
+    <span class="section-number">12</span>
+    <h2>Complete File Structure Map</h2>
+  </div>
+
+  <pre>
+centro-ai-recruiter/
+│
+├── app/                              # Next.js 15 App Router
+│   ├── layout.tsx                    # Root layout — Roboto font, Centro brand tokens
+│   ├── globals.css                   # Global styles + Tailwind directives
+│   ├── icon.png                      # Favicon (auto-served by App Router)
+│   ├── page.tsx                      # Landing page — name/email/consent form
+│   │
+│   ├── verify/
+│   │   └── [sessionId]/page.tsx      # Identity verification — ID + selfie
+│   │
+│   ├── screen/
+│   │   └── [sessionId]/page.tsx      # Screening UI — Hume EVI + webcam + recording
+│   │
+│   ├── results/
+│   │   └── [sessionId]/page.tsx      # Candidate-facing score breakdown
+│   │
+│   ├── start/
+│   │   └── [invitationCode]/page.tsx # Invitation code landing
+│   │
+│   ├── login/
+│   │   └── page.tsx                  # Admin login page (branded)
+│   │
+│   ├── admin/
+│   │   ├── layout.tsx                # Admin shell with nav
+│   │   ├── page.tsx                  # Sessions dashboard (756 lines)
+│   │   ├── [sessionId]/page.tsx      # Single session detail + override
+│   │   ├── bias/page.tsx             # Bias audit dashboard
+│   │   ├── forge/page.tsx            # Candidate Forge — coaching drafts
+│   │   ├── routing/page.tsx          # Job routing — match to catalog
+│   │   ├── sourcing/page.tsx         # Sourcing analytics
+│   │   └── usage/page.tsx            # API usage analytics
+│   │
+│   └── api/
+│       ├── hume-token/route.ts       # Issue short-lived Hume access token
+│       ├── verify-identity/route.ts  # Rekognition + Claude ID parser
+│       ├── start-session/route.ts    # Register session start
+│       ├── score/route.ts            # Full scoring pipeline (196 lines)
+│       ├── upload-cv/route.ts        # CV parsing via Claude
+│       ├── upload-recording/route.ts # Recording → Zoho WorkDrive
+│       ├── ping/route.ts             # Health check
+│       ├── booking/confirm/route.ts  # Booking confirmation
+│       ├── genesys/
+│       │   ├── outbound/route.ts     # WhatsApp outbound via Genesys
+│       │   └── whatsapp-booking/     # WhatsApp booking invite
+│       └── admin/
+│           ├── login/route.ts        # Auth endpoint → set cookie
+│           ├── logout/route.ts       # Clear cookie
+│           ├── sessions/route.ts     # List sessions
+│           ├── sessions/[id]/
+│           │   ├── route.ts          # Get single session
+│           │   └── override/route.ts # Apply reviewer override
+│           ├── sessions/bulk-action/ # Bulk approve/reject
+│           ├── invitations/route.ts  # Create candidate invite
+│           ├── match-jobs/route.ts   # Role matching
+│           └── draft-coaching/       # AI coaching draft
+│
+├── components/
+│   ├── BrandHeader.tsx               # Centro CDX branded header
+│   ├── CameraFeed.tsx                # Webcam video feed component
+│   ├── DimensionCard.tsx             # Score dimension display card
+│   ├── EmotionTimeline.tsx           # Emotion chart visualization
+│   ├── HumeWidget.tsx                # Hume EVI 2 voice widget (16.6 KB)
+│   ├── MethodologyPanel.tsx          # Scoring methodology explanation
+│   ├── NetworkStatus.tsx             # Live network ping indicator
+│   ├── ScoreCard.tsx                 # Per-dimension score card
+│   ├── ScoringMatrix.tsx             # Full scoring matrix display
+│   └── admin/
+│       ├── AdminNav.tsx              # Admin navigation sidebar
+│       ├── InviteModal.tsx           # Candidate invitation modal (15.5 KB)
+│       └── StatusBadge.tsx           # Pass/Borderline/Reject badge
+│
+├── lib/
+│   ├── admin-auth.ts                 # HMAC session cookie auth (Edge-safe)
+│   ├── aws-rekognition.ts            # Rekognition wrapper — face match + OCR
+│   ├── claude.ts                     # Claude scoring + Arabic ID translation (448 lines)
+│   ├── claude-face.ts                # Claude Vision facial expression analysis
+│   ├── cv-parser.ts                  # PDF/DOCX → structured CV via Claude
+│   ├── face-capture.ts               # Client-side webcam frame capture
+│   ├── fuzzy.ts                      # Levenshtein distance name matching
+│   ├── genesys.ts                    # Genesys Cloud WhatsApp client
+│   ├── hume.ts                       # Hume token issuance (server-side)
+│   ├── hume-face.ts                  # Hume Expression Measurement WebSocket
+│   ├── local-db.ts                   # File-system JSON session store
+│   ├── recording.ts                  # IndexedDB recording blob manager
+│   ├── role-catalog.ts               # BPO role definitions (8 roles)
+│   ├── rubric.ts                     # Scoring rubric + persona prompt (189 lines)
+│   ├── theme.ts                      # Centro brand color constants
+│   ├── usage.ts                      # IndexedDB usage log + summarization
+│   ├── zoho-creator.ts               # Zoho Creator REST client (1152 lines)
+│   └── zoho-workdrive.ts             # Zoho WorkDrive upload client
+│
+├── data/
+│   └── sessions.json                 # Local file-based session store
+│
+├── public/
+│   └── centro-logo.png               # Centro CDX brand logo
+│
+├── middleware.ts                      # Edge auth gate for /admin + /api/admin
+├── next.config.mjs                    # Next.js configuration
+├── tailwind.config.ts                 # Tailwind theme (Centro brand tokens)
+├── tsconfig.json                      # TypeScript configuration
+├── package.json                       # Dependencies + scripts
+└── .env.example                       # Environment variable template
+  </pre>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     13. ROADMAP
+     ═══════════════════════════════════════════════════ -->
+<section id="roadmap" class="section">
+  <div class="section-header">
+    <span class="section-number">13</span>
+    <h2>Phased Roadmap</h2>
+  </div>
+
+  <div class="diagram-container">
+    <div class="diagram-title">Release Roadmap — v1.0 to v2.0</div>
+    <div class="mermaid">
+gantt
+    title Centro AI Recruiter — Release Phases
+    dateFormat YYYY-MM-DD
+    axisFormat %b %Y
+
+    section v1.0 — Core
+    Landing + Screening UI          :done, v1a, 2026-05-01, 2026-05-18
+    Hume EVI 2 Integration          :done, v1b, 2026-05-05, 2026-05-15
+    Claude Scoring Pipeline         :done, v1c, 2026-05-10, 2026-05-18
+    ID Verification (Rekognition)   :done, v1d, 2026-05-12, 2026-05-20
+    Admin Dashboard (Basic)         :done, v1e, 2026-05-15, 2026-05-25
+    Smoke Testing (4 rounds)        :active, v1f, 2026-05-20, 2026-06-10
+
+    section v1.1 — Integration
+    Zoho Creator Sync               :active, v11a, 2026-06-01, 2026-06-20
+    Dynamic Rubric from Creator     :v11b, 2026-06-10, 2026-06-25
+    Candidate Invite System         :done, v11c, 2026-05-28, 2026-06-08
+
+    section v1.2 — Media
+    Recording Upload to WorkDrive   :v12a, 2026-06-15, 2026-07-01
+    Facial Expression (Hume/Claude) :done, v12b, 2026-05-25, 2026-06-10
+    CV Upload + Parsing             :done, v12c, 2026-05-30, 2026-06-08
+    Bias Audit Dashboard            :v12d, 2026-06-20, 2026-07-05
+
+    section v1.5 — Comms
+    Genesys WhatsApp Invites        :v15a, 2026-07-01, 2026-07-15
+    Zoho One SSO (replace Basic)    :v15b, 2026-07-10, 2026-07-30
+    Candidate Forge Coaching        :v15c, 2026-07-05, 2026-07-20
+
+    section v2.0 — Scale
+    Zoho Recruit Sync               :v20a, 2026-08-01, 2026-08-30
+    Multi-language Rubrics          :v20b, 2026-08-15, 2026-09-15
+    Job Routing Engine              :v20c, 2026-08-01, 2026-08-20
+    WhatsApp / SMS Scheduling       :v20d, 2026-09-01, 2026-09-30
+    </div>
+  </div>
+
+  <h3>Phase Summary</h3>
+  <div class="card-grid card-grid-3">
+    <div class="card" style="border-left: 4px solid var(--success);">
+      <h4>v1.0 — Core Platform <span class="tag tag-success">CURRENT</span></h4>
+      <ul>
+        <li>Full candidate screening flow</li>
+        <li>Hume EVI 2 voice agent</li>
+        <li>Claude rubric scoring</li>
+        <li>Identity verification</li>
+        <li>Admin dashboard</li>
+        <li>Mock fallbacks for all integrations</li>
+      </ul>
+    </div>
+    <div class="card" style="border-left: 4px solid var(--info);">
+      <h4>v1.1 — Zoho Integration <span class="tag tag-accent">ACTIVE</span></h4>
+      <ul>
+        <li>Live sync to Zoho Creator</li>
+        <li>Dynamic rubric loading from Creator</li>
+        <li>Candidate invitation system with PIN</li>
+        <li>Bulk session management</li>
+      </ul>
+    </div>
+    <div class="card" style="border-left: 4px solid var(--warning);">
+      <h4>v1.2 — Media & Analysis</h4>
+      <ul>
+        <li>Session recording → Zoho WorkDrive</li>
+        <li>Enhanced facial expression analysis</li>
+        <li>CV upload and AI parsing</li>
+        <li>Bias audit dashboard</li>
+        <li>Name discrepancy detection</li>
+      </ul>
+    </div>
+    <div class="card" style="border-left: 4px solid var(--purple);">
+      <h4>v1.5 — Communications</h4>
+      <ul>
+        <li>Genesys Cloud WhatsApp invites</li>
+        <li>Zoho One SSO authentication</li>
+        <li>Candidate Forge coaching program</li>
+        <li>Sourcing analytics</li>
+      </ul>
+    </div>
+    <div class="card" style="border-left: 4px solid var(--danger);">
+      <h4>v2.0 — Scale & Automation</h4>
+      <ul>
+        <li>Zoho Recruit bi-directional sync</li>
+        <li>Multi-language rubric support</li>
+        <li>Automated job routing engine</li>
+        <li>WhatsApp/SMS booking scheduler</li>
+        <li>Multi-tenant architecture</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>🧪 Smoke Test Plan</h4>
+      <ul>
+        <li><strong>Round 1:</strong> Mahmoud + 2 engineers (~3 sessions)</li>
+        <li><strong>Round 2:</strong> Pre-sales team (5-8 people)</li>
+        <li><strong>Round 3:</strong> Deployment team (5-8 people)</li>
+        <li><strong>Round 4:</strong> Software team (5-8 people)</li>
+        <li>Calibrate thresholds after ~25 sessions</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ═══════════════════════════════════════════════════
+     FOOTER
+     ═══════════════════════════════════════════════════ -->
+<footer class="footer">
+  <p><strong>Centro CDX · AI Recruiter</strong> — System Architecture Document v1.0.0</p>
+  <p style="margin-top: 4px;">Generated June 11, 2026 · Confidential — Internal Use Only</p>
+</footer>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'base',
+    themeVariables: {
+      primaryColor: '#e8f4f8',
+      primaryTextColor: '#004a59',
+      primaryBorderColor: '#00b4d8',
+      lineColor: '#8896a7',
+      secondaryColor: '#f0fdf4',
+      tertiaryColor: '#fef3c7',
+      fontFamily: 'Inter, sans-serif',
+      fontSize: '13px',
+      noteBkgColor: '#fffbeb',
+      noteTextColor: '#92400e',
+      noteBorderColor: '#d97706',
+      actorBkg: '#e8f4f8',
+      actorBorder: '#004a59',
+      actorTextColor: '#004a59',
+      sequenceNumberColor: '#ffffff',
+      labelBoxBkgColor: '#f8fafb',
+      labelBoxBorderColor: '#e2e8f0',
+      labelTextColor: '#1a2332'
+    },
+    flowchart: {
+      htmlLabels: true,
+      curve: 'basis',
+      nodeSpacing: 50,
+      rankSpacing: 50,
+      padding: 15
+    },
+    sequence: {
+      actorMargin: 80,
+      messageMargin: 40,
+      boxMargin: 10,
+      noteMargin: 10,
+      mirrorActors: false,
+      bottomMarginAdj: 1,
+      useMaxWidth: true
+    },
+    gantt: {
+      titleTopMargin: 25,
+      barHeight: 24,
+      barGap: 6,
+      topPadding: 50,
+      leftPadding: 100,
+      gridLineStartPadding: 35,
+      fontSize: 12,
+      sectionFontSize: 14,
+      numberSectionStyles: 4
+    },
+    er: {
+      fontSize: 13,
+      useMaxWidth: true
+    }
+  });
+
+  // Smooth scroll for TOC links
+  document.querySelectorAll('.toc-link').forEach(link => {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      const targetId = this.getAttribute('href').slice(1);
+      const target = document.getElementById(targetId);
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+</script>
+</body>
+</html>
